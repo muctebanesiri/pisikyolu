@@ -218,7 +218,7 @@ class PodcastCoverGenerator:
         
         # Wrap text to fit within bounds
         title_lines = self.wrap_text(title, max_chars_per_line=25)
-        subtitle_lines = self.wrap_text(subtitle, max_chars_per_line=35) if subtitle else []
+        subtitle_lines = self.wrap_text(subtitle, max_chars_per_line=45) if subtitle else []
         
         # Calculate font sizes
         title_size, subtitle_size = self.calculate_font_sizes(title_lines, subtitle_lines)
@@ -306,7 +306,7 @@ class PodcastCoverGenerator:
         svg_lines.append('  </g>')
         
         # Title Section
-        svg_lines.append('  <g transform="translate(540, 1340)">')
+        svg_lines.append('  <g transform="translate(540, 1250)">')
         
         # Render title lines
         y_offset = 0
@@ -318,7 +318,7 @@ class PodcastCoverGenerator:
                 svg_lines.append(f'    <text x="0" y="{line_y}" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="{title_size}" font-weight="700" fill="{BRAND_COLORS["dark"]}" opacity="0.98" filter="url(#textGlow)" letter-spacing="0.5">{self.escape_xml(line)}</text>')
         
         # Calculate subtitle starting position
-        subtitle_start_y = len(title_lines) * (title_size + 10) + 20
+        subtitle_start_y = len(title_lines) * (title_size + 10) + 15
         
         # Render subtitle lines
         for i, line in enumerate(subtitle_lines):
