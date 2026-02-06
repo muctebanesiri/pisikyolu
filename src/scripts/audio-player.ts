@@ -173,8 +173,8 @@ function showFeedback(action: string, value: string | number = '') {
             const direction = (value as number) > 0 ? 'Forward' : 'Back';
             text = `${direction} ${Math.abs(value as number)}s`;
             break;
-        case 'play': text = 'Playing'; break;
-        case 'pause': text = 'Paused'; break;
+        case 'play': text = 'اوخونور'; break;
+        case 'pause': text = 'دوردو'; break;
         case 'mute': text = 'Muted'; break;
         case 'unmute': text = 'Unmuted'; break;
         case 'volume': text = `Volume ${value}%`; break;
