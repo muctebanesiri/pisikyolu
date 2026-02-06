@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "podcast/season-1/sabir.md",
-                "mode": "preview",
+                "file": "podcast/season-1/linux.md",
+                "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "sabir"
+              "title": "linux"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "podcast/season-1/sabir.md",
+                "file": "podcast/season-1/linux.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for sabir"
+              "title": "Backlinks for linux"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "podcast/season-1/sabir.md",
+                "file": "podcast/season-1/linux.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from sabir"
+              "title": "Outgoing links from linux"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "podcast/season-1/sabir.md",
+                "file": "podcast/season-1/linux.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of sabir"
+              "title": "Outline of linux"
             }
           }
         ]
@@ -185,9 +185,10 @@
   },
   "active": "6abe88ef85de969f",
   "lastOpenFiles": [
+    "podcast/season-1/sabir.md",
+    "podcast/season-1/linux.md",
     "podcast/season-1/mollanasreddin.md",
     "podcast/season-1/ajabshir.md",
-    "podcast/season-1/root.md",
-    "podcast/season-1/sabir.md"
+    "podcast/season-1/root.md"
   ]
 }
