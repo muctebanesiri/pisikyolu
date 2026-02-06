@@ -1,0 +1,41 @@
+{
+  "name": "pisikyolu",
+  "workspaces": [
+    "src/remark-transcript-plugin"
+  ],
+  "type": "module",
+  "private": true,
+  "description": "Hope in Source website",
+  "version": "1.0.0",
+  "author": "Henry Zhu <hi@henryzoo.com>",
+  "bugs": {
+    "url": "gt.mucteba.ir/issues"
+  },
+  "homepage": "https://pisikyolu.com",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build && bun run scripts/build-search-index.ts",
+    "preview": "astro preview",
+    "astro": "astro",
+    "deploy": "bun run build --force && wrangler pages deploy dist --project-name pisikyolu-com"
+  },
+  "dependencies": {
+    "@astrojs/check": "0.9.6",
+    "@astrojs/preact": "4.1.3",
+    "astro": "5.16.6",
+    "gray-matter": "^4.0.3",
+    "pagefind": "^1.4.0",
+    "preact": "^10.28.0",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/bun": "^1.3.5",
+    "@types/mdast": "^4.0.4",
+    "@types/unist": "^3.0.3",
+    "sharp": "^0.34.5",
+    "typescript": "^5.9.3"
+  }
+}

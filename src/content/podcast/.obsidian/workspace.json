@@ -1,0 +1,221 @@
+{
+  "main": {
+    "id": "c8007a9ce2ad8499",
+    "type": "split",
+    "children": [
+      {
+        "id": "2abda4f82b8512ca",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f2b01fb9f6314a9a",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "season-1/sabir.md",
+                "mode": "source",
+                "source": true
+              },
+              "icon": "lucide-file",
+              "title": "sabir"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "b92f2ddab335c9c6",
+    "type": "split",
+    "children": [
+      {
+        "id": "c836999246a167e6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "96080fb308227799",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "337161c0b00cae4d",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "eac2c07de8665184",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "409d6d6933c6145e",
+    "type": "split",
+    "children": [
+      {
+        "id": "f95343c85ddb33dc",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8a92829f4197cf3f",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "season-5/walk.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for walk"
+            }
+          },
+          {
+            "id": "1835a4445f6b2a51",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "season-5/walk.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from walk"
+            }
+          },
+          {
+            "id": "930daefa65da4bf2",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "2099c6ff063c28f3",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "c4f1e06643630fea",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "season-5/walk.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of walk"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "f2b01fb9f6314a9a",
+  "lastOpenFiles": [
+    "season-1/root.md",
+    "season-1/sabir.md",
+    "season-1/ajabshir.md",
+    "season-1/mollanasreddin.md",
+    "root.md",
+    "season-1/properties.md",
+    "season-1/authority.md",
+    "season-1/evangelism.md",
+    "season-1/city.md",
+    "season-1",
+    "۱. فصل/root.md",
+    "۱. فصل/properties.md",
+    "۱. فصل/mollanasreddin.md",
+    "۱. فصل/evangelism.md",
+    "۱. فصل/city.md",
+    "۱. فصل/authority.md",
+    "۱. فصل",
+    "season-1/index.md",
+    "season-1/تاریخ مختصر مشروطه عثمانی.md",
+    "season-1/faith.md",
+    "season-1/haircut.md",
+    "season-1/inefficiency.md",
+    "season-1/liturgy.md",
+    "season-1/membership.md",
+    "season-1/money.md",
+    "season-1/trust.md",
+    "season-5/facade.md",
+    "season-5/unpacking.md",
+    "t 2.jpg",
+    "t 1.jpg",
+    "t.jpg",
+    "t 3.jpg"
+  ]
+}
