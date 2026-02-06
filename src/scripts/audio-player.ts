@@ -386,7 +386,7 @@ function initAudioPlayer() {
         showFeedback(audio.muted ? 'mute' : 'unmute');
         if (!audio.muted && audio.volume === 0) {
             audio.volume = 0.5;
-            if (volumeSlider) volumeSlider.value = "50";
+            if (volumeSlider) volumeSlider.value = "100";
         }
     });
 
