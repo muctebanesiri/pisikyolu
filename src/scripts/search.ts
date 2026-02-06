@@ -153,7 +153,7 @@ function createModal() {
       <input
         type="text"
         class="search-modal-input"
-        placeholder="Search transcripts..."
+        placeholder="ترنسکریپتلر آراسیندا آختار..."
         autocomplete="off"
         spellcheck="false"
       />
