@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "podcast/season-1/mollanasreddin.md",
+                "file": "podcast/season-1/ajabshir.md",
                 "mode": "source",
-                "source": false
+                "source": true
               },
               "icon": "lucide-file",
-              "title": "mollanasreddin"
+              "title": "ajabshir"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "\"ملا نصرالدین\"",
+                "query": "",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -74,8 +74,7 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -95,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "podcast/season-1/mollanasreddin.md",
+                "file": "podcast/season-1/ajabshir.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -105,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for mollanasreddin"
+              "title": "Backlinks for ajabshir"
             }
           },
           {
@@ -114,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "podcast/season-1/mollanasreddin.md",
+                "file": "podcast/season-1/ajabshir.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from mollanasreddin"
+              "title": "Outgoing links from ajabshir"
             }
           },
           {
@@ -157,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "podcast/season-1/mollanasreddin.md",
+                "file": "podcast/season-1/ajabshir.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of mollanasreddin"
+              "title": "Outline of ajabshir"
             }
           }
         ]
@@ -184,6 +183,11 @@
       "bases:Create new base": false
     }
   },
-  "active": "6683b82d9fc0961c",
-  "lastOpenFiles": []
+  "active": "6abe88ef85de969f",
+  "lastOpenFiles": [
+    "podcast/season-1/mollanasreddin.md",
+    "podcast/season-1/root.md",
+    "podcast/season-1/sabir.md",
+    "podcast/season-1/ajabshir.md"
+  ]
 }
