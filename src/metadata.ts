@@ -1,7 +1,7 @@
 export const hisMetadata = {
-  title: "pisikyolu",
+  title: "پیشیک‌یولو",
   description:
-    "What are the parallels between faith and open source software? Join Nadia and Henry for an off-the-cuff conversation between friends.",
+    "پیشیک‌یولو، مجتبی نصیری طرفیندن، حقوق، ادبیات، تکنولوژی و بنزری موضوعاتا گوره بیر پادکستدیر.",
   gitOrg: "muctebanesiri",
   gitRepo: "",
   siteUrl: "https://fm.mucteba.ir",
