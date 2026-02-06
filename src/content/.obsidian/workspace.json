@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "podcast/season-1/root.md",
+                "file": "podcast/season-1/sabir.md",
                 "mode": "preview",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "root"
+              "title": "sabir"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "podcast/season-1/root.md",
+                "file": "podcast/season-1/sabir.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for root"
+              "title": "Backlinks for sabir"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "podcast/season-1/root.md",
+                "file": "podcast/season-1/sabir.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from root"
+              "title": "Outgoing links from sabir"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "podcast/season-1/root.md",
+                "file": "podcast/season-1/sabir.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of root"
+              "title": "Outline of sabir"
             }
           }
         ]
@@ -185,9 +185,9 @@
   },
   "active": "6abe88ef85de969f",
   "lastOpenFiles": [
-    "podcast/season-1/mollanasreddin.md",
-    "podcast/season-1/root.md",
     "podcast/season-1/ajabshir.md",
+    "podcast/season-1/root.md",
+    "podcast/season-1/mollanasreddin.md",
     "podcast/season-1/sabir.md"
   ]
 }
