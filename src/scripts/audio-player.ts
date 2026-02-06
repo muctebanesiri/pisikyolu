@@ -19,6 +19,8 @@ let closeShortcuts: HTMLElement | null = null;
 let volumeSlider: HTMLInputElement | null = null;
 let playerFeedback: HTMLElement | null = null;
 let feedbackText: HTMLElement | null = null;
+let speedButton: HTMLElement | null = null;
+let speedMenu: HTMLElement | null = null;
 
 let allMessages: NodeListOf<HTMLElement>;
 let feedbackTimeout: ReturnType<typeof setTimeout>;
@@ -178,6 +180,7 @@ function showFeedback(action: string, value: string | number = '') {
         case 'mute': text = 'Muted'; break;
         case 'unmute': text = 'Unmuted'; break;
         case 'volume': text = `Volume ${value}%`; break;
+        case 'speed': text = `Speed: ${value}x`; break;
     }
 
     feedbackText.textContent = text;
@@ -193,6 +196,24 @@ function seekRelative(seconds: number) {
     const newTime = Math.max(0, Math.min(audio.duration, audio.currentTime + seconds));
     audio.currentTime = newTime;
     showFeedback('seek', seconds);
+}
+
+function setPlaybackSpeed(speed: number) {
+    if (!audio) return;
+    audio.playbackRate = speed;
+    if (speedButton) {
+        speedButton.textContent = `${speed}x`;
+    }
+    
+    // Update active state in menu
+    document.querySelectorAll('.speed-option').forEach(option => {
+        const optionSpeed = parseFloat(option.getAttribute('data-speed') || '1');
+        const isActive = Math.abs(optionSpeed - speed) < 0.01;
+        option.classList.toggle('bg-his-green/30', isActive);
+        option.classList.toggle('text-his-green', isActive);
+    });
+    
+    showFeedback('speed', speed);
 }
 
 function handleAudioKeydown(e: KeyboardEvent) {
@@ -216,6 +237,13 @@ function handleAudioKeydown(e: KeyboardEvent) {
             e.preventDefault();
             audio.muted = !audio.muted;
             showFeedback(audio.muted ? 'mute' : 'unmute');
+            break;
+        case "KeyL":
+            e.preventDefault();
+            if (speedMenu) {
+                speedMenu.classList.toggle('hidden');
+                showFeedback(speedMenu.classList.contains('hidden') ? 'Speed menu closed' : 'Speed menu open');
+            }
             break;
     }
 }
@@ -245,6 +273,21 @@ function handleGlobalClick(e: MouseEvent) {
                 history.replaceState(null, "", `#t=${seconds}`);
                 seekToTimestamp(false);
             }
+        }
+    }
+
+    // Handle speed option clicks
+    if (target.classList.contains('speed-option')) {
+        const speed = parseFloat(target.getAttribute('data-speed') || '1');
+        setPlaybackSpeed(speed);
+        if (speedMenu) speedMenu.classList.add('hidden');
+        return;
+    }
+
+    // Close speed menu when clicking elsewhere
+    if (speedMenu && !speedMenu.classList.contains('hidden')) {
+        if (!target.closest('#speed-button') && !target.closest('#speed-menu')) {
+            speedMenu.classList.add('hidden');
         }
     }
 }
@@ -277,6 +320,31 @@ function initAudioPlayer() {
     allMessages = document.querySelectorAll('.message');
 
     if (!audio) return;
+
+    // Create speed control HTML if it doesn't exist
+    if (shortcutsButton && !document.getElementById('speed-button')) {
+        const speedControlHtml = `
+            <div class="relative group">
+                <button id="speed-button" class="flex h-8 w-8 items-center justify-center rounded-lg bg-his-green/10 text-his-green transition-all duration-200 hover:bg-his-green/20 hover:opacity-80 focus:outline-none text-xs font-medium" aria-label="Playback Speed" title="Playback Speed">
+                    1x
+                </button>
+                <div id="speed-menu" class="absolute hidden group-hover:block hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 w-28 bg-his-hover/95 backdrop-blur-sm border border-his-text-tertiary/50 rounded-lg shadow-lg z-50">
+                    <div class="py-1">
+                        ${[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(speed => `
+                            <button class="speed-option w-full text-left px-3 py-2 text-sm text-his-text hover:bg-his-green/20 transition-colors ${speed === 1 ? 'bg-his-green/30 text-his-green' : ''}" data-speed="${speed}">
+                                ${speed}x
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        shortcutsButton.insertAdjacentHTML('beforebegin', speedControlHtml);
+    }
+
+    speedButton = document.getElementById('speed-button');
+    speedMenu = document.getElementById('speed-menu');
 
     // Listeners
     playPauseButton?.addEventListener("click", togglePlayPause);
@@ -322,6 +390,13 @@ function initAudioPlayer() {
         }
     });
 
+    // Speed control listeners
+    speedButton?.addEventListener('click', () => {
+        if (speedMenu) {
+            speedMenu.classList.toggle('hidden');
+        }
+    });
+
     shortcutsButton?.addEventListener("click", () => shortcutsDialog?.classList.remove("hidden"));
     closeShortcuts?.addEventListener("click", () => shortcutsDialog?.classList.add("hidden"));
     shortcutsDialog?.addEventListener("click", (e) => {
@@ -334,6 +409,7 @@ function initAudioPlayer() {
     window.addEventListener("hashchange", handleHashChange);
 
     audio.volume = 0.5;
+    audio.playbackRate = 1; // Set default playback rate
     seekToTimestamp();
 }
 
