@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "podcast/season-1/ajabshir.md",
+                "file": "podcast/season-1/root.md",
                 "mode": "preview",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "ajabshir"
+              "title": "root"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "podcast/season-1/ajabshir.md",
+                "file": "podcast/season-1/root.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for ajabshir"
+              "title": "Backlinks for root"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "podcast/season-1/ajabshir.md",
+                "file": "podcast/season-1/root.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from ajabshir"
+              "title": "Outgoing links from root"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "podcast/season-1/ajabshir.md",
+                "file": "podcast/season-1/root.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of ajabshir"
+              "title": "Outline of root"
             }
           }
         ]
@@ -187,7 +187,7 @@
   "lastOpenFiles": [
     "podcast/season-1/mollanasreddin.md",
     "podcast/season-1/root.md",
-    "podcast/season-1/sabir.md",
-    "podcast/season-1/ajabshir.md"
+    "podcast/season-1/ajabshir.md",
+    "podcast/season-1/sabir.md"
   ]
 }
