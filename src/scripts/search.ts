@@ -128,7 +128,7 @@ function getLoadingHtml(): string {
     return `
     <div class="search-loading">
       <div class="search-loading-spinner"></div>
-      <span>Searching...</span>
+      <span>آختاریلیر...</span>
     </div>
   `;
 }
