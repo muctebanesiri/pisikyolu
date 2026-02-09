@@ -11,10 +11,14 @@
             "id": "6abe88ef85de969f",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "podcast/season-1/mollanasreddin.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "New tab"
+              "title": "mollanasreddin"
             }
           }
         ]
@@ -179,11 +183,12 @@
       "bases:Create new base": false
     }
   },
-  "active": "922623998b8d32dc",
+  "active": "6abe88ef85de969f",
   "lastOpenFiles": [
+    "thumbnail.jpg",
+    "podcast/season-1/mollanasreddin.md",
     "podcast/season-1/sabir.md",
     "podcast/season-1/vahid.md",
-    "podcast/season-1/mollanasreddin.md",
     "podcast/season-1/linux.md",
     "podcast/season-1/ajabshir.md",
     "podcast/season-1/root.md",
