@@ -11,14 +11,10 @@
             "id": "6abe88ef85de969f",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "podcast/season-1/linux.md",
-                "mode": "source",
-                "source": true
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "linux"
+              "title": "New tab"
             }
           }
         ]
@@ -183,12 +179,14 @@
       "bases:Create new base": false
     }
   },
-  "active": "6abe88ef85de969f",
+  "active": "922623998b8d32dc",
   "lastOpenFiles": [
     "podcast/season-1/sabir.md",
-    "podcast/season-1/linux.md",
+    "podcast/season-1/vahid.md",
     "podcast/season-1/mollanasreddin.md",
+    "podcast/season-1/linux.md",
     "podcast/season-1/ajabshir.md",
-    "podcast/season-1/root.md"
+    "podcast/season-1/root.md",
+    "podcast/season-1/humanrights.md"
   ]
 }
