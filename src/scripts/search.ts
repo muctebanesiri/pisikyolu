@@ -271,7 +271,7 @@ async function openModal() {
     input?.focus();
 
     if (!input?.value && resultsArea) {
-        resultsArea.innerHTML = pagefind ? getEmptyStateHtml() : '<div class="search-empty-state">Search available after build</div>';
+        resultsArea.innerHTML = pagefind ? getEmptyStateHtml() : '<div class="search-empty-state">نتیجه‌لر بوردا لیست اولاجاق</div>';
     }
 }
 
