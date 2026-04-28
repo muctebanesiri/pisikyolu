@@ -44,12 +44,6 @@ function parseTimestamp(timestamp: string): number {
   return parts[0] * 60 + parts[1];
 }
 
-function formatTimestamp(seconds: number): string {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-}
-
 function parseTranscriptMessages(markdown: string): Message[] {
   const normalized = markdown.replace(/\r\n/g, "\n");
   const lines = normalized.split("\n");
