@@ -9,13 +9,13 @@
  */
 
 import * as pagefind from "pagefind";
-import { readdir, readFile } from "fs/promises";
+import { readdir, readFile, rm } from "fs/promises";
 import { join } from "path";
 import matter from "gray-matter";
 
 const CONTENT_DIR = "src/content/podcast";
 const OUTPUT_DIR = "dist/pagefind";
-const BUCKET_SIZE_SECONDS = 120; // 2 minutes
+const BUCKET_SIZE_SECONDS = 300; // 5 minutes
 
 // Match: [00:31] **Nadia:** Text here...
 const timestampRegex = /^\[(\d{1,2}:\d{2}(?::\d{2})?)\]\s*\*\*([^*]+)\*\*:?\s*(.*)/;
@@ -125,7 +125,8 @@ function getSlugFromPath(filePath: string): string {
 }
 
 async function main() {
-  console.log("Building search index with 2-minute buckets...");
+  console.log("Building search index with 5-minute buckets...");
+  await rm(OUTPUT_DIR, { recursive: true, force: true });
 
   const { index } = await pagefind.createIndex();
   if (!index) {

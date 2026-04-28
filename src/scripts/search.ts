@@ -10,6 +10,8 @@ interface PagefindResult {
 interface PagefindData {
     url: string;
     excerpt: string;
+    plain_excerpt?: string;
+    raw_content?: string;
     meta: {
         title: string;
         speaker?: string;
@@ -48,6 +50,27 @@ function extractTimestampSeconds(excerpt: string): number | null {
     }
     // Format is MM:SS
     return parseInt(first) * 60 + parseInt(second);
+}
+
+function extractTimestampFromRawContent(result: PagefindData): number | null {
+    if (!result.raw_content) return null;
+
+    const plainExcerpt = result.plain_excerpt ?? result.excerpt.replace(/<[^>]*>/g, '');
+    if (!plainExcerpt) return null;
+
+    const excerptIndex = result.raw_content.indexOf(plainExcerpt);
+    if (excerptIndex < 0) return null;
+
+    const beforeExcerpt = result.raw_content.slice(0, excerptIndex);
+    const timestampMatches = beforeExcerpt.match(/\[(\d{1,2}:\d{2}(?::\d{2})?)\]/g);
+    const lastTimestamp = timestampMatches?.[timestampMatches.length - 1];
+    return lastTimestamp ? extractTimestampSeconds(lastTimestamp) : null;
+}
+
+function extractResultTimestampSeconds(result: PagefindData): number | null {
+    return extractTimestampSeconds(result.excerpt || '')
+        ?? extractTimestampFromRawContent(result)
+        ?? extractBucketSeconds(result.url);
 }
 
 /**
@@ -439,8 +462,8 @@ function renderGroupedResults(results: PagefindData[], totalResults: number, has
     // 1. Sort matches within each group by timestamp/seconds
     for (const group of grouped.values()) {
         group.results.sort((a, b) => {
-            const timeA = extractTimestampSeconds(a.result.excerpt || '') ?? extractBucketSeconds(a.result.url) ?? 0;
-            const timeB = extractTimestampSeconds(b.result.excerpt || '') ?? extractBucketSeconds(b.result.url) ?? 0;
+            const timeA = extractResultTimestampSeconds(a.result) ?? 0;
+            const timeB = extractResultTimestampSeconds(b.result) ?? 0;
             return timeA - timeB;
         });
     }
@@ -488,10 +511,7 @@ function renderMatch(result: PagefindData, index: number, baseUrl: string) {
 
     // Extract precise timestamp from excerpt for deep linking
     // Fall back to bucket seconds from URL if excerpt doesn't have timestamp
-    let seconds = extractTimestampSeconds(excerpt);
-    if (seconds === null) {
-        seconds = extractBucketSeconds(result.url);
-    }
+    const seconds = extractResultTimestampSeconds(result);
 
     const url = seconds !== null
         ? `${baseUrl}#msg-${seconds}`
