@@ -24,6 +24,38 @@ export interface EpisodeLabCuration {
 // Add entries episode-by-episode as you read transcripts.
 export const HOME_LAB_CURATION: EpisodeLabCuration[] = [
   {
+    slug: "totems",
+    assertion: {
+      at: 1539,
+      text: "Words are totems. If you know the etymology. If you don't, you're just looking at the top of the totem.",
+    },
+    openLoop: {
+      at: 1029,
+      text: "We didn't even grieve COVID in a way, it just ended, but no one said it was over. What are our rituals anymore anyway?",
+    },
+    lexicon: [
+      { term: "hyperstition", anchors: [1122] },
+      { term: "psychomagic", anchors: [1050] },
+      { term: "post-critical", anchors: [2657] },
+    ],
+  },
+  {
+    slug: "snow",
+    assertion: {
+      at: 3343,
+      text: "All we have in this age of AI is what we are uniquely experiencing.",
+    },
+    openLoop: {
+      at: 3275,
+      text: "The opposite of striving is nothing. When really it should be, how do you come into being more?",
+    },
+    lexicon: [
+      { term: "temporal bandwidth", anchors: [4478] },
+      { term: "wu wei", anchors: [2754] },
+      { term: "foreground-background", anchors: [3844] },
+    ],
+  },
+  {
     slug: "checkpoint",
     assertion: {
       at: 2579,
