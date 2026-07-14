@@ -1,0 +1,26 @@
+name: Create PR from upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # daily
+  workflow_dispatch:
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MERGE_TOKEN }}
+      - name: Pull detached remote (all files)
+        uses: everlytic/pull-detached-remote@v1
+        with:
+          source-repo: hzoo/hopeinsource.com
+          source-branch: main
+          # source-directory: not set → syncs everything
+          token: ${{ secrets.MERGE_TOKEN }}
+          pr-title: "Sync all upstream changes"
+          pr-body: "Review each file and decide what to keep."
