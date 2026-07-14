@@ -9,9 +9,7 @@ embedUrl: https://podcasters.spotify.com/pod/show/pisikyolu/episodes/11-City-as-
 sidebar:
   order: 6
 speakers:
-  Henry: other
-  Nadia: right
-  Timothy: left
+  مجتبی: right
 draft: false
 ---
 
