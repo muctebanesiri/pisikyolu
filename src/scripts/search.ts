@@ -254,16 +254,25 @@ async function openModal() {
     }
 
     const trigger = document.getElementById('search-trigger');
-    // --- FIX: Import the default export from pagefind ---
+    // --- FIX: Import the default export using the correct base path ---
     if (!pagefind && !trigger?.dataset.dev) {
         try {
+            // Use Astro's BASE_URL to construct the path reliably
+            const base = import.meta.env.BASE_URL || '/';
+            // Remove trailing slash if present to avoid double slashes
+            const basePath = base.endsWith('/') ? base.slice(0, -1) : base;
             const p = 'pagefind';
-            // Dynamic import, escaped from Vite analysis
-            const module = await import(/* @vite-ignore */ `/${p}/${p}.js`);
+            // @ts-ignore - dynamic import
+            const module = await import(/* @vite-ignore */ `${basePath}/${p}/${p}.js`);
             // Pagefind exports its API as the default export
-            pagefind = module.default || module; // fallback just in case
+            pagefind = module.default || module;
+            // Quick sanity check
+            if (typeof pagefind?.search !== 'function') {
+                console.warn('Pagefind loaded but does not have a search method – check the import.');
+                pagefind = null;
+            }
         } catch (e) {
-            console.warn('Pagefind not found. Search will be available after build.');
+            console.warn('Pagefind not found at the expected path. Search will be unavailable.', e);
         }
     }
 
