@@ -77,8 +77,8 @@ jobs:
         with:
           path: ${{ env.BUILD_PATH }}/dist
           
-      - name: Sync-Fork-action
-        uses: XueMoMo/Sync-Fork-action@v1.0.6
+      - name: Pull Detached Remote
+        uses: litetex/pull-detached-remote@v0.3
 
   deploy:
     environment:
