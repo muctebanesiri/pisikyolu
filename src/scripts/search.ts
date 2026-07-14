@@ -1,5 +1,6 @@
 /**
- * Search functionality with Spotlight-style modal
+ * Search functionality with Spotlight-style modal.
+ * Loaded on demand via search-entry.ts.
  */
 
 interface PagefindResult {
@@ -9,6 +10,8 @@ interface PagefindResult {
 interface PagefindData {
     url: string;
     excerpt: string;
+    plain_excerpt?: string;
+    raw_content?: string;
     meta: {
         title: string;
         speaker?: string;
@@ -18,6 +21,14 @@ interface PagefindData {
 
 interface Pagefind {
     search: (query: string) => Promise<{ results: PagefindResult[] }>;
+}
+
+interface SearchSession {
+    id: number;
+    results: PagefindResult[];
+    hydratedResults: PagefindData[];
+    nextIndex: number;
+    total: number;
 }
 
 /**
@@ -41,6 +52,27 @@ function extractTimestampSeconds(excerpt: string): number | null {
     return parseInt(first) * 60 + parseInt(second);
 }
 
+function extractTimestampFromRawContent(result: PagefindData): number | null {
+    if (!result.raw_content) return null;
+
+    const plainExcerpt = result.plain_excerpt ?? result.excerpt.replace(/<[^>]*>/g, '');
+    if (!plainExcerpt) return null;
+
+    const excerptIndex = result.raw_content.indexOf(plainExcerpt);
+    if (excerptIndex < 0) return null;
+
+    const beforeExcerpt = result.raw_content.slice(0, excerptIndex);
+    const timestampMatches = beforeExcerpt.match(/\[(\d{1,2}:\d{2}(?::\d{2})?)\]/g);
+    const lastTimestamp = timestampMatches?.[timestampMatches.length - 1];
+    return lastTimestamp ? extractTimestampSeconds(lastTimestamp) : null;
+}
+
+function extractResultTimestampSeconds(result: PagefindData): number | null {
+    return extractTimestampSeconds(result.excerpt || '')
+        ?? extractTimestampFromRawContent(result)
+        ?? extractBucketSeconds(result.url);
+}
+
 /**
  * Extract seconds from bucket URL like /slug#bucket-123
  */
@@ -56,9 +88,15 @@ let backdrop: HTMLDivElement | null = null;
 let modal: HTMLDivElement | null = null;
 let input: HTMLInputElement | null = null;
 let resultsArea: HTMLDivElement | null = null;
-let currentSearch: { results: PagefindResult[] } | null = null;
-// Load up to 500 results to ensure we can group them properly by episode
-const MAX_RESULTS = 500;
+let modalAbort: AbortController | null = null;
+let activeSearchId = 0;
+let searchSession: SearchSession | null = null;
+let isHydratingMore = false;
+
+// Keep initial search render cheap, then hydrate more on demand.
+const INITIAL_RESULTS_TO_HYDRATE = 60;
+const LOAD_MORE_RESULTS_STEP = 40;
+const HYDRATE_BATCH_SIZE = 20;
 
 // Quotes from the podcast for the empty state
 const SEARCH_QUOTES = [
@@ -128,13 +166,16 @@ function getLoadingHtml(): string {
     return `
     <div class="search-loading">
       <div class="search-loading-spinner"></div>
-      <span>آختاریلیر...</span>
+      <span>Searching...</span>
     </div>
   `;
 }
 
 function createModal() {
     if (modal) return;
+    modalAbort?.abort();
+    modalAbort = new AbortController();
+    const { signal } = modalAbort;
 
     // Backdrop
     backdrop = document.createElement('div');
@@ -153,7 +194,7 @@ function createModal() {
       <input
         type="text"
         class="search-modal-input"
-        placeholder="ترنسکریپتلر آراسیندا آختار..."
+        placeholder="Search transcripts..."
         autocomplete="off"
         spellcheck="false"
       />
@@ -172,14 +213,20 @@ function createModal() {
     input.addEventListener('input', (e) => {
         const query = (e.target as HTMLInputElement).value.trim();
         if (debounceTimer) clearTimeout(debounceTimer);
+        selectedIndex = -1;
 
         if (!query) {
+            activeSearchId++;
+            searchSession = null;
+            isHydratingMore = false;
             resultsArea!.innerHTML = getEmptyStateHtml();
             return;
         }
 
-        debounceTimer = setTimeout(() => performSearch(query), 250);
-    });
+        debounceTimer = setTimeout(() => {
+            void performSearch(query);
+        }, 250);
+    }, { signal });
 
     // Keyboard navigation
     input.addEventListener('keydown', (e) => {
@@ -199,13 +246,20 @@ function createModal() {
         } else if (e.key === 'Escape') {
             closeModal();
         }
-    });
+    }, { signal });
 
     // Backdrop click
-    backdrop.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal, { signal });
 
-    // Handle search result clicks - close modal and navigate to hash (delegated)
+    // Delegated clicks in search area
     resultsArea.addEventListener('click', (e) => {
+        const loadMoreButton = (e.target as HTMLElement).closest<HTMLButtonElement>('#search-load-more');
+        if (loadMoreButton) {
+            e.preventDefault();
+            void loadMoreResults();
+            return;
+        }
+
         // Handle both search results and splash quote links
         const link = (e.target as HTMLElement).closest<HTMLAnchorElement>('.search-result, .search-splash-quote-link');
 
@@ -238,14 +292,7 @@ function createModal() {
                 window.location.href = link.href;
             }
         }
-    });
-}
-
-function handleGlobalKeydown(e: KeyboardEvent) {
-    if (e.key === '/' && !(e.target as HTMLElement).matches('input, textarea, [contenteditable]')) {
-        e.preventDefault();
-        openModal();
-    }
+    }, { signal });
 }
 
 async function openModal() {
@@ -254,25 +301,13 @@ async function openModal() {
     }
 
     const trigger = document.getElementById('search-trigger');
-    // --- FIX: Import the default export using the correct base path ---
     if (!pagefind && !trigger?.dataset.dev) {
         try {
-            // Use Astro's BASE_URL to construct the path reliably
-            const base = import.meta.env.BASE_URL || '/';
-            // Remove trailing slash if present to avoid double slashes
-            const basePath = base.endsWith('/') ? base.slice(0, -1) : base;
+            // @ts-ignore - Dynamic import of Pagefind, escaped from Vite analysis via dynamic path
             const p = 'pagefind';
-            // @ts-ignore - dynamic import
-            const module = await import(/* @vite-ignore */ `${basePath}/${p}/${p}.js`);
-            // Pagefind exports its API as the default export
-            pagefind = module.default || module;
-            // Quick sanity check
-            if (typeof pagefind?.search !== 'function') {
-                console.warn('Pagefind loaded but does not have a search method – check the import.');
-                pagefind = null;
-            }
-        } catch (e) {
-            console.warn('Pagefind not found at the expected path. Search will be unavailable.', e);
+            pagefind = await import(/* @vite-ignore */ `/${p}/${p}.js`);
+        } catch {
+            console.warn('Pagefind not found. Search will be available after build.');
         }
     }
 
@@ -282,16 +317,16 @@ async function openModal() {
     document.body.style.overflow = 'hidden';
     input?.focus();
 
-    // Reset selection when opening
-    selectedIndex = -1;
-
     if (!input?.value && resultsArea) {
-        resultsArea.innerHTML = pagefind ? getEmptyStateHtml() : '<div class="search-empty-state">نتیجه‌لر بوردا لیست اولاجاق</div>';
+        resultsArea.innerHTML = pagefind ? getEmptyStateHtml() : '<div class="search-empty-state">Search available after build</div>';
     }
 }
 
 function closeModal() {
     if (!modal || !backdrop || !input || !resultsArea) return;
+    activeSearchId++;
+    searchSession = null;
+    isHydratingMore = false;
     modal.classList.remove('visible');
     backdrop.classList.remove('visible');
     document.body.style.overflow = '';
@@ -300,43 +335,113 @@ function closeModal() {
     selectedIndex = -1;
 }
 
+async function hydrateResults(
+    results: PagefindResult[],
+    startIndex: number,
+    count: number,
+    searchId: number,
+): Promise<PagefindData[] | null> {
+    const hydrated: PagefindData[] = [];
+    const endIndex = Math.min(startIndex + count, results.length);
+
+    for (let i = startIndex; i < endIndex; i += HYDRATE_BATCH_SIZE) {
+        const batch = results.slice(i, Math.min(i + HYDRATE_BATCH_SIZE, endIndex));
+        const data = await Promise.all(batch.map((r) => r.data()));
+        if (searchId !== activeSearchId) return null;
+        hydrated.push(...data);
+    }
+
+    return hydrated;
+}
+
 async function performSearch(query: string) {
     if (!pagefind || !resultsArea) return;
 
-    // Reset selection for new search results
+    const searchId = ++activeSearchId;
     selectedIndex = -1;
+    searchSession = null;
+    isHydratingMore = false;
 
     try {
-        currentSearch = await pagefind.search(query);
+        const resultSet = await pagefind.search(query);
+        if (searchId !== activeSearchId) return;
 
-        if (!currentSearch || currentSearch.results.length === 0) {
+        if (!resultSet || resultSet.results.length === 0) {
             resultsArea.innerHTML = '<div class="search-no-results">No results found</div>';
             return;
         }
 
-        // Load ALL results (up to MAX_RESULTS) so we can group effectively
         resultsArea.innerHTML = getLoadingHtml();
 
-        const allResults: PagefindData[] = [];
-        const resultsToLoad = Math.min(currentSearch.results.length, MAX_RESULTS);
+        const hydratedResults = await hydrateResults(
+            resultSet.results,
+            0,
+            INITIAL_RESULTS_TO_HYDRATE,
+            searchId,
+        );
+        if (!hydratedResults || searchId !== activeSearchId) return;
 
-        // Load in batches of 20 concurrently
-        const batchSize = 20;
-        for (let i = 0; i < resultsToLoad; i += batchSize) {
-            const batch = currentSearch.results.slice(i, i + batchSize);
-            const data = await Promise.all(batch.map(r => r.data()));
-            allResults.push(...data);
-        }
+        searchSession = {
+            id: searchId,
+            results: resultSet.results,
+            hydratedResults,
+            nextIndex: hydratedResults.length,
+            total: resultSet.results.length,
+        };
 
-        renderGroupedResults(allResults);
-    } catch (e) {
+        renderSearchSession();
+    } catch {
+        if (searchId !== activeSearchId) return;
         resultsArea.innerHTML = '<div class="search-no-results">Search error</div>';
-        console.error('Search error:', e);
     }
 }
 
-// Replaced loadMoreResults/renderResults with renderGroupedResults
-function renderGroupedResults(results: PagefindData[]) {
+async function loadMoreResults() {
+    if (!searchSession || !resultsArea || isHydratingMore) return;
+    if (searchSession.nextIndex >= searchSession.total) return;
+
+    isHydratingMore = true;
+
+    const loadMoreButton = resultsArea.querySelector<HTMLButtonElement>('#search-load-more');
+    if (loadMoreButton) {
+        loadMoreButton.disabled = true;
+        loadMoreButton.textContent = 'Loading...';
+    }
+
+    const nextHydrated = await hydrateResults(
+        searchSession.results,
+        searchSession.nextIndex,
+        LOAD_MORE_RESULTS_STEP,
+        searchSession.id,
+    );
+
+    if (!nextHydrated) {
+        isHydratingMore = false;
+        return;
+    }
+
+    if (!searchSession || searchSession.id !== activeSearchId) {
+        isHydratingMore = false;
+        return;
+    }
+
+    searchSession.hydratedResults.push(...nextHydrated);
+    searchSession.nextIndex += nextHydrated.length;
+    isHydratingMore = false;
+
+    renderSearchSession();
+}
+
+function renderSearchSession() {
+    if (!searchSession) return;
+    renderGroupedResults(
+        searchSession.hydratedResults,
+        searchSession.total,
+        searchSession.nextIndex < searchSession.total,
+    );
+}
+
+function renderGroupedResults(results: PagefindData[], totalResults: number, hasMore: boolean) {
     if (!resultsArea) return;
 
     // Group results by episode (base URL without anchor)
@@ -357,8 +462,8 @@ function renderGroupedResults(results: PagefindData[]) {
     // 1. Sort matches within each group by timestamp/seconds
     for (const group of grouped.values()) {
         group.results.sort((a, b) => {
-            const timeA = extractTimestampSeconds(a.result.excerpt || '') ?? extractBucketSeconds(a.result.url) ?? 0;
-            const timeB = extractTimestampSeconds(b.result.excerpt || '') ?? extractBucketSeconds(b.result.url) ?? 0;
+            const timeA = extractResultTimestampSeconds(a.result) ?? 0;
+            const timeB = extractResultTimestampSeconds(b.result) ?? 0;
             return timeA - timeB;
         });
     }
@@ -369,12 +474,21 @@ function renderGroupedResults(results: PagefindData[]) {
     });
 
     const resultsHtml = sortedGroups.map(([baseUrl, group]) =>
-        renderEpisodeGroup(baseUrl, group.title, group.results)
+        renderEpisodeGroup(baseUrl, group.title, group.results),
     ).join('');
 
+    const headerText = hasMore
+        ? `${results.length} of ${totalResults} results`
+        : `${totalResults} result${totalResults !== 1 ? 's' : ''}`;
+
+    const loadMoreHtml = hasMore
+        ? '<button id="search-load-more" class="search-load-more" type="button">Load more results</button>'
+        : '';
+
     resultsArea.innerHTML = `
-      <div class="search-results-header">${results.length} result${results.length !== 1 ? 's' : ''}</div>
+      <div class="search-results-header">${headerText}</div>
       <div class="search-results-list">${resultsHtml}</div>
+      ${loadMoreHtml}
     `;
 }
 
@@ -397,10 +511,7 @@ function renderMatch(result: PagefindData, index: number, baseUrl: string) {
 
     // Extract precise timestamp from excerpt for deep linking
     // Fall back to bucket seconds from URL if excerpt doesn't have timestamp
-    let seconds = extractTimestampSeconds(excerpt);
-    if (seconds === null) {
-        seconds = extractBucketSeconds(result.url);
-    }
+    const seconds = extractResultTimestampSeconds(result);
 
     const url = seconds !== null
         ? `${baseUrl}#msg-${seconds}`
@@ -471,33 +582,8 @@ function updateSelection(resultLinks: NodeListOf<HTMLAnchorElement>) {
     }
 }
 
-function initSearch() {
-    const trigger = document.getElementById('search-trigger');
-    if (!trigger) return;
-
-    trigger.addEventListener('click', openModal);
-    document.addEventListener('keydown', handleGlobalKeydown);
+export async function openSearchModal() {
+    await openModal();
 }
 
-function cleanupSearch() {
-    backdrop?.remove();
-    modal?.remove();
-    backdrop = null;
-    modal = null;
-    input = null;
-    resultsArea = null;
-    document.removeEventListener('keydown', handleGlobalKeydown);
-}
-
-// Initialize and handle cleanup on every page load (including navigations)
-function setupSearch() {
-    cleanupSearch();
-    initSearch();
-}
-
-document.addEventListener('astro:page-load', setupSearch);
-
-// Fallback for initial load if not using View Transitions or if script loads after astro:page-load
-if (document.readyState === 'complete') {
-    setupSearch();
-}
+export {};
