@@ -1,17 +1,17 @@
 {
-  "name": "pisikyolu",
+  "name": "pişikyolu",
   "workspaces": [
     "src/remark-transcript-plugin"
   ],
   "type": "module",
   "private": true,
-  "description": "Hope in Source website",
+  "description": "pişikyolu podcast",
   "version": "1.0.0",
-  "author": "Henry Zhu <hi@henryzoo.com>",
+  "author": "Mücteba Nesiri <fm@mucteba.ir>",
   "bugs": {
-    "url": "gt.mucteba.ir/issues"
+    "url": "https://github.com/muctebanesiri/pisikyolu/issues"
   },
-  "homepage": "https://pisikyolu.com",
+  "homepage": "https://fm.mucteba.ir",
   "license": "MIT",
   "scripts": {
     "dev": "astro dev",
