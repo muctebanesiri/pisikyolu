@@ -2,8 +2,8 @@ name: Create PR from upstream
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # daily
-  workflow_dispatch:
+    - cron: '0 0 * * *'      # daily at midnight UTC
+  workflow_dispatch:         # allows manual trigger
 
 jobs:
   create-pr:
@@ -11,16 +11,33 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout your repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MERGE_TOKEN }}   # use your PAT
+
+      - name: Add upstream remote and fetch
+        run: |
+          git remote add upstream https://github.com/hzoo/hopeinsource.com.git
+          git fetch upstream main
+
+      - name: Create a branch with upstream content
+        run: |
+          # Create a new branch from upstream/main
+          git checkout -b sync/upstream upstream/main
+          # Push this branch to your repository
+          git push -u origin sync/upstream
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.MERGE_TOKEN }}
-      - name: Pull detached remote (all files)
-        uses: everlytic/pull-detached-remote@v1
-        with:
-          source-repo: hzoo/hopeinsource.com
-          source-branch: main
-          # source-directory: not set → syncs everything
-          token: ${{ secrets.MERGE_TOKEN }}
-          pr-title: "Sync all upstream changes"
-          pr-body: "Review each file and decide what to keep."
+          branch: sync/upstream           # the branch we just pushed
+          base: main                      # target branch in your repo
+          title: "Sync all upstream changes"
+          body: |
+            This PR brings all new files and updates from the original repository.
+            Review each file before merging.
+          delete-branch: true             # delete the branch after merging
