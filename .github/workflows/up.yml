@@ -1,4 +1,4 @@
-name: Create PR from upstream
+name: Sync from upstream
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  create-pr:
+  sync:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -19,7 +19,7 @@ jobs:
           token: ${{ secrets.MERGE_TOKEN }}
           fetch-depth: 0
 
-      - name: Configure git user
+      - name: Configure git
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "github-actions"
@@ -30,53 +30,31 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Prepare branch for sync
+      - name: Create merge branch from main and merge upstream
         run: |
-          # Delete remote branch if exists (to start fresh)
+          # Delete any old remote branch to start fresh
           git push origin --delete sync/upstream || true
-          # Create a new branch from main
+          # Start from your main
           git checkout main
           git checkout -b sync/upstream
-
-      - name: Merge upstream into branch (allow conflicts)
-        run: |
-          # Merge upstream/main with unrelated histories, don't commit yet
+          # Merge upstream, allow unrelated histories, do not commit automatically
           git merge upstream/main --allow-unrelated-histories --no-commit --no-ff || true
-
-      - name: Stage all changes (including conflicts)
-        run: git add -A
-
-      - name: Check if there are staged changes
-        id: check_staged
-        run: |
-          if git diff --cached --quiet; then
-            echo "No staged changes"
-            echo "has_staged=false" >> $GITHUB_OUTPUT
+          # Stage everything (including conflicts)
+          git add -A
+          # If there are staged changes, commit them; otherwise add a dummy commit
+          if ! git diff --cached --quiet; then
+            git commit -m "Merge upstream/main into sync/upstream"
           else
-            echo "Staged changes found"
-            echo "has_staged=true" >> $GITHUB_OUTPUT
+            git commit --allow-empty -m "Dummy commit to sync upstream"
           fi
-
-      - name: Commit merge (or dummy commit if no changes)
-        run: |
-          if [[ "${{ steps.check_staged.outputs.has_staged }}" == "true" ]]; then
-            git commit -m "Merge upstream/main with conflicts (if any)"
-          else
-            # No changes – add a dummy commit to force a PR
-            echo "No content changes, adding dummy commit to trigger PR"
-            git commit --allow-empty -m "Dummy commit to sync with upstream (no content changes)"
-          fi
+          # Push the branch
           git push -u origin sync/upstream --force
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.MERGE_TOKEN }}
-          branch: sync/upstream
-          base: main
-          title: "Sync all upstream changes"
-          body: |
-            This PR syncs your repository with the latest changes from the upstream repository.
-            - If there are merge conflicts, they are included in the commit – please resolve them.
-            - If there were no content changes, a dummy commit was added to trigger this PR (you can ignore it or drop it).
-          delete-branch: true
+      - name: Create Pull Request (or update existing)
+        run: |
+          gh pr create --base main --head sync/upstream \
+            --title "Sync all upstream changes" \
+            --body "This PR brings all upstream changes. Resolve conflicts if any." \
+            --force || echo "PR already exists or could not be created"
+        env:
+          GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
