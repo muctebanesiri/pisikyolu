@@ -77,8 +77,6 @@ jobs:
         with:
           path: ${{ env.BUILD_PATH }}/dist
           
-      - name: Pull Detached Remote
-        uses: litetex/pull-detached-remote@v0.3
 
   deploy:
     environment:
