@@ -18,7 +18,7 @@ html {
 
 @theme {
   --font-system: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Segoe UI", Vazirmatn, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   /* DARK THEME - Default (matches your main site) */
@@ -336,7 +336,7 @@ html {
 
 .search-esc-hint {
   font-size: 0.5625rem;
-  font-family: robomatn, monospace;
+  font-family: Vazirmatn, monospace;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-his-text-tertiary);
@@ -524,7 +524,7 @@ html {
 
 .search-result-time {
   font-size: 0.75rem;
-  font-family: robomatn, monospace;
+  font-family: Vazirmatn, monospace;
   color: var(--color-his-text-tertiary);
   min-width: 3rem;
   flex-shrink: 0;
