@@ -41,23 +41,19 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create branch with upstream changes
+      - name: Create branch with upstream changes (including conflicts)
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
-          # Start from your main branch
           git checkout main
-          # Create a new branch (will be your main + upstream merge)
           git checkout -b sync/upstream
-          # Merge upstream into it, allow unrelated histories, but don't auto-commit
+          # Merge upstream, allowing unrelated histories, do not auto-commit
           git merge upstream/main --allow-unrelated-histories --no-commit --no-ff || true
-          # If there are staged changes (including conflicts), commit them
-          if ! git diff --cached --quiet; then
-            git commit -m "Merge upstream/main into sync/upstream (including conflicts if any)"
-            git push -u origin sync/upstream --force
-          else
-            echo "Merge produced no changes – nothing to commit."
-            exit 1
-          fi
+          # Stage all files (including conflict markers)
+          git add .
+          # Commit the merge (even if there are unresolved conflicts)
+          git commit -m "Merge upstream/main into sync/upstream (with conflicts if any)"
+          # Push the branch to your repository
+          git push -u origin sync/upstream --force
 
       - name: Create Pull Request
         if: steps.check_changes.outputs.has_changes == 'true'
@@ -69,6 +65,5 @@ jobs:
           title: "Sync all upstream changes"
           body: |
             This PR brings all new files and updates from the original repository.
-            Review each file before merging.
-            If there are conflicts, they are shown in the diff. Resolve them here or locally.
+            Review each file and resolve conflicts if any.
           delete-branch: true
