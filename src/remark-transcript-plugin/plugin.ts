@@ -75,6 +75,10 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
   return (tree: Root, vfile) => {
     const speakerConfig: Record<string, string> = (vfile.data?.astro?.frontmatter?.speakers as Record<string, string>) || {};
     const speakerOrder: string[] = [];
+<<<<<<< HEAD
+=======
+    const messageIdCountsBySecond = new Map<number, number>();
+>>>>>>> upstream/main
     let speakerCount = 0;
     let lastSpeaker: string | null = null;
 
@@ -133,7 +137,15 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
         : node.children.slice(1);
 
       const seconds = timeToSeconds(timestamp);
+<<<<<<< HEAD
       const messageId = `msg-${seconds}`;
+=======
+      const nextOccurrence = (messageIdCountsBySecond.get(seconds) ?? 0) + 1;
+      messageIdCountsBySecond.set(seconds, nextOccurrence);
+      const messageId = nextOccurrence === 1
+        ? `msg-${seconds}`
+        : `msg-${seconds}-${nextOccurrence}`;
+>>>>>>> upstream/main
       
       // Look ahead for next speaker
       const nextNode = parent.children[index + 1] as RootContent;
@@ -181,7 +193,12 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
         hProperties: {
           id: messageId,
           className: classes,
+<<<<<<< HEAD
           "data-timestamp": String(seconds)
+=======
+          "data-timestamp": String(seconds),
+          "data-msg-occurrence": String(nextOccurrence),
+>>>>>>> upstream/main
         },
       };
 

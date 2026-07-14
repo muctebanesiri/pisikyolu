@@ -1,6 +1,10 @@
 ---
 import { hisMetadata } from "@/metadata.ts";
+<<<<<<< HEAD
 import his_cover from "@/assets/his.webp";
+=======
+import his_cover from "@/assets/his.jpg";
+>>>>>>> upstream/main
 
 const { 
   title = hisMetadata.title,
@@ -10,6 +14,7 @@ const {
   type = 'website',
   publishedTime,
   modifiedTime,
+<<<<<<< HEAD
   author = 'Henry Zhu, Nadia Asparouhova',
 } = Astro.props;
 
@@ -17,6 +22,12 @@ import { ClientRouter } from 'astro:transitions';
 
 const siteTitle = title === hisMetadata.title ? title : `${title}`;
 const isMainPage = slug === '';
+=======
+  author = 'Henry Zhu',
+} = Astro.props;
+
+const siteTitle = title === hisMetadata.title ? title : `${title}`;
+>>>>>>> upstream/main
 ---
 
 <!-- Global Metadata -->
@@ -25,9 +36,12 @@ const isMainPage = slug === '';
 <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
 <meta name="generator" content={Astro.generator} />
 
+<<<<<<< HEAD
 <!-- Preconnect to external domains -->
 <link rel="preconnect" href="https://castbox.fm" />
 
+=======
+>>>>>>> upstream/main
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
 
@@ -62,11 +76,19 @@ const isMainPage = slug === '';
 <meta name="theme-color" content="#1a1a1a" />
 
 <!-- Structured Data -->
+<<<<<<< HEAD
 <script type="application/ld+json" set:html={JSON.stringify({
   "@context": "https://schema.org",
   "@type": "PodcastSeries",
   "name": "Hope in Source",
   "url": "https://pisikyolu.com",
+=======
+<script is:inline type="application/ld+json" set:html={JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "PodcastSeries",
+  "name": "Hope in Source",
+  "url": "https://hopeinsource.com",
+>>>>>>> upstream/main
   "description": hisMetadata.description,
   "author": [
     {
@@ -76,5 +98,8 @@ const isMainPage = slug === '';
     }
   ]
 })} />
+<<<<<<< HEAD
 
 <ClientRouter />
+=======
+>>>>>>> upstream/main

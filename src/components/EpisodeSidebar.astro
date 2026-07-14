@@ -1,4 +1,8 @@
 ---
+<<<<<<< HEAD
+=======
+import { formatEpisodeDate } from "@/lib/dates";
+>>>>>>> upstream/main
 import { getEpisodeData } from "@/lib/episodes";
 import Search from "./Search.astro";
 
@@ -7,7 +11,11 @@ interface Props {
 }
 
 const { currentSlug } = Astro.props;
+<<<<<<< HEAD
 const { episodesBySeasons, seasons } = await getEpisodeData();
+=======
+const { archiveGroups } = await getEpisodeData();
+>>>>>>> upstream/main
 ---
 
 <!-- Mobile backdrop -->
@@ -42,16 +50,28 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
   <!-- Scrollable content (hidden scrollbar) -->
   <div class="overflow-y-auto flex-1 p-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
     <!-- Episodes list -->
+<<<<<<< HEAD
     {seasons.map((season) => (
       <section class="mb-6">
         {season !== 0 && (
           <h3 class="text-[10px] font-bold text-his-green uppercase tracking-[0.2em] mb-3 px-3 flex items-center gap-2">
             <span>{season === 2 ? "Maintainers Anonymous" : `فصل ${season}`}</span>
+=======
+    {archiveGroups.map((group) => (
+      <section class="mb-6">
+        {group.id !== "0" && (
+          <h3 class="text-[10px] font-bold text-his-green uppercase tracking-[0.2em] mb-3 px-3 flex items-center gap-2">
+            <span>{group.label}</span>
+>>>>>>> upstream/main
             <span class="flex-1 h-px bg-gradient-to-r from-his-green/30 to-transparent"></span>
           </h3>
         )}
         <div class="space-y-0.5">
+<<<<<<< HEAD
           {episodesBySeasons[season].map((episode) => {
+=======
+          {group.episodes.map((episode) => {
+>>>>>>> upstream/main
             const isActive = episode.slug === currentSlug;
             return (
               <a
@@ -62,8 +82,13 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                     ? "bg-his-green/12 ring-1 ring-his-green/25"
                     : "hover:bg-his-hover/60"
                 ]}
+<<<<<<< HEAD
                 data-astro-prefetch="hover"
                 aria-current={isActive ? "page" : undefined}
+=======
+                aria-current={isActive ? "page" : undefined}
+                title={formatEpisodeDate(episode.data.date)}
+>>>>>>> upstream/main
               >
                 <div class="flex items-start gap-2.5">
                   <span class:list={[
@@ -73,6 +98,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                     {episode.epNumber}
                   </span>
                   <div class="flex-1 min-w-0">
+<<<<<<< HEAD
                     <div class="flex items-baseline justify-between gap-2">
                       <span class:list={[
                         "text-sm leading-snug transition-colors truncate",
@@ -85,6 +111,47 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                           ? episode.data.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                           : `${episode.data.date.toLocaleDateString('en-US', { month: 'short' })} '${String(episode.data.date.getFullYear()).slice(-2)}`}
                       </span>
+=======
+                    <div class="flex items-baseline gap-2">
+                      <div class="flex items-center gap-1.5 flex-1 min-w-0">
+                        <span class:list={[
+                          "text-sm leading-snug transition-colors truncate flex-1 min-w-0",
+                          isActive ? "text-his-green font-medium" : "text-his-text-secondary group-hover:text-his-text"
+                        ]}>
+                          {episode.episodeTitle}
+                        </span>
+                      </div>
+                      {(episode.data.sauntercast || episode.data.video?.url) && (
+                        <div class="flex items-center gap-1 flex-shrink-0">
+                          {episode.data.sauntercast && (
+                            <span class:list={[
+                              "inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border flex-shrink-0",
+                              isActive
+                                ? "border-his-green/40 bg-his-green/15 text-his-green"
+                                : "border-his-hr bg-his-hover/60 text-his-text-tertiary group-hover:text-his-green group-hover:border-his-green/30"
+                            ]} title="Sauntercast">
+                              <svg class="h-2.5 w-2.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7" />
+                              </svg>
+                              <span class="sr-only">Sauntercast</span>
+                            </span>
+                          )}
+                          {episode.data.video?.url && (
+                            <span class:list={[
+                              "inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border flex-shrink-0",
+                              isActive
+                                ? "border-his-green/40 bg-his-green/15 text-his-green"
+                                : "border-his-hr bg-his-hover/60 text-his-text-tertiary group-hover:text-his-green group-hover:border-his-green/30"
+                            ]} title="Video episode">
+                              <svg class="h-2.5 w-2.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                              <span class="sr-only">Video episode</span>
+                            </span>
+                          )}
+                        </div>
+                      )}
+>>>>>>> upstream/main
                     </div>
                     {episode.guestDisplays.length > 0 && (
                       <span class:list={[

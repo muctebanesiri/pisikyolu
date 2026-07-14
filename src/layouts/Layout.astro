@@ -7,7 +7,10 @@ interface Props {
   frontmatter?: {
     title?: string;
     description?: string;
+<<<<<<< HEAD
     embedUrl?: string;
+=======
+>>>>>>> upstream/main
   };
   slug?: string;
 }
@@ -16,13 +19,20 @@ const { frontmatter, slug = '' } = Astro.props;
 ---
 
 <!doctype html>
+<<<<<<< HEAD
 <html dir="rtl">
+=======
+<html lang="en">
+>>>>>>> upstream/main
   <head>
     <BaseHead
       title={frontmatter?.title}
       description={frontmatter?.description}
       slug={slug}
+<<<<<<< HEAD
       embedUrl={frontmatter?.embedUrl}
+=======
+>>>>>>> upstream/main
     />
   </head>
   <body>

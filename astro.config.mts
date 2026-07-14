@@ -9,9 +9,15 @@ import { remarkLinksExtractor } from './src/plugins/remark-links-extractor';
 // https://astro.build/config
 export default defineConfig({
   publicDir: "public",
+<<<<<<< HEAD
   integrations: [preact()],
   vite: {
     plugins: [tailwindcss()],
+=======
+  integrations: [preact({ compat: true })],
+  vite: {
+    plugins: [tailwindcss() as never],
+>>>>>>> upstream/main
     build: {
       rollupOptions: {
         external: ['/pagefind/pagefind.js'],
@@ -25,9 +31,12 @@ export default defineConfig({
     remarkPlugins: [remarkLinksExtractor, remarkTranscriptPlugin, remarkResponsiveImages],
   },
   experimental: {
+<<<<<<< HEAD
     // headingIdCompat: true,
     preserveScriptOrder: true,
     staticImportMetaEnv: true,
+=======
+>>>>>>> upstream/main
     chromeDevtoolsWorkspace: true,
   },
   image: {
@@ -43,4 +52,8 @@ export default defineConfig({
       },
     },
   },
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> upstream/main
