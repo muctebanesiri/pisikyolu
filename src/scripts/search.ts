@@ -254,11 +254,14 @@ async function openModal() {
     }
 
     const trigger = document.getElementById('search-trigger');
+    // --- FIX: Import the default export from pagefind ---
     if (!pagefind && !trigger?.dataset.dev) {
         try {
-            // @ts-ignore - Dynamic import of Pagefind, escaped from Vite analysis via dynamic path
             const p = 'pagefind';
-            pagefind = await import(/* @vite-ignore */ `/${p}/${p}.js`);
+            // Dynamic import, escaped from Vite analysis
+            const module = await import(/* @vite-ignore */ `/${p}/${p}.js`);
+            // Pagefind exports its API as the default export
+            pagefind = module.default || module; // fallback just in case
         } catch (e) {
             console.warn('Pagefind not found. Search will be available after build.');
         }
@@ -269,6 +272,9 @@ async function openModal() {
     backdrop.classList.add('visible');
     document.body.style.overflow = 'hidden';
     input?.focus();
+
+    // Reset selection when opening
+    selectedIndex = -1;
 
     if (!input?.value && resultsArea) {
         resultsArea.innerHTML = pagefind ? getEmptyStateHtml() : '<div class="search-empty-state">نتیجه‌لر بوردا لیست اولاجاق</div>';
@@ -287,6 +293,9 @@ function closeModal() {
 
 async function performSearch(query: string) {
     if (!pagefind || !resultsArea) return;
+
+    // Reset selection for new search results
+    selectedIndex = -1;
 
     try {
         currentSearch = await pagefind.search(query);
@@ -313,6 +322,7 @@ async function performSearch(query: string) {
         renderGroupedResults(allResults);
     } catch (e) {
         resultsArea.innerHTML = '<div class="search-no-results">Search error</div>';
+        console.error('Search error:', e);
     }
 }
 
