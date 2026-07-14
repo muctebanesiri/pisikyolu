@@ -1,5 +1,5 @@
 ---
-title: FFmpeg (مجتبی)
+title: FFmpeg (مجتبی نصیری)
 season: 1
 date: 2024-12-28
 time: "31"
