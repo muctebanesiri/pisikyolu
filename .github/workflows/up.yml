@@ -41,32 +41,34 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create branch from main and merge upstream (allow conflicts)
+      - name: Create branch with upstream changes
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
-          # Delete the remote branch if it exists (to start fresh)
-          git push origin --delete sync/upstream || true
+          # Start from your main branch
           git checkout main
+          # Create a new branch (will be your main + upstream merge)
           git checkout -b sync/upstream
-          # Attempt merge, allow unrelated histories, but don't auto-commit
+          # Merge upstream into it, allow unrelated histories, but don't auto-commit
           git merge upstream/main --allow-unrelated-histories --no-commit --no-ff || true
-          # If there are conflicts, we commit them (with conflict markers) anyway
-          if git diff --cached --quiet; then
-            # No changes staged? That means merge was a no-op
-            echo "Merge produced no changes – aborting"
-            exit 1
-          else
-            # Commit the merge (conflicts included)
-            git commit -m "Merge upstream/main with conflicts (if any)" || true
-            # Push the branch
+          # If there are staged changes (including conflicts), commit them
+          if ! git diff --cached --quiet; then
+            git commit -m "Merge upstream/main into sync/upstream (including conflicts if any)"
             git push -u origin sync/upstream --force
+          else
+            echo "Merge produced no changes – nothing to commit."
+            exit 1
           fi
 
-      - name: Create Pull Request using GitHub CLI
+      - name: Create Pull Request
         if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          gh pr create --base main --head sync/upstream \
-            --title "Sync all upstream changes" \
-            --body "This PR brings all changes from upstream. Please review each file and resolve conflicts if any are shown."
-        env:
-          GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.MERGE_TOKEN }}
+          branch: sync/upstream
+          base: main
+          title: "Sync all upstream changes"
+          body: |
+            This PR brings all new files and updates from the original repository.
+            Review each file before merging.
+            If there are conflicts, they are shown in the diff. Resolve them here or locally.
+          delete-branch: true
