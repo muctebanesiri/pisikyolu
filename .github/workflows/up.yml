@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MERGE_TOKEN }}
-          fetch-depth: 0    # fetch all history for correct diff
+          fetch-depth: 0
 
       - name: Add upstream remote
         run: git remote add upstream https://github.com/hzoo/hopeinsource.com.git
@@ -29,18 +29,21 @@ jobs:
         id: check_changes
         run: |
           if git diff --quiet upstream/main -- .; then
-            echo "✅ No changes detected between upstream/main and your current branch."
+            echo "No changes detected"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
-            echo "✅ Changes detected."
+            echo "Changes detected"
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create branch with upstream content
+      - name: Create branch from main and merge upstream
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
-          git checkout -b sync/upstream upstream/main
-          git push -u origin sync/upstream --force   # overwrite existing branch
+          git checkout main
+          git checkout -b sync/upstream
+          # Merge upstream/main into the new branch
+          git merge upstream/main --no-edit --allow-unrelated-histories
+          git push -u origin sync/upstream --force
 
       - name: Create Pull Request
         if: steps.check_changes.outputs.has_changes == 'true'
