@@ -41,12 +41,10 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create branch from main and merge upstream
+      - name: Create branch from upstream main
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
-          git checkout main
-          git checkout -b sync/upstream
-          git merge upstream/main --no-edit --allow-unrelated-histories
+          git checkout -b sync/upstream upstream/main
           git push -u origin sync/upstream --force
 
       - name: Create Pull Request
@@ -59,5 +57,5 @@ jobs:
           title: "Sync all upstream changes"
           body: |
             This PR brings all new files and updates from the original repository.
-            Review each file before merging.
+            Review each file and resolve conflicts if any.
           delete-branch: true
