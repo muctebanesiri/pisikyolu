@@ -76,6 +76,9 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_PATH }}/dist
+          
+      - name: Sync-Fork-action
+        uses: XueMoMo/Sync-Fork-action@v1.0.6
 
   deploy:
     environment:
@@ -88,3 +91,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        
