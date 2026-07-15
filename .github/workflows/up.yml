@@ -2,8 +2,8 @@ name: Sync selected upstream directories
 
 on:
   schedule:
-    - cron: '0 0 * * *'        # daily at midnight UTC
-  workflow_dispatch:           # manual trigger
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -39,25 +39,17 @@ jobs:
           git checkout main
           git checkout -b sync/upstream
 
-          # Remove all current files (we want a clean copy of what we select)
-          git rm -rf .
-
-          # Copy the directories you want from upstream
-          # 1. Copy the entire 'scripts' directory
+          # Copy the directories you want from upstream (overwriting local versions)
           git checkout upstream/main -- scripts
-
-          # 2. Copy the entire 'src' directory (we'll remove the podcast folder next)
           git checkout upstream/main -- src
 
-          # Remove the podcast folder from src/content
-          git rm -rf src/content/podcast
+          # Restore the files/folders you want to keep from your main
+          git checkout main -- src/content/podcast
+          git checkout main -- README.md
 
-          # Remove README.md if it exists
-          git rm -f README.md 2>/dev/null || true
-
-          # Stage everything and commit
+          # Add and commit
           git add -A
-          git commit -m "Sync scripts/ and src/ (excluding src/content/podcast and README.md) from upstream"
+          git commit -m "Sync scripts/ and src/ from upstream (preserving podcast folder and README from main)"
 
           # Push the branch
           git push -u origin sync/upstream --force
@@ -66,7 +58,7 @@ jobs:
         run: |
           gh pr create --base main --head sync/upstream \
             --title "Sync scripts and src from upstream" \
-            --body "This PR syncs:\n- The entire `scripts/` directory\n- The entire `src/` directory (excluding `src/content/podcast/`)\n- README.md is also excluded\n\nReview the changes and merge what you want." \
+            --body "This PR updates:\n- `scripts/` directory\n- `src/` directory (excluding `src/content/podcast/`)\n\nIt preserves your current `README.md` and `src/content/podcast/` as they are in `main`." \
             --force || echo "PR may already exist"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
