@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       path:
-        description: 'Relative path (e.g., src/scripts) or full GitHub URL (e.g., https://github.com/hzoo/hopeinsource.com/tree/main/src/scripts)'
+        description: 'Relative path (e.g., src/scripts) or full GitHub URL'
         required: true
         type: string
 
@@ -43,6 +43,8 @@ jobs:
           else
             CLEAN_PATH="$RAW_PATH"
           fi
+          # Remove trailing slash if present to avoid directory issues
+          CLEAN_PATH="${CLEAN_PATH%/}"
           echo "clean_path=$CLEAN_PATH" >> $GITHUB_OUTPUT
           echo "Extracted path: $CLEAN_PATH"
 
@@ -55,15 +57,22 @@ jobs:
 
       - name: Create branch and copy the specified path
         run: |
-          # Delete existing remote branch (ignore if not exists)
+          # Delete existing remote branch (if any)
           git push origin --delete sync/specific || true
 
           # Start from main
           git checkout main
           git checkout -b sync/specific
 
-          # Copy only the sanitized path from upstream
+          # Copy the sanitized path from upstream
           git checkout upstream/main -- ${{ steps.sanitize.outputs.clean_path }}
+
+          # Check if there are any changes staged
+          if git diff --cached --quiet; then
+            echo "No changes to merge – everything is already up-to-date."
+            echo "NO_CHANGES=true" >> $GITHUB_ENV
+            exit 0
+          fi
 
           # Stage and commit
           git add -A
@@ -72,7 +81,8 @@ jobs:
           # Push branch
           git push -u origin sync/specific --force
 
-      - name: Create Pull Request
+      - name: Create Pull Request (if changes exist)
+        if: env.NO_CHANGES != 'true'
         run: |
           gh pr create --base main --head sync/specific \
             --title "Merge ${{ steps.sanitize.outputs.clean_path }} from upstream" \
@@ -80,3 +90,9 @@ jobs:
             --force || echo "PR may already exist"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
+
+      - name: Skip PR (no changes)
+        if: env.NO_CHANGES == 'true'
+        run: |
+          echo "No changes to merge – exiting without creating a PR."
+          exit 0
