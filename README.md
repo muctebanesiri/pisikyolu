@@ -2,6 +2,8 @@
 
 Source code for [fm.mucteba.ir](https://fm.mucteba.ir).
 
+forked and isnspired by [hope in source](https://github.com/hzoo/hopeinsource.com).
+
 ## Features
 
 - **Full Transcripts**: Read along while listening.
