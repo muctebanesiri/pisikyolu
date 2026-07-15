@@ -1,12 +1,15 @@
-name: Sync selected upstream directories
+name: Merge specific file/directory from upstream
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
   workflow_dispatch:
+    inputs:
+      path:
+        description: 'Path to file or directory (e.g., src/scripts/search.ts or scripts/)'
+        required: true
+        type: string
 
 jobs:
-  sync:
+  merge-specific:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -30,35 +33,30 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch and copy selected directories
+      - name: Create branch and copy the specified path
         run: |
-          # Delete any existing remote branch (fresh start)
-          git push origin --delete sync/upstream || true
+          # Delete any existing remote branch (start fresh)
+          git push origin --delete sync/specific || true
 
-          # Start from your main branch
+          # Start from main
           git checkout main
-          git checkout -b sync/upstream
+          git checkout -b sync/specific
 
-          # Copy the directories you want from upstream (overwriting local versions)
-          git checkout upstream/main -- scripts
-          git checkout upstream/main -- src
+          # Copy only the requested path from upstream
+          git checkout upstream/main -- ${{ github.event.inputs.path }}
 
-          # Restore the files/folders you want to keep from your main
-          git checkout main -- src/content/podcast
-          git checkout main -- README.md
-
-          # Add and commit
+          # Stage and commit
           git add -A
-          git commit -m "Sync scripts/ and src/ from upstream (preserving podcast folder and README from main)"
+          git commit -m "Merge ${{ github.event.inputs.path }} from upstream"
 
-          # Push the branch
-          git push -u origin sync/upstream --force
+          # Push branch
+          git push -u origin sync/specific --force
 
       - name: Create Pull Request
         run: |
-          gh pr create --base main --head sync/upstream \
-            --title "Sync scripts and src from upstream" \
-            --body "This PR updates:\n- `scripts/` directory\n- `src/` directory (excluding `src/content/podcast/`)\n\nIt preserves your current `README.md` and `src/content/podcast/` as they are in `main`." \
+          gh pr create --base main --head sync/specific \
+            --title "Merge ${{ github.event.inputs.path }} from upstream" \
+            --body "This PR merges only the path: \`${{ github.event.inputs.path }}\` from upstream.\n\nReview and merge it." \
             --force || echo "PR may already exist"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
