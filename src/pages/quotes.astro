@@ -15,15 +15,13 @@ const allExcerpts = episodes.flatMap((ep) =>
     episodeTitle: ep.episodeTitle,
   })),
 );
-
-const previewExcerpts = allExcerpts.slice(0, 6);
 ---
 
 <HomeContentLayout activeLayout="B" title="Excerpts" description="Selected excerpts from Hope in Source episodes." episodeData={episodeData}>
   <section aria-label="Excerpts">
     <div id="home-dialogue">
       <div class="convo-flow">
-        {previewExcerpts.map((q) => {
+        {allExcerpts.map((q) => {
           const side = convoSide(q.speaker, q.slug, q.seconds);
           return (
             <div
@@ -42,11 +40,6 @@ const previewExcerpts = allExcerpts.slice(0, 6);
           );
         })}
       </div>
-      {allExcerpts.length > 6 && (
-        <a href="/quotes" class="lab-show-more w-fit no-underline">
-          show {allExcerpts.length - 6} more
-        </a>
-      )}
     </div>
   </section>
 </HomeContentLayout>
