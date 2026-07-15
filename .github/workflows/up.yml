@@ -1,4 +1,4 @@
-name: Sync upstream (clean copy)
+name: Sync selected upstream directories
 
 on:
   schedule:
@@ -30,7 +30,7 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch from main with clean upstream content
+      - name: Create branch and copy selected directories
         run: |
           # Delete any existing remote branch (fresh start)
           git push origin --delete sync/upstream || true
@@ -39,15 +39,25 @@ jobs:
           git checkout main
           git checkout -b sync/upstream
 
-          # Remove all current files (we want a clean copy of upstream)
+          # Remove all current files (we want a clean copy of what we select)
           git rm -rf .
 
-          # Copy all upstream files into the working directory
-          git checkout upstream/main -- .
+          # Copy the directories you want from upstream
+          # 1. Copy the entire 'scripts' directory
+          git checkout upstream/main -- scripts
 
-          # Stage and commit the new state (this is a single commit on top of main)
+          # 2. Copy the entire 'src' directory (we'll remove the podcast folder next)
+          git checkout upstream/main -- src
+
+          # Remove the podcast folder from src/content
+          git rm -rf src/content/podcast
+
+          # Remove README.md if it exists
+          git rm -f README.md 2>/dev/null || true
+
+          # Stage everything and commit
           git add -A
-          git commit -m "Clean copy of upstream/main"
+          git commit -m "Sync scripts/ and src/ (excluding src/content/podcast and README.md) from upstream"
 
           # Push the branch
           git push -u origin sync/upstream --force
@@ -55,8 +65,8 @@ jobs:
       - name: Create Pull Request
         run: |
           gh pr create --base main --head sync/upstream \
-            --title "Sync upstream (clean copy)" \
-            --body "This PR applies the current upstream content as a single commit on top of main. Review each file and revert any you don't want by editing the PR files directly." \
+            --title "Sync scripts and src from upstream" \
+            --body "This PR syncs:\n- The entire `scripts/` directory\n- The entire `src/` directory (excluding `src/content/podcast/`)\n- README.md is also excluded\n\nReview the changes and merge what you want." \
             --force || echo "PR may already exist"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
