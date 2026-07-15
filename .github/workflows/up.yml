@@ -1,9 +1,9 @@
-name: Sync from upstream (clean copy)
+name: Sync upstream (clean copy)
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *'        # daily at midnight UTC
+  workflow_dispatch:           # manual trigger
 
 jobs:
   sync:
@@ -30,20 +30,33 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch from upstream (clean copy)
+      - name: Create branch from main with clean upstream content
         run: |
-          # Delete any existing remote branch
+          # Delete any existing remote branch (fresh start)
           git push origin --delete sync/upstream || true
-          # Create a new branch from upstream/main
-          git checkout -b sync/upstream upstream/main
-          # Push it
+
+          # Start from your main branch
+          git checkout main
+          git checkout -b sync/upstream
+
+          # Remove all current files (we want a clean copy of upstream)
+          git rm -rf .
+
+          # Copy all upstream files into the working directory
+          git checkout upstream/main -- .
+
+          # Stage and commit the new state (this is a single commit on top of main)
+          git add -A
+          git commit -m "Clean copy of upstream/main"
+
+          # Push the branch
           git push -u origin sync/upstream --force
 
       - name: Create Pull Request
         run: |
           gh pr create --base main --head sync/upstream \
             --title "Sync upstream (clean copy)" \
-            --body "This branch is a clean copy of upstream. Review each file and revert any you don't want." \
-            --force || echo "PR already exists or could not be created"
+            --body "This PR applies the current upstream content as a single commit on top of main. Review each file and revert any you don't want by editing the PR files directly." \
+            --force || echo "PR may already exist"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
