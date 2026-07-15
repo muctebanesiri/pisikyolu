@@ -2,6 +2,8 @@
  * Audio Player functionality
  */
 
+import { parseTimeHash } from "./time-hash";
+
 let audio: HTMLAudioElement | null = null;
 let playPauseButton: HTMLElement | null = null;
 let seekSlider: HTMLInputElement | null = null;
@@ -19,14 +21,31 @@ let closeShortcuts: HTMLElement | null = null;
 let volumeSlider: HTMLInputElement | null = null;
 let playerFeedback: HTMLElement | null = null;
 let feedbackText: HTMLElement | null = null;
-let speedButton: HTMLElement | null = null;
-let speedMenu: HTMLElement | null = null;
 
-let allMessages: NodeListOf<HTMLElement>;
-let feedbackTimeout: ReturnType<typeof setTimeout>;
+interface MessagePoint {
+    time: number;
+    el: HTMLElement;
+}
+
+let messagePoints: MessagePoint[] = [];
+let messagePointsReady = false;
+let feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 let lastHighlightedMessage: HTMLElement | null = null;
 let isLoaded = false;
 let src = '';
+let listenerAbort: AbortController | null = null;
+
+function ensureMessagePoints() {
+    if (messagePointsReady) return;
+    messagePoints = Array.from(document.querySelectorAll<HTMLElement>('.message'))
+        .map((message) => ({
+            time: parseInt(message.getAttribute('data-timestamp') || '', 10),
+            el: message,
+        }))
+        .filter(({ time }) => !isNaN(time))
+        .sort((a, b) => a.time - b.time);
+    messagePointsReady = true;
+}
 
 function formatTime(seconds: number) {
     if (!seconds || isNaN(seconds)) return "00:00";
@@ -53,26 +72,39 @@ function updateTimeDisplay() {
 }
 
 function updateCurrentMessage() {
-    if (!audio) return;
+    ensureMessagePoints();
+    if (!audio || messagePoints.length === 0) return;
     const currentTime = Math.floor(audio.currentTime);
-    let currentMessage: HTMLElement | null = null;
-
-    allMessages.forEach(message => {
-        const timestamp = parseInt(message.getAttribute('data-timestamp') || '0');
-        if (timestamp <= currentTime) {
-            currentMessage = message;
-        }
-    });
+    const currentIndex = findMessageIndex(currentTime);
+    const currentMessage = currentIndex >= 0 ? messagePoints[currentIndex].el : null;
 
     if (currentMessage !== lastHighlightedMessage) {
         if (lastHighlightedMessage) {
-            (lastHighlightedMessage as HTMLElement).classList.remove('message-current');
+            lastHighlightedMessage.classList.remove('message-current');
         }
         if (currentMessage) {
-            (currentMessage as HTMLElement).classList.add('message-current');
+            currentMessage.classList.add('message-current');
         }
         lastHighlightedMessage = currentMessage;
     }
+}
+
+function findMessageIndex(seconds: number): number {
+    let low = 0;
+    let high = messagePoints.length - 1;
+    let best = -1;
+
+    while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        if (messagePoints[mid].time <= seconds) {
+            best = mid;
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+
+    return best;
 }
 
 function prepAudioPosition(seconds: number) {
@@ -90,10 +122,12 @@ function seekToTimestamp(playAudio = true) {
     const hash = window.location.hash;
     if (!hash) return;
 
-    let seconds: number;
-    if (hash.startsWith("#t=")) {
-        seconds = parseInt(hash.slice(3), 10);
-        if (isNaN(seconds)) return;
+    const parsedTimeHash = parseTimeHash(hash);
+    if (parsedTimeHash) {
+        const seconds = parsedTimeHash.seconds;
+        if (hash !== parsedTimeHash.canonicalHash) {
+            history.replaceState(null, "", parsedTimeHash.canonicalHash);
+        }
 
         const msgId = `msg-${seconds}`;
         const msgElement = document.getElementById(msgId);
@@ -102,15 +136,19 @@ function seekToTimestamp(playAudio = true) {
         }
 
         loadAudioAndPlay(seconds, playAudio);
+        return;
+    }
 
-    } else if (hash.startsWith("#msg-")) {
+    if (hash.startsWith("#t=")) return;
+
+    if (hash.startsWith("#msg-")) {
         const msgElement = document.getElementById(hash.slice(1));
         if (!msgElement) return;
 
         const timestamp = msgElement.getAttribute("data-timestamp");
         if (!timestamp) return;
 
-        seconds = parseInt(timestamp, 10);
+        const seconds = parseInt(timestamp, 10);
         if (isNaN(seconds)) return;
 
         prepAudioPosition(seconds);
@@ -167,7 +205,9 @@ function updateMuteIcon(isMuted: boolean) {
 
 function showFeedback(action: string, value: string | number = '') {
     if (!feedbackText || !playerFeedback) return;
-    clearTimeout(feedbackTimeout);
+    if (feedbackTimeout) {
+        clearTimeout(feedbackTimeout);
+    }
 
     let text = '';
     switch (action) {
@@ -175,12 +215,11 @@ function showFeedback(action: string, value: string | number = '') {
             const direction = (value as number) > 0 ? 'Forward' : 'Back';
             text = `${direction} ${Math.abs(value as number)}s`;
             break;
-        case 'play': text = 'اوخونور'; break;
-        case 'pause': text = 'دوردو'; break;
+        case 'play': text = 'Playing'; break;
+        case 'pause': text = 'Paused'; break;
         case 'mute': text = 'Muted'; break;
         case 'unmute': text = 'Unmuted'; break;
         case 'volume': text = `Volume ${value}%`; break;
-        case 'speed': text = `Speed: ${value}x`; break;
     }
 
     feedbackText.textContent = text;
@@ -198,26 +237,8 @@ function seekRelative(seconds: number) {
     showFeedback('seek', seconds);
 }
 
-function setPlaybackSpeed(speed: number) {
-    if (!audio) return;
-    audio.playbackRate = speed;
-    if (speedButton) {
-        speedButton.textContent = `${speed}x`;
-    }
-    
-    // Update active state in menu
-    document.querySelectorAll('.speed-option').forEach(option => {
-        const optionSpeed = parseFloat(option.getAttribute('data-speed') || '1');
-        const isActive = Math.abs(optionSpeed - speed) < 0.01;
-        option.classList.toggle('bg-his-green/30', isActive);
-        option.classList.toggle('text-his-green', isActive);
-    });
-    
-    showFeedback('speed', speed);
-}
-
 function handleAudioKeydown(e: KeyboardEvent) {
-    if ((e.target as HTMLElement).matches('input, [contenteditable="true"]')) return;
+    if ((e.target as HTMLElement).matches('input, textarea, select, [contenteditable="true"]')) return;
     if (!audio) return;
 
     switch (e.code) {
@@ -237,13 +258,6 @@ function handleAudioKeydown(e: KeyboardEvent) {
             e.preventDefault();
             audio.muted = !audio.muted;
             showFeedback(audio.muted ? 'mute' : 'unmute');
-            break;
-        case "KeyL":
-            e.preventDefault();
-            if (speedMenu) {
-                speedMenu.classList.toggle('hidden');
-                showFeedback(speedMenu.classList.contains('hidden') ? 'Speed menu closed' : 'Speed menu open');
-            }
             break;
     }
 }
@@ -275,21 +289,6 @@ function handleGlobalClick(e: MouseEvent) {
             }
         }
     }
-
-    // Handle speed option clicks
-    if (target.classList.contains('speed-option')) {
-        const speed = parseFloat(target.getAttribute('data-speed') || '1');
-        setPlaybackSpeed(speed);
-        if (speedMenu) speedMenu.classList.add('hidden');
-        return;
-    }
-
-    // Close speed menu when clicking elsewhere
-    if (speedMenu && !speedMenu.classList.contains('hidden')) {
-        if (!target.closest('#speed-button') && !target.closest('#speed-menu')) {
-            speedMenu.classList.add('hidden');
-        }
-    }
 }
 
 function handleHashChange() {
@@ -297,6 +296,10 @@ function handleHashChange() {
 }
 
 function initAudioPlayer() {
+    listenerAbort?.abort();
+    listenerAbort = new AbortController();
+    const { signal } = listenerAbort;
+
     audio = document.getElementById("audio-element") as HTMLAudioElement;
     playPauseButton = document.getElementById("play-pause");
     seekSlider = document.getElementById("seek-slider") as HTMLInputElement;
@@ -317,50 +320,23 @@ function initAudioPlayer() {
 
     const container = document.getElementById("audio-player-container");
     src = container?.dataset.src || '';
-    allMessages = document.querySelectorAll('.message');
-
     if (!audio) return;
 
-    // Create speed control HTML if it doesn't exist
-    if (shortcutsButton && !document.getElementById('speed-button')) {
-        const speedControlHtml = `
-            <div class="relative group">
-                <button id="speed-button" class="flex h-8 w-8 items-center justify-center rounded-lg bg-his-green/10 text-his-green transition-all duration-200 hover:bg-his-green/20 hover:opacity-80 focus:outline-none text-xs font-medium" aria-label="Playback Speed" title="Playback Speed">
-                    1x
-                </button>
-                <div id="speed-menu" class="absolute hidden group-hover:block hover:block bottom-full left-1/2 -translate-x-1/2 mb-2 w-28 bg-his-hover/95 backdrop-blur-sm border border-his-text-tertiary/50 rounded-lg shadow-lg z-50">
-                    <div class="py-1">
-                        ${[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(speed => `
-                            <button class="speed-option w-full text-left px-3 py-2 text-sm text-his-text hover:bg-his-green/20 transition-colors ${speed === 1 ? 'bg-his-green/30 text-his-green' : ''}" data-speed="${speed}">
-                                ${speed}x
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        shortcutsButton.insertAdjacentHTML('beforebegin', speedControlHtml);
-    }
-
-    speedButton = document.getElementById('speed-button');
-    speedMenu = document.getElementById('speed-menu');
-
     // Listeners
-    playPauseButton?.addEventListener("click", togglePlayPause);
+    playPauseButton?.addEventListener("click", togglePlayPause, { signal });
 
     seekSlider?.addEventListener("input", () => {
         if (audio && audio.duration) {
             const seekTime = audio.duration * (Number(seekSlider?.value) / 100);
             audio.currentTime = seekTime;
         }
-    });
+    }, { signal });
 
-    audio.addEventListener("timeupdate", updateTimeDisplay);
+    audio.addEventListener("timeupdate", updateTimeDisplay, { signal });
     audio.addEventListener("loadedmetadata", () => {
         updateTimeDisplay();
         if (seekSlider) seekSlider.disabled = false;
-    });
+    }, { signal });
 
     volumeSlider?.addEventListener("input", () => {
         if (audio && volumeSlider) {
@@ -370,7 +346,7 @@ function initAudioPlayer() {
             updateMuteIcon(audio.muted);
             showFeedback('volume', val);
         }
-    });
+    }, { signal });
 
     audio.addEventListener("volumechange", () => {
         if (!audio) return;
@@ -378,7 +354,7 @@ function initAudioPlayer() {
         if (!audio.muted && volumeSlider) {
             volumeSlider.value = String(Math.round(audio.volume * 100));
         }
-    });
+    }, { signal });
 
     muteButton?.addEventListener("click", () => {
         if (!audio) return;
@@ -388,41 +364,45 @@ function initAudioPlayer() {
             audio.volume = 0.5;
             if (volumeSlider) volumeSlider.value = "50";
         }
-    });
+    }, { signal });
 
-    // Speed control listeners
-    speedButton?.addEventListener('click', () => {
-        if (speedMenu) {
-            speedMenu.classList.toggle('hidden');
-        }
-    });
-
-    shortcutsButton?.addEventListener("click", () => shortcutsDialog?.classList.remove("hidden"));
-    closeShortcuts?.addEventListener("click", () => shortcutsDialog?.classList.add("hidden"));
+    shortcutsButton?.addEventListener("click", () => shortcutsDialog?.classList.remove("hidden"), { signal });
+    closeShortcuts?.addEventListener("click", () => shortcutsDialog?.classList.add("hidden"), { signal });
     shortcutsDialog?.addEventListener("click", (e) => {
         if (e.target === shortcutsDialog) shortcutsDialog?.classList.add("hidden");
-    });
+    }, { signal });
 
-    document.addEventListener("keydown", handleAudioKeydown);
+    document.addEventListener("keydown", handleAudioKeydown, { signal });
 
-    document.addEventListener("click", handleGlobalClick);
-    window.addEventListener("hashchange", handleHashChange);
+    document.addEventListener("click", handleGlobalClick, { signal });
+    window.addEventListener("hashchange", handleHashChange, { signal });
 
     audio.volume = 0.5;
-    audio.playbackRate = 1; // Set default playback rate
     seekToTimestamp();
 }
 
 function cleanupAudioPlayer() {
+    listenerAbort?.abort();
+    listenerAbort = null;
+
     if (audio) {
         audio.pause();
         audio.src = '';
     }
+
+    if (lastHighlightedMessage) {
+        lastHighlightedMessage.classList.remove('message-current');
+    }
+
+    if (feedbackTimeout) {
+        clearTimeout(feedbackTimeout);
+        feedbackTimeout = null;
+    }
+
+    messagePoints = [];
+    messagePointsReady = false;
     isLoaded = false;
     lastHighlightedMessage = null;
-    document.removeEventListener("keydown", handleAudioKeydown);
-    document.removeEventListener("click", handleGlobalClick);
-    window.removeEventListener("hashchange", handleHashChange);
 }
 
 function setupAudioPlayer() {
@@ -432,6 +412,10 @@ function setupAudioPlayer() {
 
 document.addEventListener('astro:page-load', setupAudioPlayer);
 
-if (document.readyState === 'complete') {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupAudioPlayer, { once: true });
+} else {
     setupAudioPlayer();
 }
+
+export {};
