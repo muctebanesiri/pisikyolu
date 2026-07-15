@@ -1,4 +1,4 @@
-name: Sync from upstream
+name: Sync from upstream (clean copy)
 
 on:
   schedule:
@@ -30,31 +30,20 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create merge branch from main and merge upstream
+      - name: Create branch from upstream (clean copy)
         run: |
-          # Delete any old remote branch to start fresh
+          # Delete any existing remote branch
           git push origin --delete sync/upstream || true
-          # Start from your main
-          git checkout main
-          git checkout -b sync/upstream
-          # Merge upstream, allow unrelated histories, do not commit automatically
-          git merge upstream/main --allow-unrelated-histories --no-commit --no-ff || true
-          # Stage everything (including conflicts)
-          git add -A
-          # If there are staged changes, commit them; otherwise add a dummy commit
-          if ! git diff --cached --quiet; then
-            git commit -m "Merge upstream/main into sync/upstream"
-          else
-            git commit --allow-empty -m "Dummy commit to sync upstream"
-          fi
-          # Push the branch
+          # Create a new branch from upstream/main
+          git checkout -b sync/upstream upstream/main
+          # Push it
           git push -u origin sync/upstream --force
 
-      - name: Create Pull Request (or update existing)
+      - name: Create Pull Request
         run: |
           gh pr create --base main --head sync/upstream \
-            --title "Sync all upstream changes" \
-            --body "This PR brings all upstream changes. Resolve conflicts if any." \
+            --title "Sync upstream (clean copy)" \
+            --body "This branch is a clean copy of upstream. Review each file and revert any you don't want." \
             --force || echo "PR already exists or could not be created"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
