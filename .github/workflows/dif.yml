@@ -1,0 +1,28 @@
+name: Debug diff
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MERGE_TOKEN }}
+          fetch-depth: 0
+
+      - name: Add upstream
+        run: git remote add upstream https://github.com/hzoo/hopeinsource.com.git
+
+      - name: Fetch upstream
+        run: git fetch upstream main
+
+      - name: Show differences
+        run: |
+          echo "=== Files that differ between main and upstream (excluding podcast & README) ==="
+          git diff main upstream/main --name-status -- . ':!src/content/podcast' ':!README.md' || echo "No differences"
+          echo ""
+          echo "=== Files that differ only in podcast or README (excluded) ==="
+          git diff main upstream/main --name-status -- src/content/podcast README.md || echo "No differences"
