@@ -10,7 +10,7 @@ const {
   type = 'website',
   publishedTime,
   modifiedTime,
-  author = 'Henry Zhu',
+  author = 'Mücteba Nesiri',
 } = Astro.props;
 
 const siteTitle = title === hisMetadata.title ? title : `${title}`;
@@ -59,13 +59,13 @@ const siteTitle = title === hisMetadata.title ? title : `${title}`;
 <script is:inline type="application/ld+json" set:html={JSON.stringify({
   "@context": "https://schema.org",
   "@type": "PodcastSeries",
-  "name": "Hope in Source",
-  "url": "https://hopeinsource.com",
-  "description": hisMetadata.description,
+  "name": "پیشیک‌یولو",
+  "url": "https://hopeinsource.com",  // keep original URL
+  "description": hisMetadata.description,  // already Persian
   "author": [
     {
       "@type": "Person",
-      "name": "Henry Zhu",
+      "name": "Mücteba Nesiri",
       "url": "https://henryzoo.com"
     }
   ]
