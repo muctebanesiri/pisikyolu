@@ -1,8 +1,6 @@
-name: Sync upstream (keep podcast & README)
+name: Sync upstream (debug)
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
   workflow_dispatch:
 
 jobs:
@@ -30,36 +28,22 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Prepare branch with upstream merge
+      - name: Prepare branch and list diffs
         run: |
           BRANCH="sync/upstream"
-
-          # Delete local branch if it exists
           git branch -D $BRANCH || true
-
-          # Create new branch from main
           git checkout -b $BRANCH main
-
-          # Merge upstream, auto-resolve conflicts in favour of upstream (no commit yet)
           git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
-
-          # Remove any upstream podcast folder
           git rm -rf src/content/podcast || true
-
-          # Restore YOUR podcast folder from main
           git checkout main -- src/content/podcast
           git add src/content/podcast
-
-          # Keep YOUR README.md from main
           git checkout main -- README.md
           git add README.md
-
-          # Stage any other changes (just in case)
           git add -A
-
-          # Debug: show what is staged
-          echo "=== Staged changes (if any) ==="
-          git diff --cached --name-status || echo "No staged changes"
+          echo "=== Files different from main (after exclusions) ==="
+          git diff main --name-status || echo "No differences"
+          echo "=== Files from upstream that are not brought in (should only be podcast/README) ==="
+          git diff upstream/main --name-status || echo "No differences"
 
       - name: Create or Update Pull Request
         uses: peter-evans/create-pull-request@v6
@@ -69,16 +53,9 @@ jobs:
           base: main
           force: true
           delete-branch: false
-          commit-message: "Sync upstream (auto-resolved, kept podcast & README)"
-          title: "Sync upstream (keep my podcast & README)"
-          body: |
-            This PR merges the latest upstream changes into your `main` branch.
-
-            - All conflicts are **auto‑resolved** by taking the upstream version.
-            - Your **`src/content/podcast`** folder is **kept exactly as in `main`**.
-            - Your **`README.md`** is **kept exactly as in `main`**.
-
-            Review the diff and merge if everything looks good.
+          commit-message: "Sync upstream"
+          title: "Sync upstream"
+          body: "Sync upstream changes"
 
       - name: Log result
         run: |
