@@ -43,7 +43,7 @@ jobs:
           # Create a new branch from upstream/main
           git checkout -b $BRANCH upstream/main
 
-          # Remove the unwanted items
+          # Remove unwanted items
           git rm -rf README.md || true
           git rm -rf src/content/podcast || true
 
@@ -60,7 +60,6 @@ jobs:
       - name: Create or Update Pull Request
         run: |
           BRANCH="sync/upstream"
-          # Try to create a PR; if it already exists, this will error but the branch is updated
           gh pr create --base main --head $BRANCH \
             --title "Sync upstream (clean copy, no podcast, no README)" \
             --body "This PR provides a clean copy of upstream with README and podcast folder removed.\n\nTimestamp file ensures a diff. Review and merge." \
