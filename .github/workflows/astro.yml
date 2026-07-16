@@ -1,102 +1,74 @@
-# Sample workflow for building and deploying an Astro site to GitHub Pages
-#
-# This workflow builds the site and deploys it to GitHub Pages.
-# The build step also generates the Pagefind search index (if you have @astrojs/pagefind installed).
-#
-name: Deploy Astro site to Pages
+name: Sync upstream (merge, keep custom files)
 
 on:
-  # Runs on pushes targeting the default branch
-  push:
-    branches: ["main"]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
-env:
-  BUILD_PATH: "." # default value when not using subfolders
-  # BUILD_PATH: subfolder
+  schedule:
+    - cron: '0 0 * * *'          # daily at midnight UTC
+  workflow_dispatch:             # manual trigger
 
 jobs:
-  build:
-    name: Build
+  sync:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
     steps:
+      # 1. Checkout your repository (full history)
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MERGE_TOKEN }}
+          fetch-depth: 0
 
-      - name: Detect package manager
-        id: detect-package-manager
+      # 2. Set git identity – this will be the "bot" user
+      - name: Configure git
         run: |
-          if [ -f "${{ github.workspace }}/yarn.lock" ]; then
-            echo "manager=yarn" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT
-            echo "runner=yarn" >> $GITHUB_OUTPUT
-            echo "lockfile=yarn.lock" >> $GITHUB_OUTPUT
-            exit 0
-          elif [ -f "${{ github.workspace }}/package.json" ]; then
-            echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=ci" >> $GITHUB_OUTPUT
-            echo "runner=npx --no-install" >> $GITHUB_OUTPUT
-            echo "lockfile=package-lock.json" >> $GITHUB_OUTPUT
-            exit 0
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      # 3. Add upstream repository as a remote
+      - name: Add upstream remote
+        run: git remote add upstream https://github.com/hzoo/hopeinsource.com.git
+
+      # 4. Fetch the latest upstream main
+      - name: Fetch upstream
+        run: git fetch upstream main
+
+      # 5. Create a new branch from main, then merge upstream into it
+      - name: Create branch and merge upstream
+        run: |
+          # Delete any existing remote branch (fresh start)
+          git push origin --delete sync/upstream || true
+
+          # Start from your main branch
+          git checkout main
+          git checkout -b sync/upstream
+
+          # Merge upstream/main, allowing unrelated histories.
+          # Use --no-commit --no-ff so we can commit the merge ourselves,
+          # even if there are conflicts.
+          git merge upstream/main --allow-unrelated-histories --no-commit --no-ff || true
+
+          # Stage everything (including conflict markers if any)
+          git add -A
+
+          # If there are staged changes, commit them; otherwise add a dummy commit
+          if ! git diff --cached --quiet; then
+            git commit -m "Merge upstream/main into sync/upstream"
           else
-            echo "Unable to determine package manager"
-            exit 1
+            # No changes – still create a commit to ensure the branch is ahead
+            git commit --allow-empty -m "Dummy commit to sync upstream (no changes)"
           fi
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
-          cache-dependency-path: ${{ env.BUILD_PATH }}/${{ steps.detect-package-manager.outputs.lockfile }}
+          # Push the branch
+          git push -u origin sync/upstream --force
 
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v5
-
-      - name: Install dependencies
-        run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
-        working-directory: ${{ env.BUILD_PATH }}
-
-      # ⚠️ IMPORTANT: This build step runs `astro build`.
-      # If you have @astrojs/pagefind installed, the search index is generated here.
-      # Do NOT remove or change this step unless you understand the consequences.
-      - name: Build with Astro
+      # 6. Create (or update) a pull request
+      - name: Create Pull Request
         run: |
-          ${{ steps.detect-package-manager.outputs.runner }} astro build \
-            --site "${{ steps.pages.outputs.origin }}" \
-            --base "${{ steps.pages.outputs.base_path }}"
-        working-directory: ${{ env.BUILD_PATH }}
-
-      # ⚠️ Upload the built site (including the Pagefind index) to GitHub Pages.
-      # The index is inside ./dist/pagefind – do not delete it manually.
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ${{ env.BUILD_PATH }}/dist
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    runs-on: ubuntu-latest
-    name: Deploy
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          gh pr create --base main --head sync/upstream \
+            --title "Sync upstream (merge, keep custom files)" \
+            --body "This PR merges the latest upstream changes into your custom code.\n\n- Files you added or modified in **main** are preserved.\n- If there are merge conflicts, they are shown in the diff – please resolve them before merging.\n\nAfter merging, your main will be up‑to‑date with upstream while keeping your customizations." \
+            --force || echo "PR already exists or could not be created"
+        env:
+          GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
