@@ -7,7 +7,7 @@ description: "بو اپیزوددا ففمپگ، مولتیمدیانین آچا
 episodeLink: https://s3.castbox.fm/31/db/42/f6743b40afa296bee675e518da.mp3
 embedUrl: https://podcasters.spotify.com/pod/show/pisikyolu/episodes/11-City-as-Liturgy-Bonus-e2su9hg
 video:
-  url: "https://www.youtube.com/watch?v=UQWoucxYK64"
+  url: "https://youtu.be/_kYGYjlfIuo?si=eYoFIhaJ_cnjdNgy"
   offsetSeconds: 35
 sidebar:
   order: 6
