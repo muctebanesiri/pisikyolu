@@ -7,6 +7,7 @@ import { Image } from "astro:assets";
 import his_cover from "@/assets/his.jpg";
 import { HOME_LAYOUTS, type HomeLayoutId } from "@/lib/home-layouts";
 import { getEpisodeData, type EpisodeData } from "@/lib/episodes";
+import { toPersianDigits } from "@/lib/localization";  // ✅ added
 import {
   formatEpisodeDate,
   formatEpisodeDateValue,
@@ -89,11 +90,11 @@ const seasonLinks = archiveGroups.map((group) => ({
             </div>
           )}
           {seasonLinks.length > 0 && (
-            <nav class="brand-season-links" aria-label="Season archive">
+            <nav class="brand-season-links" aria-label="آرشیو فصل‌ها">
               {seasonLinks.map((season) => (
                 <a href={season.href} class="brand-season-link">
                   <span>{season.label}</span>
-                  <span class="brand-season-count">{season.count} eps</span>
+                  <span class="brand-season-count">{toPersianDigits(season.count)} قسمت</span>
                 </a>
               ))}
             </nav>
@@ -102,7 +103,7 @@ const seasonLinks = archiveGroups.map((group) => ({
       </div>
     </section>
 
-    <nav id="home-top-controls" aria-label="Site navigation">
+    <nav id="home-top-controls" aria-label="ناوبری سایت">
       <div class="home-controls-inner">
         <div class="home-view-list">
           {HOME_LAYOUTS.map((layout) => (
