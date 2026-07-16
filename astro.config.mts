@@ -1,16 +1,43 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
 import preact from '@astrojs/preact';
-import pagefind from 'astro-pagefind';          // ✅ correct package
-import tailwindcss from '@tailwindcss/vite';
 
+import { remarkTranscriptPlugin } from "./src/remark-transcript-plugin/plugin";
+import { remarkResponsiveImages } from './src/plugins/remark-responsive-images';
+import { remarkLinksExtractor } from './src/plugins/remark-links-extractor';
+
+// https://astro.build/config
 export default defineConfig({
   publicDir: "public",
-  integrations: [
-    preact({ compat: true }),
-    pagefind(),                                 // ✅ generates search index
-  ],
+  integrations: [preact({ compat: true })],
   vite: {
-    plugins: [tailwindcss()],
-    // no external/optimizeDeps for pagefind
+    plugins: [tailwindcss() as never],
+    build: {
+      rollupOptions: {
+        external: ['/pagefind/pagefind.js'],
+      },
+    },
+    optimizeDeps: {
+      exclude: ['/pagefind/pagefind.js'],
+    },
+  },
+  markdown: {
+    remarkPlugins: [remarkLinksExtractor, remarkTranscriptPlugin, remarkResponsiveImages],
+  },
+  experimental: {
+    chromeDevtoolsWorkspace: true,
+  },
+  image: {
+    responsiveStyles: true,
+    layout: 'constrained',
+    // Reasonable default widths for responsive images
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: {
+        quality: 90,
+        formats: ['webp'],
+        widths: [640, 750, 828, 1080, 1200, 1920],
+      },
+    },
   },
 });
