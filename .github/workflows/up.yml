@@ -1,4 +1,4 @@
-name: Sync upstream (always create PR)
+name: Sync upstream (clean copy, no podcast, no README)
 
 on:
   schedule:
@@ -30,36 +30,40 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch with upstream content (clean copy, keep podcast & README, add timestamp)
+      - name: Create branch from upstream (clean copy, remove podcast & README)
         run: |
           BRANCH="sync/upstream"
-          # Delete remote branch if exists
+
+          # Delete remote branch if it exists (to start fresh)
           git push origin --delete $BRANCH || true
-          # Start from main
-          git checkout main
-          git checkout -b $BRANCH
-          # Remove all tracked files
-          git rm -rf .
-          # Copy upstream content
-          git checkout upstream/main -- .
-          # Restore podcast and README from main
-          git checkout main -- src/content/podcast
-          git checkout main -- README.md
-          # Add timestamp to force diff
+
+          # Delete local branch if it exists
+          git branch -D $BRANCH || true
+
+          # Create a new branch from upstream/main
+          git checkout -b $BRANCH upstream/main
+
+          # Remove the unwanted items
+          git rm -rf README.md || true
+          git rm -rf src/content/podcast || true
+
+          # Add a timestamp file to force a diff (so the branch is always ahead of main)
           echo "Last sync: $(date -u)" > .sync-timestamp
           git add .sync-timestamp
-          # Commit
-          git commit -m "Sync upstream (keep podcast & README, timestamped)"
-          # Push
+
+          # Commit the changes
+          git commit -m "Clean copy of upstream (removed README and podcast)"
+
+          # Push the branch
           git push -u origin $BRANCH --force
 
-      - name: Create or update Pull Request
+      - name: Create or Update Pull Request
         run: |
           BRANCH="sync/upstream"
-          # Try to create PR; if it exists, it will error but the branch is updated
+          # Try to create a PR; if it already exists, this will error but the branch is updated
           gh pr create --base main --head $BRANCH \
-            --title "Sync upstream (keep podcast & README)" \
-            --body "This PR syncs upstream changes (excluding podcast and README). Timestamp file ensures a diff." \
+            --title "Sync upstream (clean copy, no podcast, no README)" \
+            --body "This PR provides a clean copy of upstream with README and podcast folder removed.\n\nTimestamp file ensures a diff. Review and merge." \
             || echo "PR already exists – branch updated."
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
