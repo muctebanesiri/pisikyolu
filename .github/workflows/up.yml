@@ -1,4 +1,4 @@
-name: Sync upstream (force fresh copy)
+name: Sync upstream (always create PR)
 
 on:
   schedule:
@@ -30,23 +30,23 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Prepare fresh branch from upstream
+      - name: Prepare fresh branch with upstream content
         run: |
           BRANCH="sync/upstream"
 
           # Delete local branch if it exists
           git branch -D $BRANCH || true
 
-          # Delete remote branch if it exists (to start fresh)
+          # Delete remote branch if it exists
           git push origin --delete $BRANCH || true
 
-          # Create new branch from main
+          # Create branch from main
           git checkout -b $BRANCH main
 
-          # Remove all files (we want a clean slate)
+          # Remove all current files
           git rm -rf .
 
-          # Copy ALL upstream files (except .git)
+          # Copy everything from upstream (except .git)
           git checkout upstream/main -- .
 
           # Restore YOUR podcast folder from main
@@ -57,8 +57,12 @@ jobs:
           git checkout main -- README.md
           git add README.md
 
-          # Commit (there will always be changes unless upstream is identical to main)
-          git commit -m "Fresh sync from upstream (kept podcast & README from main)"
+          # Add a timestamp file to force a diff (this will always be new)
+          echo "Last sync: $(date -u)" > .sync-timestamp
+          git add .sync-timestamp
+
+          # Commit everything
+          git commit -m "Fresh sync from upstream (kept podcast & README, timestamped)"
 
           # Push the branch
           git push -u origin $BRANCH --force
@@ -71,7 +75,7 @@ jobs:
           base: main
           force: true
           delete-branch: false
-          commit-message: "Fresh sync from upstream (kept podcast & README)"
+          commit-message: "Fresh sync from upstream (kept podcast & README, timestamped)"
           title: "Sync upstream (fresh copy, keep podcast & README)"
           body: |
             This PR provides a fresh copy of upstream, with your podcast folder and README preserved.
@@ -80,4 +84,14 @@ jobs:
             - Your `src/content/podcast` folder is kept from `main`.
             - Your `README.md` is kept from `main`.
 
+            **Note:** The `.sync-timestamp` file is just a marker to force this PR. You can ignore it; it has no effect on your site.
+
             Review the diff and merge to apply the latest upstream changes.
+
+      - name: Log result
+        run: |
+          if [[ "${{ steps.pr.outputs.pull-request-number }}" != "" ]]; then
+            echo "✅ Pull request #${{ steps.pr.outputs.pull-request-number }} created/updated."
+          else
+            echo "ℹ️ No changes detected – this should not happen."
+          fi
