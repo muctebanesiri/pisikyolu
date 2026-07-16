@@ -1,6 +1,4 @@
 # Sample workflow for building and deploying an Astro site to GitHub Pages
-# This workflow builds the site and deploys it to GitHub Pages.
-# The build step also generates the Pagefind search index.
 #
 name: Deploy Astro site to Pages
 
@@ -40,7 +38,7 @@ jobs:
             exit 0
           elif [ -f "${{ github.workspace }}/package.json" ]; then
             echo "manager=npm" >> $GITHUB_OUTPUT
-            echo "command=install" >> $GITHUB_OUTPUT   # ✅ uses install (not ci) to fix lockfile
+            echo "command=install" >> $GITHUB_OUTPUT
             echo "runner=npx --no-install" >> $GITHUB_OUTPUT
             echo "lockfile=package-lock.json" >> $GITHUB_OUTPUT
             exit 0
@@ -52,9 +50,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: "22"                      # ✅ Astro 6 needs Node >=22.12
+          node-version: "22"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
           cache-dependency-path: ${{ env.BUILD_PATH }}/${{ steps.detect-package-manager.outputs.lockfile }}
+          # Temporary: force a cache miss to get the new package
+          cache-key: npm-${{ hashFiles('package-lock.json') }}-v2
 
       - name: Setup Pages
         id: pages
@@ -64,15 +64,16 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
         working-directory: ${{ env.BUILD_PATH }}
 
-      - name: Install Pagefind
-        run: npm install @stanniel/astro-pagefind
-        working-directory: ${{ env.BUILD_PATH }}
-
       - name: Build with Astro
         run: |
           ${{ steps.detect-package-manager.outputs.runner }} astro build \
             --site "${{ steps.pages.outputs.origin }}" \
             --base "${{ steps.pages.outputs.base_path }}"
+        working-directory: ${{ env.BUILD_PATH }}
+
+      # ✅ FALLBACK: manually generate Pagefind index if the integration failed
+      - name: Generate Pagefind index (fallback)
+        run: npx pagefind --source dist || true
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Upload artifact
