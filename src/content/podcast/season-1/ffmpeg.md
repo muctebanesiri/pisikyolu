@@ -1,7 +1,7 @@
 ---
 title: FFmpeg (مجتبی نصیری)
 season: 1
-date: 2024-12-28
+date: 2026-05-02
 time: "31"
 description: "بو اپیزوددا ففمپگ، مولتیمدیانین آچار فرانسه‌سی‌نه گوره دانیشدیم."
 episodeLink: https://s3.castbox.fm/31/db/42/f6743b40afa296bee675e518da.mp3
