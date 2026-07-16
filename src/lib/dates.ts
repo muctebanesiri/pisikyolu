@@ -5,7 +5,7 @@ function padDatePart(value: number): string {
 }
 
 export function formatEpisodeDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("fa-IR", {
     month: "short",
     day: "numeric",
     year: "numeric",
