@@ -1,4 +1,4 @@
-name: Sync upstream (keep my podcast, take upstream for rest)
+name: Sync upstream (keep podcast & README)
 
 on:
   schedule:
@@ -30,51 +30,56 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch and merge upstream
-        id: prepare
+      - name: Prepare branch with upstream merge (keep podcast & README)
         run: |
           BRANCH="sync/upstream"
 
-          # Delete any existing local branch with same name (to start clean)
+          # Delete local branch if it exists (start fresh)
           git branch -D $BRANCH || true
 
           # Create new branch from main
           git checkout -b $BRANCH main
 
-          # Merge upstream, auto-resolve conflicts in favour of upstream
+          # Merge upstream, auto-resolve conflicts in favour of upstream, but don't commit yet
           git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
 
-          # Remove upstream's podcast folder (if present)
+          # Remove upstream's podcast folder (if it exists)
           git rm -rf src/content/podcast || true
 
           # Restore YOUR podcast folder from main
           git checkout main -- src/content/podcast
           git add src/content/podcast
 
-          # Keep README.md from main
+          # Keep YOUR README.md from main
           git checkout main -- README.md
           git add README.md
 
-          # Always add a timestamp file to guarantee a diff
-          echo "Last sync: $(date -u)" > .sync-timestamp
-          git add .sync-timestamp
-
-          # Commit (if there are no staged changes, this will still have the timestamp)
-          git commit -m "Merge upstream/main (auto-resolved; podcast and README kept from main)"
+          # Now we have staged changes (or none). The action below will commit only if there is a diff.
 
       - name: Create or Update Pull Request
+        id: pr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.MERGE_TOKEN }}
           branch: sync/upstream
           base: main
+          force: true                                    # overwrite existing branch
+          delete-branch: false                           # keep branch after merge
+          commit-message: "Merge upstream (auto-resolved, kept podcast & README)"
           title: "Sync upstream (keep my podcast & README)"
           body: |
-            This PR merges upstream changes while:
-            - Auto‑resolving conflicts by taking upstream version (except podcast & README)
-            - Keeping your **own** `src/content/podcast` folder (from main)
-            - Keeping your `README.md` (from main)
+            This PR merges the latest upstream changes into your `main` branch.
 
-            Review and merge.
-          delete-branch: false
-          commit-message: "Merge upstream/main (auto-resolved; podcast and README kept from main)"
+            - All conflicts are **auto‑resolved** by taking the upstream version.
+            - Your **`src/content/podcast`** folder is **kept exactly as in `main`**.
+            - Your **`README.md`** is **kept exactly as in `main`**.
+
+            Review the diff and merge if everything looks good.
+
+      - name: Log result
+        run: |
+          if [[ "${{ steps.pr.outputs.pull-request-number }}" != "" ]]; then
+            echo "✅ Pull request #${{ steps.pr.outputs.pull-request-number }} created/updated."
+          else
+            echo "ℹ️ No changes detected – no pull request needed."
+          fi
