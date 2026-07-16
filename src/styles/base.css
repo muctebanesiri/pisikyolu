@@ -580,7 +580,7 @@ body:has(#chat-header) #theme-toggle {
 
 .search-esc-hint {
   font-size: 0.5625rem;
-  font-family: ui-monospace, monospace;
+  font-family: Vazirmatn, monospace;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-his-text-tertiary);
@@ -773,7 +773,7 @@ body:has(#chat-header) #theme-toggle {
 
 .search-result-time {
   font-size: 0.75rem;
-  font-family: ui-monospace, monospace;
+  font-family: Vazirmatn, monospace;
   color: var(--color-his-text-tertiary);
   min-width: 3rem;
   flex-shrink: 0;
@@ -1522,7 +1522,7 @@ body:has(#chat-header) #theme-toggle {
   opacity: 0.07;
   pointer-events: none;
   line-height: 1;
-  font-family: Georgia, serif;
+  font-family: Vazirmatn, serif;
 }
 
 .question-item {
