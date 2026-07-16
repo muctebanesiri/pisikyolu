@@ -21,6 +21,9 @@
     "astro": "astro",
     "deploy": "bun run build --force && wrangler pages deploy dist --project-name hopeinsource-com"
   },
+  "devDependencies": {
+  "@stanniel/astro-pagefind": "^1.0.0"
+  },
   "dependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/preact": "^5.1.2",
