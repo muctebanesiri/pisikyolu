@@ -53,8 +53,6 @@ jobs:
           node-version: "22"
           cache: ${{ steps.detect-package-manager.outputs.manager }}
           cache-dependency-path: ${{ env.BUILD_PATH }}/${{ steps.detect-package-manager.outputs.lockfile }}
-          # Temporary: force a cache miss to get the new package
-          cache-key: npm-${{ hashFiles('package-lock.json') }}-v2
 
       - name: Setup Pages
         id: pages
@@ -71,7 +69,7 @@ jobs:
             --base "${{ steps.pages.outputs.base_path }}"
         working-directory: ${{ env.BUILD_PATH }}
 
-      # ✅ FALLBACK: manually generate Pagefind index if the integration failed
+      # ✅ Fallback: manually generate Pagefind index (if integration fails)
       - name: Generate Pagefind index (fallback)
         run: npx pagefind --source dist || true
         working-directory: ${{ env.BUILD_PATH }}
