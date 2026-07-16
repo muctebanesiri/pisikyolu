@@ -4,7 +4,7 @@ import Testimonial from "@/components/Testimonial.astro";
 import Footer from "@/components/Footer.astro";
 import Subscribe from "@/components/Subscribe.astro";
 import { Image } from "astro:assets";
-import his_cover from "@/assets/his.webp";
+import his_cover from "@/assets/his.jpg";
 import { HOME_LAYOUTS, type HomeLayoutId } from "@/lib/home-layouts";
 import { getEpisodeData, type EpisodeData } from "@/lib/episodes";
 import {
@@ -37,10 +37,10 @@ const seasonLinks = archiveGroups.map((group) => ({
     <section id="home-brand">
       <div class="brand-inner">
         <div class="brand-content flex flex-col items-center text-center max-w-[472px] mx-auto">
-          <h1 class="brand-title m-0">Pişikyolu پیشیک یولو</h1>
+          <h1 class="brand-title m-0">Hope in Source</h1>
           <Image
             src={his_cover}
-            alt="Pişikyolu Cover Art"
+            alt="Hope in Source Cover Art"
             width={472}
             height={472}
             widths={[320, 472, 944]}
@@ -51,16 +51,16 @@ const seasonLinks = archiveGroups.map((group) => ({
           />
           <div class="brand-taglines text-center space-y-1">
             <p class="m-0 text-lg font-medium tracking-wide opacity-0 animate-[fadeIn_0.8s_ease_0.2s_forwards]">
-              نظریمه جالب گلن موضوعاتدان دانیشیرام.
+              off-the-cuff conversations between friends
             </p>
             <p class="m-0 text-[0.85rem] text-his-text-secondary italic opacity-0 animate-[fadeIn_0.8s_ease_0.5s_forwards]">
-              بعضا حقوق
+              finding the sacred in the ordinary
             </p>
             <p class="m-0 text-[0.85rem] text-his-text-secondary italic opacity-0 animate-[fadeIn_0.8s_ease_0.7s_forwards]">
-              بعضا تکنولوژی
+              universal within the particular
             </p>
             <p class="m-0 text-[0.85rem] text-his-text-secondary italic opacity-0 animate-[fadeIn_0.8s_ease_0.9s_forwards]">
-              و بعضا ادبیات
+              where word becomes flesh
             </p>
           </div>
           <div class="brand-meta mt-5 space-y-1.5 text-xs text-his-text-tertiary">
@@ -68,7 +68,7 @@ const seasonLinks = archiveGroups.map((group) => ({
               <Subscribe />
             </div>
             <p class="m-0 opacity-0 animate-[fadeIn_0.8s_ease_1.3s_forwards]">
-              with <a href="mucteba.ir">Mücteba Nesiri</a>
+              with <a href="https://henryzoo.com/living-out-in-faith">Henry</a> & <a href="https://nadia.xyz/public-faith">Nadia</a>
             </p>
           </div>
           {latestEpisode && (

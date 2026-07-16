@@ -28,8 +28,7 @@
     "gray-matter": "^4.0.3",
     "pagefind": "^1.5.2",
     "preact": "^10.29.1",
-    "tailwindcss": "^4.2.4",
-    "astro-pagefind": "^1.0.0"
+    "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.4",
