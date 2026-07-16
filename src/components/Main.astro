@@ -57,7 +57,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                     {season !== 0 && (
                         <div class="flex items-center gap-3 mb-2">
                             <h2 class="text-xl font-semibold tracking-wide text-his-green">
-                                {season === 2 ? "Maintainers Anonymous" : `فصل ${season}`}
+                                {season === 2 ? "Maintainers Anonymous" : `Season ${season}`}
                             </h2>
                             <div class="flex-1 h-px bg-gradient-to-r from-his-green/30 to-transparent"></div>
                         </div>
@@ -83,7 +83,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                                                 <span class="text-his-text-tertiary/50">·</span>
                                             </>
                                         )}
-                                        <span>{episode.data.date.toLocaleDateString('en-US', {
+                                        <span>{episode.data.date.toLocaleDateString('fa-IR', {
                                           year: 'numeric',
                                           month: 'short',
                                           day: 'numeric',
