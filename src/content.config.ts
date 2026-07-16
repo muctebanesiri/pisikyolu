@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 const podcastSchema = z.object({
@@ -8,11 +9,23 @@ const podcastSchema = z.object({
   time: z.string(),
   description: z.string(),
   episodeLink: z.string(),
-  embedUrl: z.string(),
+  sauntercast: z.boolean().optional(),
+  video: z.object({
+    url: z.url(),
+    offsetSeconds: z.number().int().nonnegative().optional(),
+  }).optional(),
   sidebar: z.object({
     order: z.number(),
   }),
   speakers: z.record(z.string(), z.enum(['left', 'right', 'other'])).optional(),
+  quotes: z.array(
+    z.object({
+      text: z.string(),
+      speaker: z.string(),
+      timestamp: z.string(),
+      topic: z.string().optional(),
+    })
+  ).max(2).optional(),
 });
 
 // Define the podcast collection
