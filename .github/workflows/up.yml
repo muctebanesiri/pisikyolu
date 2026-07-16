@@ -1,4 +1,4 @@
-name: Sync upstream (merge, keep custom files)
+name: Sync upstream (always take upstream, except README and podcast)
 
 on:
   schedule:
@@ -13,62 +13,58 @@ jobs:
       pull-requests: write
 
     steps:
-      # 1. Checkout your repository (full history)
       - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MERGE_TOKEN }}
           fetch-depth: 0
 
-      # 2. Set git identity – this will be the "bot" user
       - name: Configure git
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
 
-      # 3. Add upstream repository as a remote
       - name: Add upstream remote
         run: git remote add upstream https://github.com/hzoo/hopeinsource.com.git
 
-      # 4. Fetch the latest upstream main
       - name: Fetch upstream
         run: git fetch upstream main
 
-      # 5. Create a new branch from main, then merge upstream into it
-      - name: Create branch and merge upstream
+      - name: Create branch from main and merge upstream (prefer upstream on conflicts)
         run: |
-          # Delete any existing remote branch (fresh start)
+          # Delete any existing remote branch
           git push origin --delete sync/upstream || true
 
           # Start from your main branch
           git checkout main
           git checkout -b sync/upstream
 
-          # Merge upstream/main, allowing unrelated histories.
-          # Use --no-commit --no-ff so we can commit the merge ourselves,
-          # even if there are conflicts.
-          git merge upstream/main --allow-unrelated-histories --no-commit --no-ff || true
+          # Merge upstream/main, using -X theirs to auto-resolve conflicts in favour of upstream
+          # --allow-unrelated-histories is only needed the first time.
+          git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
 
-          # Stage everything (including conflict markers if any)
-          git add -A
+          # If there are conflicts, they are already resolved by -X theirs.
+          # But we must ensure that README.md and src/content/podcast are from main.
+          # Restore these two paths to their main versions (overwriting any upstream changes).
+          git checkout main -- README.md
+          git checkout main -- src/content/podcast
+          git add README.md src/content/podcast
 
-          # If there are staged changes, commit them; otherwise add a dummy commit
+          # Now commit the merge (if there were no changes at all, we add a dummy commit)
           if ! git diff --cached --quiet; then
-            git commit -m "Merge upstream/main into sync/upstream"
+            git commit -m "Merge upstream/main (conflicts auto-resolved; README/podcast kept from main)"
           else
-            # No changes – still create a commit to ensure the branch is ahead
-            git commit --allow-empty -m "Dummy commit to sync upstream (no changes)"
+            git commit --allow-empty -m "Dummy commit – no changes from upstream"
           fi
 
           # Push the branch
           git push -u origin sync/upstream --force
 
-      # 6. Create (or update) a pull request
       - name: Create Pull Request
         run: |
           gh pr create --base main --head sync/upstream \
-            --title "Sync upstream (merge, keep custom files)" \
-            --body "This PR merges the latest upstream changes into your custom code.\n\n- Files you added or modified in **main** are preserved.\n- If there are merge conflicts, they are shown in the diff – please resolve them before merging.\n\nAfter merging, your main will be up‑to‑date with upstream while keeping your customizations." \
+            --title "Sync upstream (auto‑take upstream, keep README & podcast)" \
+            --body "This PR merges the latest upstream changes into your main.\n\n- All conflicts are automatically resolved by **taking the upstream version**.\n- **README.md** and **src/content/podcast/** are kept exactly as they are on your **main** branch.\n- Review the diff and merge when ready." \
             --force || echo "PR already exists or could not be created"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
