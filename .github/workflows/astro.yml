@@ -65,7 +65,7 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Install Pagefind
-        run: npm install @astrojs/pagefind
+        run: npm install @stanniel/astro-pagefind
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Build with Astro
