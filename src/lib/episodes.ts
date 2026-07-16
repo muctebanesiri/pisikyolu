@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from "astro:content";
+import { toPersianDigits } from "@/lib/localization";  // ✅ added
 
 export type PodcastEntry = CollectionEntry<'podcast'> & {
   slug: string;
@@ -48,9 +49,10 @@ function archiveGroupIdForSeason(season: number): string {
 function archiveGroupLabel(groupId: string): string {
   if (groupId === "6") return "Internet Checkpoint";
   if (groupId === "2") return "Maintainers Anonymous";
-  if (groupId === "4-5") return "Season 4/5";
+  if (groupId === "4-5") return `فصل ${toPersianDigits("4/5")}`;  // ✅ localized
   if (groupId === "0") return "Early Episodes";
-  return `فصل ${groupId}`;
+  // Convert the numeric part of groupId to Persian digits
+  return `فصل ${toPersianDigits(groupId)}`;
 }
 
 export async function getEpisodeData(): Promise<EpisodeData> {
