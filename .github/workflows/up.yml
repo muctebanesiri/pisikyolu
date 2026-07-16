@@ -30,16 +30,16 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch with upstream merge
+      - name: Create branch and merge upstream
+        id: prepare
         run: |
           BRANCH="sync/upstream"
 
-          # Delete the remote branch if it exists (to start fresh)
-          git push origin --delete $BRANCH || true
+          # Delete any existing local branch with same name (to start clean)
+          git branch -D $BRANCH || true
 
-          # Start from main
-          git checkout main
-          git checkout -b $BRANCH
+          # Create new branch from main
+          git checkout -b $BRANCH main
 
           # Merge upstream, auto-resolve conflicts in favour of upstream
           git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
@@ -55,18 +55,12 @@ jobs:
           git checkout main -- README.md
           git add README.md
 
-          # If there are no staged changes, add a timestamp file so the branch is ahead
-          if git diff --cached --quiet; then
-            echo "No upstream changes detected – adding timestamp file to force a diff."
-            echo "Last sync: $(date -u)" > .sync-timestamp
-            git add .sync-timestamp
-          fi
+          # Always add a timestamp file to guarantee a diff
+          echo "Last sync: $(date -u)" > .sync-timestamp
+          git add .sync-timestamp
 
-          # Commit (staged changes are guaranteed now)
+          # Commit (if there are no staged changes, this will still have the timestamp)
           git commit -m "Merge upstream/main (auto-resolved; podcast and README kept from main)"
-
-          # Push the branch (force‑update)
-          git push -u origin $BRANCH --force
 
       - name: Create or Update Pull Request
         uses: peter-evans/create-pull-request@v6
