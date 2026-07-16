@@ -10,7 +10,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
 ---
 
 <div class="mx-auto px-3 sm:px-5 py-5 sm:py-7 flex flex-col lg:flex-row lg:max-w-6xl">
-    <div class="lg:mr-4 flex-grow-0 flex-shrink-0 basis-[500px]">
+    <div class="lg:me-4 flex-grow-0 flex-shrink-0 basis-[500px]">
         <div class="lg:fixed lg:top-1/2 lg:-translate-y-1/2">
             <div class="flex flex-col items-center text-center max-w-[472px] mx-auto">
                 <Image
@@ -63,7 +63,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                         {episodesBySeasons[season].map((episode) => (
                             <article class="group relative px-3 sm:px-4 py-1.5 rounded-lg border border-transparent hover:border-his-hr hover:bg-his-hover/50 transition-all duration-200">
                                 <a href={`/${episode.slug}`} class="block" data-astro-prefetch="hover">
-                                    <h3 class="text-lg font-medium group-hover:text-his-green transition-colors pr-12">
+                                    <h3 class="text-lg font-medium group-hover:text-his-green transition-colors pe-12">
                                         {episode.episodeTitle}
                                     </h3>
                                     <div class="flex flex-wrap items-center gap-x-2 text-sm text-his-text-tertiary mt-0.5">
@@ -73,7 +73,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                                                     {episode.guestDisplays.map((g, i) => (
                                                         <>
                                                             {i > 0 && ", "}
-                                                            {g.name}{g.count > 1 && <sup class="ml-0.5 text-[0.65em] text-his-green/50 font-normal">×{g.count}</sup>}
+                                                            {g.name}{g.count > 1 && <sup class="ms-0.5 text-[0.65em] text-his-green/50 font-normal">×{g.count}</sup>}
                                                         </>
                                                     ))}
                                                 </span>
@@ -118,7 +118,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                                           })()}
                                 </a>
                                 {/* Episode number badge */}
-                                <span class="absolute top-2 right-3 text-xs font-mono text-his-text-tertiary">
+                                <span class="absolute top-2 start-3 text-xs font-mono text-his-text-tertiary">
                                     {episode.epNumber}
                                 </span>
                             </article>
