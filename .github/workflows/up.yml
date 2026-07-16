@@ -1,4 +1,4 @@
-name: Sync upstream (keep my podcast, take upstream for rest)
+name: Sync upstream (always create PR)
 
 on:
   schedule:
@@ -31,13 +31,15 @@ jobs:
         run: git fetch upstream main
 
       - name: Create branch and merge upstream (prefer upstream on conflicts)
+        id: create_branch
         run: |
-          # Delete existing remote branch (if any)
-          git push origin --delete sync/upstream || true
+          # Create a unique branch name with timestamp
+          BRANCH_NAME="sync/upstream-$(date +%s)"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
           # Start from your main
           git checkout main
-          git checkout -b sync/upstream
+          git checkout -b $BRANCH_NAME
 
           # Merge upstream, auto-resolve conflicts in favour of upstream
           git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
@@ -45,15 +47,15 @@ jobs:
           # Remove upstream's podcast folder (if present)
           git rm -rf src/content/podcast || true
 
-          # Now restore YOUR podcast folder from main
+          # Restore YOUR podcast folder from main
           git checkout main -- src/content/podcast
           git add src/content/podcast
 
-          # Keep README.md from main (overwrite any upstream changes)
+          # Keep README.md from main
           git checkout main -- README.md
           git add README.md
 
-          # Commit the merge (if there were changes, otherwise dummy commit)
+          # Commit (or dummy commit if no changes)
           if ! git diff --cached --quiet; then
             git commit -m "Merge upstream/main (auto-resolved; podcast and README kept from main)"
           else
@@ -61,13 +63,14 @@ jobs:
           fi
 
           # Push the branch
-          git push -u origin sync/upstream --force
+          git push -u origin $BRANCH_NAME --force
 
       - name: Create Pull Request
         run: |
-          gh pr create --base main --head sync/upstream \
-            --title "Sync upstream (keep my podcast & README)" \
+          BRANCH="${{ steps.create_branch.outputs.branch_name }}"
+          gh pr create --base main --head "$BRANCH" \
+            --title "Sync upstream (keep my podcast & README) – $BRANCH" \
             --body "This PR merges upstream changes while:\n- Auto‑resolving conflicts by taking upstream version (except podcast & README)\n- Keeping your **own** `src/content/podcast` folder (from main)\n- Keeping your `README.md` (from main)\n\nReview and merge." \
-            --force || echo "PR already exists"
+            --force
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
