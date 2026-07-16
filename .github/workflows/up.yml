@@ -1,9 +1,9 @@
-name: Sync upstream (always take upstream, except README and podcast)
+name: Sync upstream (delete podcast, keep README)
 
 on:
   schedule:
-    - cron: '0 0 * * *'          # daily at midnight UTC
-  workflow_dispatch:             # manual trigger
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -30,29 +30,28 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch from main and merge upstream (prefer upstream on conflicts)
+      - name: Create branch and merge upstream (prefer upstream on conflicts)
         run: |
-          # Delete any existing remote branch
+          # Delete existing remote branch (if any)
           git push origin --delete sync/upstream || true
 
-          # Start from your main branch
+          # Start from your main
           git checkout main
           git checkout -b sync/upstream
 
-          # Merge upstream/main, using -X theirs to auto-resolve conflicts in favour of upstream
-          # --allow-unrelated-histories is only needed the first time.
+          # Merge upstream, auto-resolve conflicts in favour of upstream
           git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
 
-          # If there are conflicts, they are already resolved by -X theirs.
-          # But we must ensure that README.md and src/content/podcast are from main.
-          # Restore these two paths to their main versions (overwriting any upstream changes).
-          git checkout main -- README.md
-          git checkout main -- src/content/podcast
-          git add README.md src/content/podcast
+          # Now, remove the podcast folder entirely (both from working tree and staging)
+          git rm -rf src/content/podcast || true
 
-          # Now commit the merge (if there were no changes at all, we add a dummy commit)
+          # Keep README.md from main (overwrite any upstream changes)
+          git checkout main -- README.md
+          git add README.md
+
+          # Commit the merge (if there were changes, otherwise dummy commit)
           if ! git diff --cached --quiet; then
-            git commit -m "Merge upstream/main (conflicts auto-resolved; README/podcast kept from main)"
+            git commit -m "Merge upstream/main (auto-resolved conflicts; podcast removed, README kept from main)"
           else
             git commit --allow-empty -m "Dummy commit – no changes from upstream"
           fi
@@ -63,8 +62,8 @@ jobs:
       - name: Create Pull Request
         run: |
           gh pr create --base main --head sync/upstream \
-            --title "Sync upstream (auto‑take upstream, keep README & podcast)" \
-            --body "This PR merges the latest upstream changes into your main.\n\n- All conflicts are automatically resolved by **taking the upstream version**.\n- **README.md** and **src/content/podcast/** are kept exactly as they are on your **main** branch.\n- Review the diff and merge when ready." \
-            --force || echo "PR already exists or could not be created"
+            --title "Sync upstream (podcast removed, README preserved)" \
+            --body "This PR merges upstream changes while:\n- Auto‑resolving conflicts by taking upstream version\n- **Deleting** the entire `src/content/podcast` folder\n- Keeping `README.md` as it is in `main`\n\nReview and merge." \
+            --force || echo "PR already exists"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
