@@ -2,6 +2,7 @@
 import { formatEpisodeDate } from "@/lib/dates";
 import { getEpisodeData } from "@/lib/episodes";
 import Search from "./Search.astro";
+import { toPersianDigits } from "@/lib/localization";  // ✅ added
 
 interface Props {
   currentSlug: string;
@@ -32,7 +33,7 @@ const { archiveGroups } = await getEpisodeData();
     <button
       id="sidebar-close"
       class="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-his-hover text-his-text-tertiary transition-colors"
-      aria-label="Close sidebar"
+      aria-label="بستن نوار کناری"
     >
       <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -71,7 +72,7 @@ const { archiveGroups } = await getEpisodeData();
                     "flex-shrink-0 text-[10px] font-mono tabular-nums pt-0.5 transition-colors",
                     isActive ? "text-his-green" : "text-his-text-tertiary group-hover:text-his-text-secondary"
                   ]}>
-                    {episode.epNumber}
+                    {toPersianDigits(episode.epNumber)}  {/* ✅ localize episode number */}
                   </span>
                   <div class="flex-1 min-w-0">
                     <div class="flex items-baseline gap-2">
@@ -121,8 +122,8 @@ const { archiveGroups } = await getEpisodeData();
                       ]}>
                         {episode.guestDisplays.map((g, i) => (
                             <>
-                              {i > 0 && ", "}
-                              {g.name}{g.count > 1 && <sup class="ml-0.5 text-[0.65em] text-his-green/50 font-normal">×{g.count}</sup>}
+                              {i > 0 && "، "}  {/* ✅ Persian comma */}
+                              {g.name}{g.count > 1 && <sup class="ms-0.5 text-[0.65em] text-his-green/50 font-normal">×{toPersianDigits(g.count)}</sup>}  {/* ✅ localize count */}
                             </>
                           ))}
                       </span>
