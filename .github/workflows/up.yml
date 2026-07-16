@@ -1,4 +1,4 @@
-name: Sync upstream (always create PR)
+name: Sync upstream (keep my podcast, take upstream for rest)
 
 on:
   schedule:
@@ -31,15 +31,15 @@ jobs:
         run: git fetch upstream main
 
       - name: Create branch and merge upstream (prefer upstream on conflicts)
-        id: create_branch
         run: |
-          # Create a unique branch name with timestamp
-          BRANCH_NAME="sync/upstream-$(date +%s)"
-          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          BRANCH="sync/upstream"
+
+          # Delete the remote branch if it exists (to start fresh)
+          git push origin --delete $BRANCH || true
 
           # Start from your main
           git checkout main
-          git checkout -b $BRANCH_NAME
+          git checkout -b $BRANCH
 
           # Merge upstream, auto-resolve conflicts in favour of upstream
           git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
@@ -47,30 +47,37 @@ jobs:
           # Remove upstream's podcast folder (if present)
           git rm -rf src/content/podcast || true
 
-          # Restore YOUR podcast folder from main
+          # Now restore YOUR podcast folder from main
           git checkout main -- src/content/podcast
           git add src/content/podcast
 
-          # Keep README.md from main
+          # Keep README.md from main (overwrite any upstream changes)
           git checkout main -- README.md
           git add README.md
 
-          # Commit (or dummy commit if no changes)
+          # Commit (if there were changes, otherwise dummy commit)
           if ! git diff --cached --quiet; then
             git commit -m "Merge upstream/main (auto-resolved; podcast and README kept from main)"
           else
             git commit --allow-empty -m "Dummy commit – no changes from upstream"
           fi
 
-          # Push the branch
-          git push -u origin $BRANCH_NAME --force
+          # Push the branch (force‑update)
+          git push -u origin $BRANCH --force
 
-      - name: Create Pull Request
+      - name: Create or Update Pull Request
         run: |
-          BRANCH="${{ steps.create_branch.outputs.branch_name }}"
-          gh pr create --base main --head "$BRANCH" \
-            --title "Sync upstream (keep my podcast & README) – $BRANCH" \
-            --body "This PR merges upstream changes while:\n- Auto‑resolving conflicts by taking upstream version (except podcast & README)\n- Keeping your **own** `src/content/podcast` folder (from main)\n- Keeping your `README.md` (from main)\n\nReview and merge." \
-            --force
+          BRANCH="sync/upstream"
+          # Check if PR already exists for this branch
+          PR_URL=$(gh pr list --base main --head $BRANCH --json url --jq '.[0].url' || echo "")
+          if [ -z "$PR_URL" ]; then
+            # No existing PR, create one
+            gh pr create --base main --head $BRANCH \
+              --title "Sync upstream (keep my podcast & README)" \
+              --body "This PR merges upstream changes while:\n- Auto‑resolving conflicts by taking upstream version (except podcast & README)\n- Keeping your **own** `src/content/podcast` folder (from main)\n- Keeping your `README.md` (from main)\n\nReview and merge."
+          else
+            echo "Pull request already exists: $PR_URL"
+            echo "The branch has been force-pushed, so the PR is updated automatically."
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
