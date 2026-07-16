@@ -1,5 +1,6 @@
 ---
 import type { ExtractedLink } from "@/plugins/remark-links-extractor";
+import { toPersianDigits } from "@/lib/localization";  // ✅ added
 
 interface TOCHeading {
   slug: string;
@@ -21,7 +22,7 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
     <div
       id="toc-scrubber"
       class="hidden md:flex fixed right-3 top-1/2 -translate-y-1/2 flex-col items-end gap-1.5 p-2 z-40"
-      aria-label="Table of contents"
+      aria-label="فهرست مطالب"
     >
       {/* Section bars */}
       {headings.length > 0 && (
@@ -29,7 +30,7 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
           id="toc-bars"
           type="button"
           class="flex flex-col items-end gap-1.5 cursor-pointer group rounded-md p-0 bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
-          aria-label="Toggle table of contents"
+          aria-label="نمایش فهرست مطالب"
           aria-controls="toc-nav"
           aria-expanded="false"
         >
@@ -48,14 +49,14 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
           id="ref-badge"
           type="button"
           class="mt-3 flex flex-col items-center gap-0.5 text-[10px] text-his-text-tertiary hover:text-his-green transition-colors cursor-pointer rounded-md p-0 bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
-          aria-label="Toggle references"
+          aria-label="نمایش ارجاعات"
           aria-controls="ref-popover"
           aria-expanded="false"
         >
           <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
           </svg>
-          <span class="font-medium">{extractedLinks.length}</span>
+          <span class="font-medium">{toPersianDigits(extractedLinks.length)}</span>
         </button>
       )}
     </div>
