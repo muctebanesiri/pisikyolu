@@ -55,12 +55,15 @@ jobs:
           git checkout main -- README.md
           git add README.md
 
-          # Commit (if there were changes, otherwise dummy commit)
-          if ! git diff --cached --quiet; then
-            git commit -m "Merge upstream/main (auto-resolved; podcast and README kept from main)"
-          else
-            git commit --allow-empty -m "Dummy commit – no changes from upstream"
+          # If there are no staged changes, add a timestamp file so the branch is ahead
+          if git diff --cached --quiet; then
+            echo "No upstream changes detected – adding timestamp file to force a diff."
+            echo "Last sync: $(date -u)" > .sync-timestamp
+            git add .sync-timestamp
           fi
+
+          # Commit (staged changes are guaranteed now)
+          git commit -m "Merge upstream/main (auto-resolved; podcast and README kept from main)"
 
           # Push the branch (force‑update)
           git push -u origin $BRANCH --force
