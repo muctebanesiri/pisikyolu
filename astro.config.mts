@@ -1,16 +1,16 @@
 import { defineConfig } from 'astro/config';
 import preact from '@astrojs/preact';
-import pagefind from '@stanniel/astro-pagefind';   // ✅ correct package
+import pagefind from '@stanniel/astro-pagefind';   // correct import
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   publicDir: "public",
   integrations: [
     preact({ compat: true }),
-    pagefind(),                                    // ✅ works with Astro 6
+    pagefind(),                                    // <-- must be called
   ],
   vite: {
     plugins: [tailwindcss()],
-    // No external/optimizeDeps needed
+    // Do NOT exclude pagefind in 'external' or 'optimizeDeps'
   },
 });
