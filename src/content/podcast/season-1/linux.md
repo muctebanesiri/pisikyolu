@@ -8,7 +8,7 @@ episodeLink: https://s3.castbox.fm/ca/a7/de/fc047041c5ad2c1e649fae05e7.m4a
 embedUrl: https://podcasters.spotify.com/pod/show/pisikyolu/episodes/11-City-as-Liturgy-Bonus-e2su9hg
 video:
   url: "https://youtu.be/QAo1UfL8UD4?si=xBDBtETKioEWzoep"
-  offsetSeconds: 35
+  offsetSeconds: 00
 sidebar:
   order: 5
 speakers:
