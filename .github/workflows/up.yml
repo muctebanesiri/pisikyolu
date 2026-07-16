@@ -1,4 +1,4 @@
-name: Sync upstream (keep podcast & README)
+name: Sync selected upstream directories
 
 on:
   schedule:
@@ -13,7 +13,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout
+      - name: Checkout your repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MERGE_TOKEN }}
@@ -21,8 +21,8 @@ jobs:
 
       - name: Configure git
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions"
 
       - name: Add upstream remote
         run: git remote add upstream https://github.com/hzoo/hopeinsource.com.git
@@ -30,56 +30,35 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Prepare branch with upstream merge (keep podcast & README)
+      - name: Create branch and copy selected directories
         run: |
-          BRANCH="sync/upstream"
+          # Delete any existing remote branch (fresh start)
+          git push origin --delete sync/upstream || true
 
-          # Delete local branch if it exists (start fresh)
-          git branch -D $BRANCH || true
+          # Start from your main branch
+          git checkout main
+          git checkout -b sync/upstream
 
-          # Create new branch from main
-          git checkout -b $BRANCH main
+          # Copy the directories you want from upstream (overwriting local versions)
+          git checkout upstream/main -- scripts
+          git checkout upstream/main -- src
 
-          # Merge upstream, auto-resolve conflicts in favour of upstream, but don't commit yet
-          git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
-
-          # Remove upstream's podcast folder (if it exists)
-          git rm -rf src/content/podcast || true
-
-          # Restore YOUR podcast folder from main
+          # Restore the files/folders you want to keep from your main
           git checkout main -- src/content/podcast
-          git add src/content/podcast
-
-          # Keep YOUR README.md from main
           git checkout main -- README.md
-          git add README.md
 
-          # Now we have staged changes (or none). The action below will commit only if there is a diff.
+          # Add and commit
+          git add -A
+          git commit -m "Sync scripts/ and src/ from upstream (preserving podcast folder and README from main)"
 
-      - name: Create or Update Pull Request
-        id: pr
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.MERGE_TOKEN }}
-          branch: sync/upstream
-          base: main
-          force: true                                    # overwrite existing branch
-          delete-branch: false                           # keep branch after merge
-          commit-message: "Merge upstream (auto-resolved, kept podcast & README)"
-          title: "Sync upstream (keep my podcast & README)"
-          body: |
-            This PR merges the latest upstream changes into your `main` branch.
+          # Push the branch
+          git push -u origin sync/upstream --force
 
-            - All conflicts are **auto‑resolved** by taking the upstream version.
-            - Your **`src/content/podcast`** folder is **kept exactly as in `main`**.
-            - Your **`README.md`** is **kept exactly as in `main`**.
-
-            Review the diff and merge if everything looks good.
-
-      - name: Log result
+      - name: Create Pull Request
         run: |
-          if [[ "${{ steps.pr.outputs.pull-request-number }}" != "" ]]; then
-            echo "✅ Pull request #${{ steps.pr.outputs.pull-request-number }} created/updated."
-          else
-            echo "ℹ️ No changes detected – no pull request needed."
-          fi
+          gh pr create --base main --head sync/upstream \
+            --title "Sync scripts and src from upstream" \
+            --body "This PR updates:\n- `scripts/` directory\n- `src/` directory (excluding `src/content/podcast/`)\n\nIt preserves your current `README.md` and `src/content/podcast/` as they are in `main`." \
+            --force || echo "PR may already exist"
+        env:
+          GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
