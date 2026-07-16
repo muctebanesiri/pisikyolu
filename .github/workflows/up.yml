@@ -1,4 +1,4 @@
-name: Sync upstream (delete podcast, keep README)
+name: Sync upstream (keep my podcast, take upstream for rest)
 
 on:
   schedule:
@@ -42,8 +42,12 @@ jobs:
           # Merge upstream, auto-resolve conflicts in favour of upstream
           git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
 
-          # Now, remove the podcast folder entirely (both from working tree and staging)
+          # Remove upstream's podcast folder (if present)
           git rm -rf src/content/podcast || true
+
+          # Now restore YOUR podcast folder from main
+          git checkout main -- src/content/podcast
+          git add src/content/podcast
 
           # Keep README.md from main (overwrite any upstream changes)
           git checkout main -- README.md
@@ -51,7 +55,7 @@ jobs:
 
           # Commit the merge (if there were changes, otherwise dummy commit)
           if ! git diff --cached --quiet; then
-            git commit -m "Merge upstream/main (auto-resolved conflicts; podcast removed, README kept from main)"
+            git commit -m "Merge upstream/main (auto-resolved; podcast and README kept from main)"
           else
             git commit --allow-empty -m "Dummy commit – no changes from upstream"
           fi
@@ -62,8 +66,8 @@ jobs:
       - name: Create Pull Request
         run: |
           gh pr create --base main --head sync/upstream \
-            --title "Sync upstream (podcast removed, README preserved)" \
-            --body "This PR merges upstream changes while:\n- Auto‑resolving conflicts by taking upstream version\n- **Deleting** the entire `src/content/podcast` folder\n- Keeping `README.md` as it is in `main`\n\nReview and merge." \
+            --title "Sync upstream (keep my podcast & README)" \
+            --body "This PR merges upstream changes while:\n- Auto‑resolving conflicts by taking upstream version (except podcast & README)\n- Keeping your **own** `src/content/podcast` folder (from main)\n- Keeping your `README.md` (from main)\n\nReview and merge." \
             --force || echo "PR already exists"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
