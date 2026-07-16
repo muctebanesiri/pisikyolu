@@ -1,15 +1,11 @@
 @import "tailwindcss";
 
-/*
- * RTL support: uses logical properties (start/end) instead of left/right.
- * Set dir="rtl" on the <html> element in your Layout.astro for full RTL.
- */
-
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -21,6 +17,7 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Episode pages have an inline header theme control; avoid overlap with fixed toggle. */
 body:has(#chat-header) #theme-toggle {
   display: none;
 }
@@ -30,6 +27,7 @@ body:has(#chat-header) #theme-toggle {
     "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
+  /* Colors */
   --color-his-green: oklch(0.88 0.12 142.49);
   --color-his-bg: var(--color-flexoki-dark-bg);
   --color-his-text: var(--color-flexoki-paper);
@@ -41,17 +39,181 @@ body:has(#chat-header) #theme-toggle {
   --color-his-chat-other: var(--color-flexoki-dark-bg-2);
   --color-his-hover: var(--color-flexoki-dark-ui-2);
   --color-his-active: var(--color-flexoki-base-800);
+  /* Darker active state for dark mode */
   --color-his-chat-bg: var(--color-flexoki-dark-ui-2);
 }
 
 @theme {
-  /* all the color variables – unchanged */
   --color-flexoki-black: #100F0F;
-  /* ... (keep all your color definitions) ... */
+  --color-flexoki-paper: #FFFCF0;
+  --color-flexoki-base-50: #F2F0E5;
+  --color-flexoki-base-100: #E6E4D9;
+  --color-flexoki-base-150: #DAD8CE;
+  --color-flexoki-base-200: #CECDC3;
+  --color-flexoki-base-300: #B7B5AC;
+  --color-flexoki-base-400: #9F9D96;
+  --color-flexoki-base-500: #878580;
+  --color-flexoki-base-600: #6F6E69;
+  --color-flexoki-base-700: #575653;
+  --color-flexoki-base-800: #403E3C;
+  --color-flexoki-base-850: #343331;
+  --color-flexoki-base-900: #282726;
+  --color-flexoki-base-950: #1C1B1A;
+  --color-flexoki-red-50: #FFE1D5;
+  --color-flexoki-red-100: #FFCABB;
+  --color-flexoki-red-150: #FDB2A2;
+  --color-flexoki-red-200: #F89A8A;
+  --color-flexoki-red-300: #E8705F;
+  --color-flexoki-red-400: #D14D41;
+  --color-flexoki-red-500: #C03E35;
+  --color-flexoki-red-600: #AF3029;
+  --color-flexoki-red-700: #942822;
+  --color-flexoki-red-800: #6C201C;
+  --color-flexoki-red-850: #551B18;
+  --color-flexoki-red-900: #3E1715;
+  --color-flexoki-red-950: #261312;
+  --color-flexoki-orange-50: #FFE7CE;
+  --color-flexoki-orange-100: #FED3AF;
+  --color-flexoki-orange-150: #FCC192;
+  --color-flexoki-orange-200: #F9AE77;
+  --color-flexoki-orange-300: #EC8B49;
+  --color-flexoki-orange-400: #DA702C;
+  --color-flexoki-orange-500: #CB6120;
+  --color-flexoki-orange-600: #BC5215;
+  --color-flexoki-orange-700: #9D4310;
+  --color-flexoki-orange-800: #71320D;
+  --color-flexoki-orange-850: #59290D;
+  --color-flexoki-orange-900: #40200D;
+  --color-flexoki-orange-950: #27180E;
+  --color-flexoki-yellow-50: #FAEEC6;
+  --color-flexoki-yellow-100: #F6E2A0;
+  --color-flexoki-yellow-150: #F1D67E;
+  --color-flexoki-yellow-200: #ECCB60;
+  --color-flexoki-yellow-300: #DFB431;
+  --color-flexoki-yellow-400: #D0A215;
+  --color-flexoki-yellow-500: #BE9207;
+  --color-flexoki-yellow-600: #AD8301;
+  --color-flexoki-yellow-700: #8E6B01;
+  --color-flexoki-yellow-800: #664D01;
+  --color-flexoki-yellow-850: #503D02;
+  --color-flexoki-yellow-900: #3A2D04;
+  --color-flexoki-yellow-950: #241E08;
+  --color-flexoki-green-50: #EDEECF;
+  --color-flexoki-green-100: #DDE2B2;
+  --color-flexoki-green-150: #CDD597;
+  --color-flexoki-green-200: #BEC97E;
+  --color-flexoki-green-300: #A0AF54;
+  --color-flexoki-green-400: #879A39;
+  --color-flexoki-green-500: #768D21;
+  --color-flexoki-green-600: #66800B;
+  --color-flexoki-green-700: #536907;
+  --color-flexoki-green-800: #3D4C07;
+  --color-flexoki-green-850: #313D07;
+  --color-flexoki-green-900: #252D09;
+  --color-flexoki-green-950: #1A1E0C;
+  --color-flexoki-cyan-50: #DDF1E4;
+  --color-flexoki-cyan-100: #BFE8D9;
+  --color-flexoki-cyan-150: #A2DECE;
+  --color-flexoki-cyan-200: #87D3C3;
+  --color-flexoki-cyan-300: #5ABDAC;
+  --color-flexoki-cyan-400: #3AA99F;
+  --color-flexoki-cyan-500: #2F968D;
+  --color-flexoki-cyan-600: #24837B;
+  --color-flexoki-cyan-700: #1C6C66;
+  --color-flexoki-cyan-800: #164F4A;
+  --color-flexoki-cyan-850: #143F3C;
+  --color-flexoki-cyan-900: #122F2C;
+  --color-flexoki-cyan-950: #101F1D;
+  --color-flexoki-blue-50: #E1ECEB;
+  --color-flexoki-blue-100: #C6DDE8;
+  --color-flexoki-blue-150: #ABCFE2;
+  --color-flexoki-blue-200: #92BFDB;
+  --color-flexoki-blue-300: #66A0C8;
+  --color-flexoki-blue-400: #4385BE;
+  --color-flexoki-blue-500: #3171B2;
+  --color-flexoki-blue-600: #205EA6;
+  --color-flexoki-blue-700: #1A4F8C;
+  --color-flexoki-blue-800: #163B66;
+  --color-flexoki-blue-850: #133051;
+  --color-flexoki-blue-900: #12253B;
+  --color-flexoki-blue-950: #101A24;
+  --color-flexoki-purple-50: #F0EAEC;
+  --color-flexoki-purple-100: #E2D9E9;
+  --color-flexoki-purple-150: #D3CAE6;
+  --color-flexoki-purple-200: #C4B9E0;
+  --color-flexoki-purple-300: #A699D0;
+  --color-flexoki-purple-400: #8B7EC8;
+  --color-flexoki-purple-500: #735EB5;
+  --color-flexoki-purple-600: #5E409D;
+  --color-flexoki-purple-700: #4F3685;
+  --color-flexoki-purple-800: #3C2A62;
+  --color-flexoki-purple-850: #31234E;
+  --color-flexoki-purple-900: #261C39;
+  --color-flexoki-purple-950: #1A1623;
+  --color-flexoki-magenta-50: #FEE4E5;
+  --color-flexoki-magenta-100: #FCCFDA;
+  --color-flexoki-magenta-150: #F9B9CF;
+  --color-flexoki-magenta-200: #F4A4C2;
+  --color-flexoki-magenta-300: #E47DA8;
+  --color-flexoki-magenta-400: #CE5D97;
+  --color-flexoki-magenta-500: #B74583;
+  --color-flexoki-magenta-600: #A02F6F;
+  --color-flexoki-magenta-700: #87285E;
+  --color-flexoki-magenta-800: #641F46;
+  --color-flexoki-magenta-850: #4F1B39;
+  --color-flexoki-magenta-900: #39172B;
+  --color-flexoki-magenta-950: #24131D;
 }
 
 @theme inline {
-  /* ... (keep all inline theme variables) ... */
+  --color-flexoki-light-bg: var(--color-flexoki-paper);
+  --color-flexoki-light-bg-2: var(--color-flexoki-base-50);
+  --color-flexoki-light-tx: var(--color-flexoki-black);
+  --color-flexoki-light-tx-2: var(--color-flexoki-base-600);
+  --color-flexoki-light-tx-3: var(--color-flexoki-base-300);
+  --color-flexoki-light-ui: var(--color-flexoki-base-100);
+  --color-flexoki-light-ui-2: var(--color-flexoki-base-150);
+  --color-flexoki-light-ui-3: var(--color-flexoki-base-200);
+  --color-flexoki-dark-bg: var(--color-flexoki-black);
+  --color-flexoki-dark-bg-2: var(--color-flexoki-base-950);
+  --color-flexoki-dark-tx: var(--color-flexoki-base-200);
+  --color-flexoki-dark-tx-2: var(--color-flexoki-base-500);
+  --color-flexoki-dark-tx-3: var(--color-flexoki-base-700);
+  --color-flexoki-dark-ui: var(--color-flexoki-base-900);
+  --color-flexoki-dark-ui-2: var(--color-flexoki-base-850);
+  --color-flexoki-dark-ui-3: var(--color-flexoki-base-800);
+  --color-flexoki-light-re: var(--color-flexoki-red-600);
+  --color-flexoki-light-or: var(--color-flexoki-orange-600);
+  --color-flexoki-light-ye: var(--color-flexoki-yellow-600);
+  --color-flexoki-light-gr: var(--color-flexoki-green-600);
+  --color-flexoki-light-cy: var(--color-flexoki-cyan-600);
+  --color-flexoki-light-bl: var(--color-flexoki-blue-600);
+  --color-flexoki-light-pu: var(--color-flexoki-purple-600);
+  --color-flexoki-light-ma: var(--color-flexoki-magenta-600);
+  --color-flexoki-dark-re: var(--color-flexoki-red-400);
+  --color-flexoki-dark-or: var(--color-flexoki-orange-400);
+  --color-flexoki-dark-ye: var(--color-flexoki-yellow-400);
+  --color-flexoki-dark-gr: var(--color-flexoki-green-400);
+  --color-flexoki-dark-cy: var(--color-flexoki-cyan-400);
+  --color-flexoki-dark-bl: var(--color-flexoki-blue-400);
+  --color-flexoki-dark-pu: var(--color-flexoki-purple-400);
+  --color-flexoki-dark-ma: var(--color-flexoki-magenta-400);
+  --color-flexoki-light-re-2: var(--color-flexoki-red-400);
+  --color-flexoki-light-or-2: var(--color-flexoki-orange-400);
+  --color-flexoki-light-ye-2: var(--color-flexoki-yellow-400);
+  --color-flexoki-light-gr-2: var(--color-flexoki-green-400);
+  --color-flexoki-light-cy-2: var(--color-flexoki-cyan-400);
+  --color-flexoki-light-bl-2: var(--color-flexoki-blue-400);
+  --color-flexoki-light-pu-2: var(--color-flexoki-purple-400);
+  --color-flexoki-light-ma-2: var(--color-flexoki-magenta-400);
+  --color-flexoki-dark-re-2: var(--color-flexoki-red-600);
+  --color-flexoki-dark-or-2: var(--color-flexoki-orange-600);
+  --color-flexoki-dark-ye-2: var(--color-flexoki-yellow-600);
+  --color-flexoki-dark-gr-2: var(--color-flexoki-green-600);
+  --color-flexoki-dark-cy-2: var(--color-flexoki-cyan-600);
+  --color-flexoki-dark-bl-2: var(--color-flexoki-blue-600);
+  --color-flexoki-dark-pu-2: var(--color-flexoki-purple-600);
+  --color-flexoki-dark-ma-2: var(--color-flexoki-magenta-600);
 }
 
 @layer base {
@@ -71,6 +233,7 @@ body:has(#chat-header) #theme-toggle {
     --color-his-chat-other: var(--color-flexoki-light-bg-2);
     --color-his-hover: var(--color-flexoki-base-100);
     --color-his-active: var(--color-flexoki-base-200);
+    /* Lighter active state for light mode */
     --color-his-green: oklch(0.45 0.12 142.49);
     --color-his-chat-bg: var(--color-flexoki-base-50);
   }
@@ -93,9 +256,8 @@ body:has(#chat-header) #theme-toggle {
     }
   }
 
-  /* RTL: use border-s-4 (logical start) instead of border-left */
   blockquote {
-    @apply my-4 ps-6 border-s-4 border-his-green italic opacity-85;
+    @apply my-4 pl-6 border-l-4 border-his-green italic opacity-85;
   }
 
   h1,
@@ -133,7 +295,7 @@ body:has(#chat-header) #theme-toggle {
   }
 
   li {
-    @apply ms-4;
+    @apply ml-4;
   }
 }
 
@@ -185,38 +347,47 @@ body:has(#chat-header) #theme-toggle {
     content-visibility: auto;
     contain-intrinsic-size: 96px;
 
+    /* Better mobile spacing */
     @media (max-width: 640px) {
       @apply max-w-[96%];
     }
 
+    /* Base message bubble style */
     & .message-bubble {
       @apply px-4 py-3 rounded-2xl bg-his-chat-bg/40 break-words relative mb-1 transition-colors duration-300;
 
+      /* Better mobile touch targets */
       @media (max-width: 640px) {
         @apply px-3 py-2 text-[0.9rem];
       }
     }
 
+    /* Current message highlighting */
     &.message-current .message-bubble {
       @apply bg-his-green/10 border border-his-green/20;
     }
 
+    /* Hide speaker name in consecutive messages */
     &.hide-speaker .message-bubble strong {
       @apply hidden;
     }
 
+    /* Consecutive message styles */
     &.consecutive .message-bubble {
       @apply mb-0 mt-[1px];
     }
 
+    /* First message in a group */
     &.consecutive-start .message-bubble {
       @apply rounded-t-2xl rounded-b-none;
     }
 
+    /* Middle messages in a group */
     &.consecutive:not(.consecutive-start):not(.consecutive-end) .message-bubble {
       @apply rounded-none py-1.5;
     }
 
+    /* Last message in a group */
     &.consecutive-end .message-bubble {
       @apply rounded-b-2xl rounded-t-none mb-3;
     }
@@ -237,12 +408,16 @@ body:has(#chat-header) #theme-toggle {
       @apply underline decoration-his-green/30 underline-offset-2 hover:decoration-his-green transition-colors;
     }
 
+    /* Better text spacing and readability */
     @apply leading-relaxed;
+
+    /* Enable text selection */
     user-select: text;
     -webkit-user-select: text;
     -moz-user-select: text;
   }
 
+  /* Speaker name styling improvements */
   .message-sent .message-bubble strong {
     @apply text-his-green;
   }
@@ -256,12 +431,13 @@ body:has(#chat-header) #theme-toggle {
   }
 
   .message-time {
-    @apply text-xs text-gray-100 opacity-0 absolute top-1 inset-inline-end-2 font-mono transition-all duration-200 cursor-pointer select-none z-10 bg-gray-800/90 px-1.5 py-0.5 rounded;
+    @apply text-xs text-gray-100 opacity-0 absolute top-1 right-2 font-mono transition-all duration-200 cursor-pointer select-none z-10 bg-gray-800/90 px-1.5 py-0.5 rounded;
 
     &:hover {
       @apply text-his-green;
     }
 
+    /* Hide timestamps on mobile */
     @media (max-width: 768px) {
       @apply hidden;
     }
@@ -271,6 +447,8 @@ body:has(#chat-header) #theme-toggle {
     @apply opacity-100;
   }
 
+
+  /* Right-aligned messages (sent & system) */
   .message-sent,
   .message-system {
     @apply ml-auto;
@@ -288,6 +466,7 @@ body:has(#chat-header) #theme-toggle {
     @apply bg-his-chat-default;
   }
 
+  /* Left-aligned messages (received) */
   .message-received {
     @apply mr-auto;
 
@@ -296,6 +475,7 @@ body:has(#chat-header) #theme-toggle {
     }
   }
 
+  /* Adjust consecutive message styling */
   .message.consecutive {
     & .message-bubble::before {
       @apply rounded-none;
@@ -311,14 +491,18 @@ body:has(#chat-header) #theme-toggle {
   }
 }
 
-[data-pagefind-highlight] {
-  background: color-mix(in oklab, var(--color-his-green) 25%, transparent);
-  color: inherit;
-  padding: 1px 3px;
-  border-radius: 3px;
-  scroll-margin-top: 80px;
+/* Pagefind highlight styling on result pages */
+@layer components {
+  [data-pagefind-highlight] {
+    background: color-mix(in oklab, var(--color-his-green) 25%, transparent);
+    color: inherit;
+    padding: 1px 3px;
+    border-radius: 3px;
+    scroll-margin-top: 80px;
+  }
 }
 
+/* Search Modal (appended to body) */
 .search-backdrop {
   position: fixed;
   inset: 0;
@@ -363,6 +547,7 @@ body:has(#chat-header) #theme-toggle {
   pointer-events: auto;
 }
 
+/* Input row at top of modal */
 .search-input-row {
   display: flex;
   align-items: center;
@@ -406,6 +591,7 @@ body:has(#chat-header) #theme-toggle {
   flex-shrink: 0;
 }
 
+/* Results area */
 .search-results-area {
   flex: 1;
   overflow-y: auto;
@@ -448,6 +634,7 @@ body:has(#chat-header) #theme-toggle {
   color: var(--color-his-text-tertiary);
 }
 
+/* Splash screen for empty search state */
 .search-splash {
   padding: 2.5rem 1.5rem;
   text-align: center;
@@ -496,6 +683,7 @@ body:has(#chat-header) #theme-toggle {
   font-style: normal;
 }
 
+/* Loading state with spinner */
 .search-loading {
   padding: 2rem 1rem;
   display: flex;
@@ -521,6 +709,7 @@ body:has(#chat-header) #theme-toggle {
   }
 }
 
+/* Episode group container */
 .search-episode-group {
   border-bottom: 1px solid var(--color-his-hr);
 }
@@ -556,6 +745,7 @@ body:has(#chat-header) #theme-toggle {
   color: var(--color-his-text-tertiary);
 }
 
+/* Matches container - flex for individual match items */
 .search-episode-matches {
   display: flex;
   flex-direction: column;
@@ -572,7 +762,7 @@ body:has(#chat-header) #theme-toggle {
   animation: searchSlideIn 0.2s ease-out both;
 }
 
-.search-result + .search-result {
+.search-result+.search-result {
   border-top: 1px solid color-mix(in oklab, var(--color-his-hr) 30%, transparent);
 }
 
@@ -601,7 +791,11 @@ body:has(#chat-header) #theme-toggle {
   flex: 1;
 }
 
-.search-result-meta,
+/* Legacy styles - can remove if not needed */
+.search-result-meta {
+  display: none;
+}
+
 .search-result-speaker,
 .search-result-timestamp,
 .search-result-episode {
@@ -639,31 +833,36 @@ body:has(#chat-header) #theme-toggle {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
+/* Flash animation for message deep-linking */
 .message.highlight-flash {
   animation: message-highlight 1.5s ease-out;
 }
 
 @keyframes message-highlight {
+
   0%,
   30% {
     background: color-mix(in oklab, var(--color-his-green) 25%, transparent);
     box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-his-green) 15%, transparent);
   }
+
   100% {
     background: transparent;
     box-shadow: none;
   }
 }
 
+/* Inline play button for highlighted messages */
 .msg-play-btn {
   position: absolute;
-  inset-inline-end: -2.5rem;
+  right: -2.5rem;
   top: 50%;
   transform: translateY(-50%);
   width: 2rem;
@@ -690,7 +889,8 @@ body:has(#chat-header) #theme-toggle {
 .msg-play-btn svg {
   width: 1rem;
   height: 1rem;
-  margin-inline-start: 2px;
+  margin-left: 2px;
+  /* Optical centering for play triangle */
 }
 
 .msg-play-btn.fade-out {
@@ -702,6 +902,7 @@ body:has(#chat-header) #theme-toggle {
     opacity: 0;
     transform: translateY(-50%) scale(0.8);
   }
+
   to {
     opacity: 1;
     transform: translateY(-50%) scale(1);
@@ -713,28 +914,33 @@ body:has(#chat-header) #theme-toggle {
     opacity: 1;
     transform: translateY(-50%) scale(1);
   }
+
   to {
     opacity: 0;
     transform: translateY(-50%) scale(0.8);
   }
 }
 
+/* Reference blockquote highlight animation */
 .ref-highlight {
   animation: ref-flash 1.5s ease-out;
 }
 
 @keyframes ref-flash {
+
   0%,
   30% {
     background: color-mix(in oklab, var(--color-his-green) 20%, transparent);
     box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-his-green) 15%, transparent);
   }
+
   100% {
     background: transparent;
     box-shadow: none;
   }
 }
 
+/* Reference blocks in transcript */
 .reference-block {
   scroll-margin-top: 80px;
 }
@@ -828,28 +1034,33 @@ body:has(#chat-header) #theme-toggle {
 
 #home-brand .brand-taglines p:nth-child(1) {
   max-width: 22rem;
-  margin-inline: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #home-brand .brand-taglines p:nth-child(2) {
   max-width: 18rem;
-  margin-inline: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #home-brand .brand-taglines p:nth-child(3) {
   max-width: 15rem;
-  margin-inline: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #home-brand .brand-taglines p:nth-child(4) {
   max-width: 12rem;
-  margin-inline: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #home-brand .brand-meta {
   margin-top: 0.28rem;
   width: min(16rem, 84%);
-  margin-inline: auto;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #home-brand .brand-meta > * {
@@ -955,6 +1166,7 @@ body:has(#chat-header) #theme-toggle {
   width: 100%;
 }
 
+
 @media (min-width: 1200px) {
   .home-root {
     display: grid;
@@ -973,12 +1185,12 @@ body:has(#chat-header) #theme-toggle {
   #home-brand .brand-inner {
     position: fixed;
     top: 50%;
-    inset-inline-start: max(1.25rem, calc((100vw - 78rem) / 2 + 1.25rem));
+    left: max(1.25rem, calc((100vw - 78rem) / 2 + 1.25rem));
     transform: translateY(-50%);
     width: min(30rem, 30vw);
     max-height: none;
     overflow: visible;
-    padding-inline-end: 0;
+    padding-right: 0;
   }
 
   #home-brand .brand-cover {
@@ -1251,7 +1463,7 @@ body:has(#chat-header) #theme-toggle {
 .convo-open-indicator {
   position: absolute;
   top: 0.38rem;
-  inset-inline-end: 0.48rem;
+  right: 0.48rem;
   font-size: 0.68rem;
   line-height: 1;
   color: var(--color-his-text-tertiary);
@@ -1303,7 +1515,7 @@ body:has(#chat-header) #theme-toggle {
   content: "?";
   position: absolute;
   top: -1rem;
-  inset-inline-end: 0;
+  right: 0;
   font-size: min(24rem, 44vw);
   font-weight: 700;
   color: var(--color-his-hr);
@@ -1325,7 +1537,7 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .question-item:nth-child(3n+1) {
-  text-align: start;
+  text-align: left;
 }
 
 .question-item:nth-child(3n+2) {
@@ -1333,7 +1545,7 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .question-item:nth-child(3n+3) {
-  text-align: end;
+  text-align: right;
 }
 
 .question-item[data-len="short"] .question-text {
@@ -1354,7 +1566,7 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .question-item:nth-child(3n+3)[data-len="long"] .question-text {
-  margin-inline-start: auto;
+  margin-left: auto;
 }
 
 .question-text {
@@ -1370,6 +1582,8 @@ body:has(#chat-header) #theme-toggle {
   text-transform: uppercase;
   color: var(--color-his-text-tertiary);
 }
+
+/* Assertions — planted declarations */
 
 #home-assertions {
   max-width: 44rem;
@@ -1406,6 +1620,8 @@ body:has(#chat-header) #theme-toggle {
   color: var(--color-his-text-tertiary);
 }
 
+/* Open Loops — suspended wonderings */
+
 #home-open-loops {
   max-width: 48rem;
   margin: 0 auto;
@@ -1424,11 +1640,11 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .loop-item:nth-child(odd) {
-  text-align: start;
+  text-align: left;
 }
 
 .loop-item:nth-child(even) {
-  text-align: end;
+  text-align: right;
 }
 
 .loop-text {
@@ -1447,6 +1663,8 @@ body:has(#chat-header) #theme-toggle {
   text-transform: uppercase;
   color: var(--color-his-text-tertiary);
 }
+
+/* Words — glossary index */
 
 #home-lexicon {
   max-width: 36rem;
@@ -1481,7 +1699,7 @@ body:has(#chat-header) #theme-toggle {
 .lexicon-row-episodes {
   font-size: 0.78rem;
   color: var(--color-his-text-tertiary);
-  text-align: end;
+  text-align: right;
 }
 
 .lexicon-row-episodes a {
@@ -1499,10 +1717,13 @@ body:has(#chat-header) #theme-toggle {
   opacity: 0.5;
 }
 
+/* Collapse: per-view thresholds */
+
 [data-collapsed="true"] > .question-item:nth-child(n + 10) { display: none; }
 [data-collapsed="true"] > .assertion-item:nth-child(n + 6) { display: none; }
 [data-collapsed="true"] > .loop-item:nth-child(n + 6) { display: none; }
 [data-collapsed="true"] > .lexicon-row:nth-child(n + 16) { display: none; }
+
 
 .lab-show-more {
   display: flex;
@@ -1535,7 +1756,6 @@ body:has(#chat-header) #theme-toggle {
   border: 1.5px solid color-mix(in oklch, var(--color-his-green) 30%, transparent);
   background: color-mix(in oklch, var(--color-his-green) 10%, transparent);
 }
-
 .sponsor-pill:hover {
   border-color: var(--color-his-green);
   background: color-mix(in oklch, var(--color-his-green) 18%, transparent);
