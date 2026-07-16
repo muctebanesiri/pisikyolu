@@ -1,15 +1,12 @@
-name: Merge specific file/directory from upstream
+name: Sync upstream (exclude README.md and podcast folder)
 
 on:
-  workflow_dispatch:
-    inputs:
-      path:
-        description: 'Relative path (e.g., src/scripts) or full GitHub URL'
-        required: true
-        type: string
+  schedule:
+    - cron: '0 0 * * *'          # daily at midnight UTC
+  workflow_dispatch:             # manual trigger
 
 jobs:
-  merge-specific:
+  sync:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -24,8 +21,8 @@ jobs:
 
       - name: Configure git
         run: |
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
+          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions"
 
       - name: Add upstream remote
         run: git remote add upstream https://github.com/hzoo/hopeinsource.com.git
@@ -33,66 +30,38 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Sanitize input path
-        id: sanitize
+      - name: Create branch from main with upstream content (excluding README and podcast)
         run: |
-          RAW_PATH="${{ github.event.inputs.path }}"
-          # If it's a GitHub URL, extract the path after /tree/main/
-          if [[ "$RAW_PATH" =~ github\.com.*/tree/main/(.*) ]]; then
-            CLEAN_PATH="${BASH_REMATCH[1]}"
-          else
-            CLEAN_PATH="$RAW_PATH"
-          fi
-          # Remove trailing slash if present to avoid directory issues
-          CLEAN_PATH="${CLEAN_PATH%/}"
-          echo "clean_path=$CLEAN_PATH" >> $GITHUB_OUTPUT
-          echo "Extracted path: $CLEAN_PATH"
+          # Delete any existing remote branch
+          git push origin --delete sync/upstream || true
 
-      - name: Check if path exists upstream
-        run: |
-          if ! git ls-tree upstream/main -- "${{ steps.sanitize.outputs.clean_path }}" | grep -q .; then
-            echo "::error::Path '${{ steps.sanitize.outputs.clean_path }}' does not exist in upstream/main"
-            exit 1
-          fi
-
-      - name: Create branch and copy the specified path
-        run: |
-          # Delete existing remote branch (if any)
-          git push origin --delete sync/specific || true
-
-          # Start from main
+          # Start from your main branch
           git checkout main
-          git checkout -b sync/specific
+          git checkout -b sync/upstream
 
-          # Copy the sanitized path from upstream
-          git checkout upstream/main -- ${{ steps.sanitize.outputs.clean_path }}
+          # Remove all current files (we want to start fresh)
+          git rm -rf .
 
-          # Check if there are any changes staged
-          if git diff --cached --quiet; then
-            echo "No changes to merge – everything is already up-to-date."
-            echo "NO_CHANGES=true" >> $GITHUB_ENV
-            exit 0
-          fi
+          # Copy EVERYTHING from upstream
+          git checkout upstream/main -- .
 
-          # Stage and commit
+          # Restore the files/folders you want to keep from your main
+          git checkout main -- README.md
+          git checkout main -- src/content/podcast
+
+          # Stage and commit (this will show the diff between main and upstream,
+          # minus the two restored items)
           git add -A
-          git commit -m "Merge ${{ steps.sanitize.outputs.clean_path }} from upstream"
+          git commit -m "Sync upstream (excluding README.md and src/content/podcast)"
 
-          # Push branch
-          git push -u origin sync/specific --force
+          # Push the branch
+          git push -u origin sync/upstream --force
 
-      - name: Create Pull Request (if changes exist)
-        if: env.NO_CHANGES != 'true'
+      - name: Create Pull Request
         run: |
-          gh pr create --base main --head sync/specific \
-            --title "Merge ${{ steps.sanitize.outputs.clean_path }} from upstream" \
-            --body "This PR merges only the path: \`${{ steps.sanitize.outputs.clean_path }}\` from upstream.\n\nReview and merge it." \
+          gh pr create --base main --head sync/upstream \
+            --title "Sync upstream (exclude README and podcast)" \
+            --body "This PR syncs all upstream files except:\n- README.md\n- src/content/podcast/\n\nReview and merge." \
             --force || echo "PR may already exist"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
-
-      - name: Skip PR (no changes)
-        if: env.NO_CHANGES == 'true'
-        run: |
-          echo "No changes to merge – exiting without creating a PR."
-          exit 0
