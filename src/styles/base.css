@@ -1185,12 +1185,12 @@ body:has(#chat-header) #theme-toggle {
   #home-brand .brand-inner {
     position: fixed;
     top: 50%;
-    left: max(1.25rem, calc((100vw - 78rem) / 2 + 1.25rem));
+    inset-inline-start: max(1.25rem, calc((100vw - 78rem) / 2 + 1.25rem));
     transform: translateY(-50%);
     width: min(30rem, 30vw);
     max-height: none;
     overflow: visible;
-    padding-right: 0;
+    padding-inline-end: 0;
   }
 
   #home-brand .brand-cover {
