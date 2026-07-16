@@ -1,10 +1,15 @@
 {
+<<<<<<< HEAD
   "name": "pişikyolu",
+=======
+  "name": "hopeinsource",
+>>>>>>> upstream/main
   "workspaces": [
     "src/remark-transcript-plugin"
   ],
   "type": "module",
   "private": true,
+<<<<<<< HEAD
   "description": "pişikyolu podcast",
   "version": "1.0.0",
   "author": "Mücteba Nesiri <fm@mucteba.ir>",
@@ -12,6 +17,15 @@
     "url": "https://github.com/muctebanesiri/pisikyolu/issues"
   },
   "homepage": "https://fm.mucteba.ir",
+=======
+  "description": "Hope in Source website",
+  "version": "1.0.0",
+  "author": "Henry Zhu <hi@henryzoo.com>",
+  "bugs": {
+    "url": "https://github.com/hzoo/hopeinsource.com/issues"
+  },
+  "homepage": "https://hopeinsource.com",
+>>>>>>> upstream/main
   "license": "MIT",
   "scripts": {
     "dev": "astro dev",
@@ -19,6 +33,7 @@
     "build": "astro check && astro build && bun run scripts/build-search-index.ts",
     "preview": "astro preview",
     "astro": "astro",
+<<<<<<< HEAD
     "deploy": "bun run build --force && wrangler pages deploy dist --project-name pisikyolu-com"
   },
   "dependencies": {
@@ -41,3 +56,25 @@
     "unist-util-visit": "^5.1.0"
   }
 }
+=======
+    "deploy": "bun run build --force && wrangler pages deploy dist --project-name hopeinsource-com"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/preact": "^5.1.2",
+    "astro": "^6.1.10",
+    "gray-matter": "^4.0.3",
+    "pagefind": "^1.5.2",
+    "preact": "^10.29.1",
+    "tailwindcss": "^4.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.2.4",
+    "@types/bun": "^1.3.13",
+    "@types/mdast": "^4.0.4",
+    "@types/unist": "^3.0.3",
+    "sharp": "^0.34.5",
+    "typescript": "^6.0.3"
+  }
+}
+>>>>>>> upstream/main

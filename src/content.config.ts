@@ -11,7 +11,11 @@ const podcastSchema = z.object({
   episodeLink: z.string(),
   sauntercast: z.boolean().optional(),
   video: z.object({
+<<<<<<< HEAD
     url: z.string().url(),
+=======
+    url: z.url(),
+>>>>>>> upstream/main
     offsetSeconds: z.number().int().nonnegative().optional(),
   }).optional(),
   sidebar: z.object({
