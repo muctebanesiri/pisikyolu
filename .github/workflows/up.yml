@@ -68,13 +68,25 @@ jobs:
       - name: Create or Update Pull Request
         run: |
           BRANCH="sync/upstream"
-          # Check if PR already exists for this branch
+
+          # Write the PR body to a temporary file using a heredoc to avoid shell interpretation
+          cat > pr_body.md << 'EOF'
+          This PR merges upstream changes while:
+          - Auto‑resolving conflicts by taking upstream version (except podcast & README)
+          - Keeping your **own** `src/content/podcast` folder (from main)
+          - Keeping your `README.md` (from main)
+
+          Review and merge.
+          EOF
+
+          # Check if PR already exists
           PR_URL=$(gh pr list --base main --head $BRANCH --json url --jq '.[0].url' || echo "")
+
           if [ -z "$PR_URL" ]; then
-            # No existing PR, create one
+            # No existing PR – create one
             gh pr create --base main --head $BRANCH \
               --title "Sync upstream (keep my podcast & README)" \
-              --body "This PR merges upstream changes while:\n- Auto‑resolving conflicts by taking upstream version (except podcast & README)\n- Keeping your **own** `src/content/podcast` folder (from main)\n- Keeping your `README.md` (from main)\n\nReview and merge."
+              --body-file pr_body.md
           else
             echo "Pull request already exists: $PR_URL"
             echo "The branch has been force-pushed, so the PR is updated automatically."
