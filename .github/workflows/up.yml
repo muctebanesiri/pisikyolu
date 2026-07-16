@@ -54,8 +54,12 @@ jobs:
           git checkout main -- README.md
           git add README.md
 
-          # Now the working tree has the combined state.
-          # The next action will commit and create/update a PR only if there is a diff.
+          # Stage any other changes (just in case)
+          git add -A
+
+          # Debug: show what is staged
+          echo "=== Staged changes (if any) ==="
+          git diff --cached --name-status || echo "No staged changes"
 
       - name: Create or Update Pull Request
         uses: peter-evans/create-pull-request@v6
@@ -63,8 +67,8 @@ jobs:
           token: ${{ secrets.MERGE_TOKEN }}
           branch: sync/upstream
           base: main
-          force: true                                  # overwrite existing remote branch
-          delete-branch: false                         # keep the branch after merge
+          force: true
+          delete-branch: false
           commit-message: "Sync upstream (auto-resolved, kept podcast & README)"
           title: "Sync upstream (keep my podcast & README)"
           body: |
