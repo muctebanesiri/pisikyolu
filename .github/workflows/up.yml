@@ -1,4 +1,4 @@
-name: Sync selected upstream directories
+name: Sync upstream (keep my podcast, take upstream for rest)
 
 on:
   schedule:
@@ -13,7 +13,7 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout your repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MERGE_TOKEN }}
@@ -21,8 +21,8 @@ jobs:
 
       - name: Configure git
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "github-actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
       - name: Add upstream remote
         run: git remote add upstream https://github.com/hzoo/hopeinsource.com.git
@@ -30,26 +30,35 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch and copy selected directories
+      - name: Create branch and merge upstream (prefer upstream on conflicts)
         run: |
-          # Delete any existing remote branch (fresh start)
+          # Delete existing remote branch (if any)
           git push origin --delete sync/upstream || true
 
-          # Start from your main branch
+          # Start from your main
           git checkout main
           git checkout -b sync/upstream
 
-          # Copy the directories you want from upstream (overwriting local versions)
-          git checkout upstream/main -- scripts
-          git checkout upstream/main -- src
+          # Merge upstream, auto-resolve conflicts in favour of upstream
+          git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
 
-          # Restore the files/folders you want to keep from your main
+          # Remove upstream's podcast folder (if present)
+          git rm -rf src/content/podcast || true
+
+          # Now restore YOUR podcast folder from main
           git checkout main -- src/content/podcast
-          git checkout main -- README.md
+          git add src/content/podcast
 
-          # Add and commit
-          git add -A
-          git commit -m "Sync scripts/ and src/ from upstream (preserving podcast folder and README from main)"
+          # Keep README.md from main (overwrite any upstream changes)
+          git checkout main -- README.md
+          git add README.md
+
+          # Commit the merge (if there were changes, otherwise dummy commit)
+          if ! git diff --cached --quiet; then
+            git commit -m "Merge upstream/main (auto-resolved; podcast and README kept from main)"
+          else
+            git commit --allow-empty -m "Dummy commit – no changes from upstream"
+          fi
 
           # Push the branch
           git push -u origin sync/upstream --force
@@ -57,8 +66,8 @@ jobs:
       - name: Create Pull Request
         run: |
           gh pr create --base main --head sync/upstream \
-            --title "Sync scripts and src from upstream" \
-            --body "This PR updates:\n- `scripts/` directory\n- `src/` directory (excluding `src/content/podcast/`)\n\nIt preserves your current `README.md` and `src/content/podcast/` as they are in `main`." \
-            --force || echo "PR may already exist"
+            --title "Sync upstream (keep my podcast & README)" \
+            --body "This PR merges upstream changes while:\n- Auto‑resolving conflicts by taking upstream version (except podcast & README)\n- Keeping your **own** `src/content/podcast` folder (from main)\n- Keeping your `README.md` (from main)\n\nReview and merge." \
+            --force || echo "PR already exists"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
