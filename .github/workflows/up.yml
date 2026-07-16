@@ -30,68 +30,36 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Prepare fresh branch with upstream content
+      - name: Create branch with upstream content (clean copy, keep podcast & README, add timestamp)
         run: |
           BRANCH="sync/upstream"
-
-          # Delete local branch if it exists
-          git branch -D $BRANCH || true
-
-          # Delete remote branch if it exists
+          # Delete remote branch if exists
           git push origin --delete $BRANCH || true
-
-          # Create branch from main
-          git checkout -b $BRANCH main
-
-          # Remove all current files
+          # Start from main
+          git checkout main
+          git checkout -b $BRANCH
+          # Remove all tracked files
           git rm -rf .
-
-          # Copy everything from upstream (except .git)
+          # Copy upstream content
           git checkout upstream/main -- .
-
-          # Restore YOUR podcast folder from main
+          # Restore podcast and README from main
           git checkout main -- src/content/podcast
-          git add src/content/podcast
-
-          # Restore YOUR README.md from main
           git checkout main -- README.md
-          git add README.md
-
-          # Add a timestamp file to force a diff (this will always be new)
+          # Add timestamp to force diff
           echo "Last sync: $(date -u)" > .sync-timestamp
           git add .sync-timestamp
-
-          # Commit everything
-          git commit -m "Fresh sync from upstream (kept podcast & README, timestamped)"
-
-          # Push the branch
+          # Commit
+          git commit -m "Sync upstream (keep podcast & README, timestamped)"
+          # Push
           git push -u origin $BRANCH --force
 
-      - name: Create or Update Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.MERGE_TOKEN }}
-          branch: sync/upstream
-          base: main
-          force: true
-          delete-branch: false
-          commit-message: "Fresh sync from upstream (kept podcast & README, timestamped)"
-          title: "Sync upstream (fresh copy, keep podcast & README)"
-          body: |
-            This PR provides a fresh copy of upstream, with your podcast folder and README preserved.
-
-            - All files (except podcast and README) are taken **exactly** from upstream.
-            - Your `src/content/podcast` folder is kept from `main`.
-            - Your `README.md` is kept from `main`.
-
-            **Note:** The `.sync-timestamp` file is just a marker to force this PR. You can ignore it; it has no effect on your site.
-
-            Review the diff and merge to apply the latest upstream changes.
-
-      - name: Log result
+      - name: Create or update Pull Request
         run: |
-          if [[ "${{ steps.pr.outputs.pull-request-number }}" != "" ]]; then
-            echo "✅ Pull request #${{ steps.pr.outputs.pull-request-number }} created/updated."
-          else
-            echo "ℹ️ No changes detected – this should not happen."
-          fi
+          BRANCH="sync/upstream"
+          # Try to create PR; if it exists, it will error but the branch is updated
+          gh pr create --base main --head $BRANCH \
+            --title "Sync upstream (keep podcast & README)" \
+            --body "This PR syncs upstream changes (excluding podcast and README). Timestamp file ensures a diff." \
+            || echo "PR already exists – branch updated."
+        env:
+          GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
