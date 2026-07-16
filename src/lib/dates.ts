@@ -26,7 +26,7 @@ export function formatEpisodeRelativeDate(date: Date, now = new Date()): string 
   const episodeDay = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
   const diffDays = Math.floor((currentDay - episodeDay) / ONE_DAY_MS);
 
-  if (diffDays <= 0) return "today";
-  if (diffDays === 1) return "1 day ago";
-  return `${diffDays} days ago`;
+  if (diffDays <= 0) return "بوپون";
+  if (diffDays === 1) return "1 گون قاباخ";
+  return `${diffDays} گون قاباخ`;
 }
