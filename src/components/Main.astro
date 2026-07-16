@@ -5,6 +5,7 @@ import Subscribe from "@/components/Subscribe.astro";
 import { Image } from "astro:assets";
 import his_cover from "@/assets/his.webp";
 import { getEpisodeData } from "@/lib/episodes";
+import { toPersianDigits } from "@/lib/localization"; // ✅ added
 
 const { episodesBySeasons, seasons } = await getEpisodeData();
 ---
@@ -57,7 +58,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                     {season !== 0 && (
                         <div class="flex items-center gap-3 mb-2">
                             <h2 class="text-xl font-semibold tracking-wide text-his-green">
-                                {season === 2 ? "Maintainers Anonymous" : `Season ${season}`}
+                                {season === 2 ? "Maintainers Anonymous" : `فصل ${toPersianDigits(season)}`}
                             </h2>
                             <div class="flex-1 h-px bg-gradient-to-r from-his-green/30 to-transparent"></div>
                         </div>
@@ -76,7 +77,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                                                     {episode.guestDisplays.map((g, i) => (
                                                         <>
                                                             {i > 0 && ", "}
-                                                            {g.name}{g.count > 1 && <sup class="ms-0.5 text-[0.65em] text-his-green/50 font-normal">×{g.count}</sup>}
+                                                            {g.name}{g.count > 1 && <sup class="ms-0.5 text-[0.65em] text-his-green/50 font-normal">×{toPersianDigits(g.count)}</sup>}
                                                         </>
                                                     ))}
                                                 </span>
@@ -91,7 +92,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                                         {episode.data.time && (
                                             <>
                                                 <span class="text-his-text-tertiary/50">·</span>
-                                                <span>{episode.data.time} min</span>
+                                                <span>{toPersianDigits(episode.data.time)} دقیقه</span>
                                             </>
                                         )}
                                     </div>
@@ -122,7 +123,7 @@ const { episodesBySeasons, seasons } = await getEpisodeData();
                                 </a>
                                 <!-- Episode number badge -->
                                 <span class="absolute top-2 start-3 text-xs font-mono text-his-text-tertiary">
-                                    {episode.epNumber}
+                                    {toPersianDigits(episode.epNumber)}
                                 </span>
                             </article>
                         ))}
