@@ -1,0 +1,65 @@
+name: Sync upstream directly to main
+
+on:
+  schedule:
+    - cron: '0 0 * * *'        # daily at midnight UTC
+  workflow_dispatch:           # manual trigger
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write           # needed to push to main
+
+    steps:
+      - name: Checkout your repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MERGE_TOKEN }}   # PAT with write access
+          fetch-depth: 0
+
+      - name: Configure git
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Add upstream remote
+        run: git remote add upstream https://github.com/hzoo/hopeinsource.com.git
+
+      - name: Fetch upstream
+        run: git fetch upstream main
+
+      - name: Merge upstream into main (keep podcast & README)
+        run: |
+          # Ensure we are on main
+          git checkout main
+
+          # Merge upstream, auto-resolve conflicts in favour of upstream, but do not commit yet
+          git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
+
+          # Remove any upstream podcast folder that might have been brought in
+          git rm -rf src/content/podcast || true
+
+          # Restore YOUR podcast folder from the current HEAD (i.e., the state before merge)
+          git checkout HEAD -- src/content/podcast || true
+          git add src/content/podcast
+
+          # Restore YOUR README.md from the current HEAD
+          git checkout HEAD -- README.md || true
+          git add README.md
+
+          # Stage any other unstaged changes (just in case)
+          git add -A
+
+          # Commit if there are changes; otherwise skip
+          if ! git diff --cached --quiet; then
+            git commit -m "Merge upstream/main (auto-resolved; kept podcast and README)"
+            echo "CHANGES=true" >> $GITHUB_ENV
+          else
+            echo "No changes to merge."
+            echo "CHANGES=false" >> $GITHUB_ENV
+          fi
+
+      - name: Push changes to main
+        if: env.CHANGES == 'true'
+        run: git push origin main
