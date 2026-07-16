@@ -50,7 +50,7 @@ function archiveGroupLabel(groupId: string): string {
   if (groupId === "2") return "Maintainers Anonymous";
   if (groupId === "4-5") return "Season 4/5";
   if (groupId === "0") return "Early Episodes";
-  return `Season ${groupId}`;
+  return `فصل ${groupId}`;
 }
 
 export async function getEpisodeData(): Promise<EpisodeData> {
