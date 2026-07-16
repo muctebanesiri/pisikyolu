@@ -3,6 +3,7 @@ import HomeContentLayout from "@/layouts/HomeContentLayout.astro";
 import { getEpisodeData } from "@/lib/episodes";
 import { timestampToSeconds } from "@/lib/content-extraction";
 import { convoSide } from "@/lib/home-data";
+import { toPersianDigits } from "@/lib/localization";  // ✅ added
 
 const episodeData = await getEpisodeData();
 const { episodes } = episodeData;
@@ -19,8 +20,8 @@ const allExcerpts = episodes.flatMap((ep) =>
 const previewExcerpts = allExcerpts.slice(0, 6);
 ---
 
-<HomeContentLayout activeLayout="B" title="Excerpts" description="Selected excerpts from Hope in Source episodes." episodeData={episodeData}>
-  <section aria-label="Excerpts">
+<HomeContentLayout activeLayout="B" title="گزیده‌ها" description="گزیده‌هایی از اپیزودهای پادکست پیشیک‌یولو." episodeData={episodeData}>
+  <section aria-label="گزیده‌ها">
     <div id="home-dialogue">
       <div class="convo-flow">
         {previewExcerpts.map((q) => {
@@ -44,7 +45,7 @@ const previewExcerpts = allExcerpts.slice(0, 6);
       </div>
       {allExcerpts.length > 6 && (
         <a href="/quotes" class="lab-show-more w-fit no-underline">
-          show {allExcerpts.length - 6} more
+          نمایش {toPersianDigits(allExcerpts.length - 6)} مورد دیگر
         </a>
       )}
     </div>
