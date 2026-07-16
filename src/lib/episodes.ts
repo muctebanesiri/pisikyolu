@@ -42,7 +42,7 @@ export interface EpisodeArchiveGroup {
 
 function archiveGroupIdForSeason(season: number): string {
   if (season === 4 || season === 5) return "4-5";
-  return String(فصل);
+  return String(season);
 }
 
 function archiveGroupLabel(groupId: string): string {
