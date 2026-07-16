@@ -1,4 +1,4 @@
-name: Sync upstream (exclude README.md and podcast folder)
+name: Sync upstream (merge, keep custom files)
 
 on:
   schedule:
@@ -13,55 +13,62 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout your repository
+      # 1. Checkout your repository (full history)
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MERGE_TOKEN }}
           fetch-depth: 0
 
+      # 2. Set git identity – this will be the "bot" user
       - name: Configure git
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "github-actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
+      # 3. Add upstream repository as a remote
       - name: Add upstream remote
         run: git remote add upstream https://github.com/hzoo/hopeinsource.com.git
 
+      # 4. Fetch the latest upstream main
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch from main with upstream content (excluding README and podcast)
+      # 5. Create a new branch from main, then merge upstream into it
+      - name: Create branch and merge upstream
         run: |
-          # Delete any existing remote branch
+          # Delete any existing remote branch (fresh start)
           git push origin --delete sync/upstream || true
 
           # Start from your main branch
           git checkout main
           git checkout -b sync/upstream
 
-          # Remove all current files (we want to start fresh)
-          git rm -rf .
+          # Merge upstream/main, allowing unrelated histories.
+          # Use --no-commit --no-ff so we can commit the merge ourselves,
+          # even if there are conflicts.
+          git merge upstream/main --allow-unrelated-histories --no-commit --no-ff || true
 
-          # Copy EVERYTHING from upstream
-          git checkout upstream/main -- .
-
-          # Restore the files/folders you want to keep from your main
-          git checkout main -- README.md
-          git checkout main -- src/content/podcast
-
-          # Stage and commit (this will show the diff between main and upstream,
-          # minus the two restored items)
+          # Stage everything (including conflict markers if any)
           git add -A
-          git commit -m "Sync upstream (excluding README.md and src/content/podcast)"
+
+          # If there are staged changes, commit them; otherwise add a dummy commit
+          if ! git diff --cached --quiet; then
+            git commit -m "Merge upstream/main into sync/upstream"
+          else
+            # No changes – still create a commit to ensure the branch is ahead
+            git commit --allow-empty -m "Dummy commit to sync upstream (no changes)"
+          fi
 
           # Push the branch
           git push -u origin sync/upstream --force
 
+      # 6. Create (or update) a pull request
       - name: Create Pull Request
         run: |
           gh pr create --base main --head sync/upstream \
-            --title "Sync upstream (exclude README and podcast)" \
-            --body "This PR syncs all upstream files except:\n- README.md\n- src/content/podcast/\n\nReview and merge." \
-            --force || echo "PR may already exist"
+            --title "Sync upstream (merge, keep custom files)" \
+            --body "This PR merges the latest upstream changes into your custom code.\n\n- Files you added or modified in **main** are preserved.\n- If there are merge conflicts, they are shown in the diff – please resolve them before merging.\n\nAfter merging, your main will be up‑to‑date with upstream while keeping your customizations." \
+            --force || echo "PR already exists or could not be created"
         env:
           GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
