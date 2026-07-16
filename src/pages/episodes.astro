@@ -2,13 +2,14 @@
 import HomeContentLayout from "@/layouts/HomeContentLayout.astro";
 import { formatEpisodeDate } from "@/lib/dates";
 import { getEpisodeData } from "@/lib/episodes";
+import { toPersianDigits } from "@/lib/localization";  // ✅ added
 
 const episodeData = await getEpisodeData();
 const { archiveGroups } = episodeData;
 ---
 
 <HomeContentLayout activeLayout="A" title="All Episodes" description="Browse every Hope in Source episode by season." episodeData={episodeData}>
-  <section id="home-archive" aria-label="Episodes by season">
+  <section id="home-archive" aria-label="اپیزودها بر اساس فصل">
     <div class="space-y-7 sm:space-y-8">
       {archiveGroups.map((group) => {
         const seasonEpisodes = group.episodes;
@@ -21,7 +22,7 @@ const { archiveGroups } = episodeData;
             <summary class="season-heading season-summary">
               <h2 class="m-0 text-xl font-semibold tracking-wide text-his-green">{group.label}</h2>
               <div class="season-summary-meta">
-                <span class="season-count">{seasonEpisodes.length}</span>
+                <span class="season-count">{toPersianDigits(seasonEpisodes.length)}</span>
                 <span class="season-caret" aria-hidden="true">+</span>
               </div>
             </summary>
@@ -35,8 +36,8 @@ const { archiveGroups } = episodeData;
                   <a href={`/${episode.slug}`} class="block">
                     <h3 class="card-title min-w-0 text-lg font-medium leading-snug transition-colors group-hover:text-his-green">
                       {episode.episodeTitle}
-                      <span class="ep-badge ml-1.5 align-middle">
-                        {episode.epNumber}
+                      <span class="ep-badge ms-1.5 align-middle">
+                        {toPersianDigits(episode.epNumber)}
                       </span>
                     </h3>
 
@@ -46,10 +47,10 @@ const { archiveGroups } = episodeData;
                           <span class="text-his-text-secondary">
                             {episode.guestDisplays.map((g, i) => (
                               <>
-                                {i > 0 && ", "}
+                                {i > 0 && "، "}
                                 {g.name}
                                 {g.count > 1 && (
-                                  <sup class="ml-0.5 text-[0.65em] font-normal text-his-green/50">&times;{g.count}</sup>
+                                  <sup class="ms-0.5 text-[0.65em] font-normal text-his-green/50">×{toPersianDigits(g.count)}</sup>
                                 )}
                               </>
                             ))}
@@ -88,7 +89,7 @@ const { archiveGroups } = episodeData;
                                 <span class="sr-only">Video episode</span>
                               </span>
                             )}
-                            {episode.data.time && <span>{episode.data.time} دقیقه</span>}
+                            {episode.data.time && <span>{toPersianDigits(episode.data.time)} دقیقه</span>}
                           </span>
                         </>
                       )}
