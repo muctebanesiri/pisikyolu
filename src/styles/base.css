@@ -1,11 +1,15 @@
 @import "tailwindcss";
 
+/*
+ * RTL support: uses logical properties (start/end) instead of left/right.
+ * Set dir="rtl" on the <html> element in your Layout.astro for full RTL.
+ */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(4px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -39,7 +43,6 @@ body:has(#chat-header) #theme-toggle {
   --color-his-chat-other: var(--color-flexoki-dark-bg-2);
   --color-his-hover: var(--color-flexoki-dark-ui-2);
   --color-his-active: var(--color-flexoki-base-800);
-  /* Darker active state for dark mode */
   --color-his-chat-bg: var(--color-flexoki-dark-ui-2);
 }
 
@@ -233,7 +236,6 @@ body:has(#chat-header) #theme-toggle {
     --color-his-chat-other: var(--color-flexoki-light-bg-2);
     --color-his-hover: var(--color-flexoki-base-100);
     --color-his-active: var(--color-flexoki-base-200);
-    /* Lighter active state for light mode */
     --color-his-green: oklch(0.45 0.12 142.49);
     --color-his-chat-bg: var(--color-flexoki-base-50);
   }
@@ -256,8 +258,9 @@ body:has(#chat-header) #theme-toggle {
     }
   }
 
+  /* RTL: use border-inline-start instead of border-left */
   blockquote {
-    @apply my-4 pl-6 border-l-4 border-his-green italic opacity-85;
+    @apply my-4 ps-6 border-inline-start-4 border-his-green italic opacity-85;
   }
 
   h1,
@@ -294,8 +297,9 @@ body:has(#chat-header) #theme-toggle {
     @apply list-disc list-outside;
   }
 
+  /* RTL: use margin-inline-start instead of margin-left */
   li {
-    @apply ml-4;
+    @apply ms-4;
   }
 }
 
@@ -347,47 +351,38 @@ body:has(#chat-header) #theme-toggle {
     content-visibility: auto;
     contain-intrinsic-size: 96px;
 
-    /* Better mobile spacing */
     @media (max-width: 640px) {
       @apply max-w-[96%];
     }
 
-    /* Base message bubble style */
     & .message-bubble {
       @apply px-4 py-3 rounded-2xl bg-his-chat-bg/40 break-words relative mb-1 transition-colors duration-300;
 
-      /* Better mobile touch targets */
       @media (max-width: 640px) {
         @apply px-3 py-2 text-[0.9rem];
       }
     }
 
-    /* Current message highlighting */
     &.message-current .message-bubble {
       @apply bg-his-green/10 border border-his-green/20;
     }
 
-    /* Hide speaker name in consecutive messages */
     &.hide-speaker .message-bubble strong {
       @apply hidden;
     }
 
-    /* Consecutive message styles */
     &.consecutive .message-bubble {
       @apply mb-0 mt-[1px];
     }
 
-    /* First message in a group */
     &.consecutive-start .message-bubble {
       @apply rounded-t-2xl rounded-b-none;
     }
 
-    /* Middle messages in a group */
     &.consecutive:not(.consecutive-start):not(.consecutive-end) .message-bubble {
       @apply rounded-none py-1.5;
     }
 
-    /* Last message in a group */
     &.consecutive-end .message-bubble {
       @apply rounded-b-2xl rounded-t-none mb-3;
     }
@@ -408,16 +403,12 @@ body:has(#chat-header) #theme-toggle {
       @apply underline decoration-his-green/30 underline-offset-2 hover:decoration-his-green transition-colors;
     }
 
-    /* Better text spacing and readability */
     @apply leading-relaxed;
-
-    /* Enable text selection */
     user-select: text;
     -webkit-user-select: text;
     -moz-user-select: text;
   }
 
-  /* Speaker name styling improvements */
   .message-sent .message-bubble strong {
     @apply text-his-green;
   }
@@ -430,14 +421,14 @@ body:has(#chat-header) #theme-toggle {
     color: var(--color-flexoki-cyan-400);
   }
 
+  /* RTL: use inset-inline-end instead of right */
   .message-time {
-    @apply text-xs text-gray-100 opacity-0 absolute top-1 right-2 font-mono transition-all duration-200 cursor-pointer select-none z-10 bg-gray-800/90 px-1.5 py-0.5 rounded;
+    @apply text-xs text-gray-100 opacity-0 absolute top-1 inset-inline-end-2 font-mono transition-all duration-200 cursor-pointer select-none z-10 bg-gray-800/90 px-1.5 py-0.5 rounded;
 
     &:hover {
       @apply text-his-green;
     }
 
-    /* Hide timestamps on mobile */
     @media (max-width: 768px) {
       @apply hidden;
     }
@@ -447,8 +438,6 @@ body:has(#chat-header) #theme-toggle {
     @apply opacity-100;
   }
 
-
-  /* Right-aligned messages (sent & system) */
   .message-sent,
   .message-system {
     @apply ml-auto;
@@ -466,7 +455,6 @@ body:has(#chat-header) #theme-toggle {
     @apply bg-his-chat-default;
   }
 
-  /* Left-aligned messages (received) */
   .message-received {
     @apply mr-auto;
 
@@ -475,7 +463,6 @@ body:has(#chat-header) #theme-toggle {
     }
   }
 
-  /* Adjust consecutive message styling */
   .message.consecutive {
     & .message-bubble::before {
       @apply rounded-none;
@@ -547,7 +534,6 @@ body:has(#chat-header) #theme-toggle {
   pointer-events: auto;
 }
 
-/* Input row at top of modal */
 .search-input-row {
   display: flex;
   align-items: center;
@@ -591,7 +577,6 @@ body:has(#chat-header) #theme-toggle {
   flex-shrink: 0;
 }
 
-/* Results area */
 .search-results-area {
   flex: 1;
   overflow-y: auto;
@@ -634,7 +619,6 @@ body:has(#chat-header) #theme-toggle {
   color: var(--color-his-text-tertiary);
 }
 
-/* Splash screen for empty search state */
 .search-splash {
   padding: 2.5rem 1.5rem;
   text-align: center;
@@ -683,7 +667,6 @@ body:has(#chat-header) #theme-toggle {
   font-style: normal;
 }
 
-/* Loading state with spinner */
 .search-loading {
   padding: 2rem 1rem;
   display: flex;
@@ -709,7 +692,6 @@ body:has(#chat-header) #theme-toggle {
   }
 }
 
-/* Episode group container */
 .search-episode-group {
   border-bottom: 1px solid var(--color-his-hr);
 }
@@ -745,7 +727,6 @@ body:has(#chat-header) #theme-toggle {
   color: var(--color-his-text-tertiary);
 }
 
-/* Matches container - flex for individual match items */
 .search-episode-matches {
   display: flex;
   flex-direction: column;
@@ -791,7 +772,6 @@ body:has(#chat-header) #theme-toggle {
   flex: 1;
 }
 
-/* Legacy styles - can remove if not needed */
 .search-result-meta {
   display: none;
 }
@@ -833,36 +813,32 @@ body:has(#chat-header) #theme-toggle {
     opacity: 0;
     transform: translateY(8px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Flash animation for message deep-linking */
 .message.highlight-flash {
   animation: message-highlight 1.5s ease-out;
 }
 
 @keyframes message-highlight {
-
   0%,
   30% {
     background: color-mix(in oklab, var(--color-his-green) 25%, transparent);
     box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-his-green) 15%, transparent);
   }
-
   100% {
     background: transparent;
     box-shadow: none;
   }
 }
 
-/* Inline play button for highlighted messages */
+/* RTL: use inset-inline-end instead of right, and adjust SVG margin if needed */
 .msg-play-btn {
   position: absolute;
-  right: -2.5rem;
+  inset-inline-end: -2.5rem;
   top: 50%;
   transform: translateY(-50%);
   width: 2rem;
@@ -889,8 +865,7 @@ body:has(#chat-header) #theme-toggle {
 .msg-play-btn svg {
   width: 1rem;
   height: 1rem;
-  margin-left: 2px;
-  /* Optical centering for play triangle */
+  margin-inline-start: 2px; /* Optical centering for play triangle – adjusts for RTL */
 }
 
 .msg-play-btn.fade-out {
@@ -902,7 +877,6 @@ body:has(#chat-header) #theme-toggle {
     opacity: 0;
     transform: translateY(-50%) scale(0.8);
   }
-
   to {
     opacity: 1;
     transform: translateY(-50%) scale(1);
@@ -914,33 +888,28 @@ body:has(#chat-header) #theme-toggle {
     opacity: 1;
     transform: translateY(-50%) scale(1);
   }
-
   to {
     opacity: 0;
     transform: translateY(-50%) scale(0.8);
   }
 }
 
-/* Reference blockquote highlight animation */
 .ref-highlight {
   animation: ref-flash 1.5s ease-out;
 }
 
 @keyframes ref-flash {
-
   0%,
   30% {
     background: color-mix(in oklab, var(--color-his-green) 20%, transparent);
     box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-his-green) 15%, transparent);
   }
-
   100% {
     background: transparent;
     box-shadow: none;
   }
 }
 
-/* Reference blocks in transcript */
 .reference-block {
   scroll-margin-top: 80px;
 }
@@ -1034,33 +1003,28 @@ body:has(#chat-header) #theme-toggle {
 
 #home-brand .brand-taglines p:nth-child(1) {
   max-width: 22rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 #home-brand .brand-taglines p:nth-child(2) {
   max-width: 18rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 #home-brand .brand-taglines p:nth-child(3) {
   max-width: 15rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 #home-brand .brand-taglines p:nth-child(4) {
   max-width: 12rem;
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 #home-brand .brand-meta {
   margin-top: 0.28rem;
   width: min(16rem, 84%);
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
 }
 
 #home-brand .brand-meta > * {
@@ -1166,7 +1130,6 @@ body:has(#chat-header) #theme-toggle {
   width: 100%;
 }
 
-
 @media (min-width: 1200px) {
   .home-root {
     display: grid;
@@ -1182,15 +1145,16 @@ body:has(#chat-header) #theme-toggle {
     margin: 0;
   }
 
+  /* RTL: use inset-inline-start instead of left */
   #home-brand .brand-inner {
     position: fixed;
     top: 50%;
-    left: max(1.25rem, calc((100vw - 78rem) / 2 + 1.25rem));
+    inset-inline-start: max(1.25rem, calc((100vw - 78rem) / 2 + 1.25rem));
     transform: translateY(-50%);
     width: min(30rem, 30vw);
     max-height: none;
     overflow: visible;
-    padding-right: 0;
+    padding-inline-end: 0;
   }
 
   #home-brand .brand-cover {
@@ -1463,7 +1427,7 @@ body:has(#chat-header) #theme-toggle {
 .convo-open-indicator {
   position: absolute;
   top: 0.38rem;
-  right: 0.48rem;
+  inset-inline-end: 0.48rem;
   font-size: 0.68rem;
   line-height: 1;
   color: var(--color-his-text-tertiary);
@@ -1515,7 +1479,7 @@ body:has(#chat-header) #theme-toggle {
   content: "?";
   position: absolute;
   top: -1rem;
-  right: 0;
+  inset-inline-end: 0;
   font-size: min(24rem, 44vw);
   font-weight: 700;
   color: var(--color-his-hr);
@@ -1536,8 +1500,9 @@ body:has(#chat-header) #theme-toggle {
   color: var(--color-his-green);
 }
 
+/* RTL: use text-align: start/end instead of left/right */
 .question-item:nth-child(3n+1) {
-  text-align: left;
+  text-align: start;
 }
 
 .question-item:nth-child(3n+2) {
@@ -1545,7 +1510,7 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .question-item:nth-child(3n+3) {
-  text-align: right;
+  text-align: end;
 }
 
 .question-item[data-len="short"] .question-text {
@@ -1566,7 +1531,7 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .question-item:nth-child(3n+3)[data-len="long"] .question-text {
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .question-text {
@@ -1640,11 +1605,11 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .loop-item:nth-child(odd) {
-  text-align: left;
+  text-align: start;
 }
 
 .loop-item:nth-child(even) {
-  text-align: right;
+  text-align: end;
 }
 
 .loop-text {
@@ -1699,7 +1664,7 @@ body:has(#chat-header) #theme-toggle {
 .lexicon-row-episodes {
   font-size: 0.78rem;
   color: var(--color-his-text-tertiary);
-  text-align: right;
+  text-align: end;
 }
 
 .lexicon-row-episodes a {
@@ -1723,7 +1688,6 @@ body:has(#chat-header) #theme-toggle {
 [data-collapsed="true"] > .assertion-item:nth-child(n + 6) { display: none; }
 [data-collapsed="true"] > .loop-item:nth-child(n + 6) { display: none; }
 [data-collapsed="true"] > .lexicon-row:nth-child(n + 16) { display: none; }
-
 
 .lab-show-more {
   display: flex;
