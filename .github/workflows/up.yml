@@ -1,4 +1,4 @@
-name: Sync upstream (keep my podcast, take upstream for rest)
+name: Sync upstream (keep podcast & README)
 
 on:
   schedule:
@@ -30,44 +30,56 @@ jobs:
       - name: Fetch upstream
         run: git fetch upstream main
 
-      - name: Create branch and merge upstream (prefer upstream on conflicts)
+      - name: Prepare branch with upstream merge
         run: |
-          # Delete existing remote branch (if any)
-          git push origin --delete sync/upstream || true
+          BRANCH="sync/upstream"
 
-          # Start from your main
-          git checkout main
-          git checkout -b sync/upstream
+          # Delete local branch if it exists
+          git branch -D $BRANCH || true
 
-          # Merge upstream, auto-resolve conflicts in favour of upstream
+          # Create new branch from main
+          git checkout -b $BRANCH main
+
+          # Merge upstream, auto-resolve conflicts in favour of upstream (no commit yet)
           git merge upstream/main --allow-unrelated-histories -X theirs --no-commit --no-ff || true
 
-          # Remove upstream's podcast folder (if present)
+          # Remove any upstream podcast folder
           git rm -rf src/content/podcast || true
 
-          # Now restore YOUR podcast folder from main
+          # Restore YOUR podcast folder from main
           git checkout main -- src/content/podcast
           git add src/content/podcast
 
-          # Keep README.md from main (overwrite any upstream changes)
+          # Keep YOUR README.md from main
           git checkout main -- README.md
           git add README.md
 
-          # Commit the merge (if there were changes, otherwise dummy commit)
-          if ! git diff --cached --quiet; then
-            git commit -m "Merge upstream/main (auto-resolved; podcast and README kept from main)"
-          else
-            git commit --allow-empty -m "Dummy commit – no changes from upstream"
-          fi
+          # Now the working tree has the combined state.
+          # The next action will commit and create/update a PR only if there is a diff.
 
-          # Push the branch
-          git push -u origin sync/upstream --force
+      - name: Create or Update Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.MERGE_TOKEN }}
+          branch: sync/upstream
+          base: main
+          force: true                                  # overwrite existing remote branch
+          delete-branch: false                         # keep the branch after merge
+          commit-message: "Sync upstream (auto-resolved, kept podcast & README)"
+          title: "Sync upstream (keep my podcast & README)"
+          body: |
+            This PR merges the latest upstream changes into your `main` branch.
 
-      - name: Create Pull Request
+            - All conflicts are **auto‑resolved** by taking the upstream version.
+            - Your **`src/content/podcast`** folder is **kept exactly as in `main`**.
+            - Your **`README.md`** is **kept exactly as in `main`**.
+
+            Review the diff and merge if everything looks good.
+
+      - name: Log result
         run: |
-          gh pr create --base main --head sync/upstream \
-            --title "Sync upstream (keep my podcast & README)" \
-            --body "This PR merges upstream changes while:\n- Auto‑resolving conflicts by taking upstream version (except podcast & README)\n- Keeping your **own** `src/content/podcast` folder (from main)\n- Keeping your `README.md` (from main)\n\nReview and merge." \
-            --force || echo "PR already exists"
-        env:
-          GITHUB_TOKEN: ${{ secrets.MERGE_TOKEN }}
+          if [[ "${{ steps.pr.outputs.pull-request-number }}" != "" ]]; then
+            echo "✅ Pull request #${{ steps.pr.outputs.pull-request-number }} created/updated."
+          else
+            echo "ℹ️ No changes detected – no pull request needed."
+          fi
