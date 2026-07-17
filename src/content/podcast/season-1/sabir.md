@@ -6,6 +6,9 @@ time: "21"
 description: میرزا علی اکبر صابردن دانیشیرام و اونون بعضی گوزل شعرلرینی اوخورام.
 episodeLink: https://s3.castbox.fm/ca/61/0e/251a584a3b815749d6b4daffa6.mp3
 embedUrl: https://podcasters.spotify.com/pod/show/pisikyolu/episodes/11-City-as-Liturgy-Bonus-e2su9hg
+video:
+  url: "https://youtu.be/_kYGYjlfIuo?si=eYoFIhaJ_cnjdNgy"
+  offsetSeconds: 00
 sidebar:
   order: 4
 speakers:
