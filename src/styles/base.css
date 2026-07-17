@@ -506,7 +506,7 @@ body:has(#chat-header) #theme-toggle {
 .search-backdrop {
   position: fixed;
   inset: 0;
-  background: #a68adf;
+  background: oklch(0.15 0 0 / 0.85);
   z-index: 999;
   opacity: 0;
   pointer-events: none;
