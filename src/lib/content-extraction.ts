@@ -177,13 +177,14 @@ export function deriveTopics(
 
 // ── Question Extraction ────────────────────────────────────
 
-/** Returns question from the first description sentence when it ends with ? */
+/** Returns question from the first description sentence when it ends with ? or ؟ */
 export function extractQuestions(
   slug: string,
   episodeTitle: string,
   description: string,
 ): EpisodeQuestion[] {
-  const descMatch = description.match(/^(.+?\?)\s/);
+  // Match both Latin (?) and Persian (؟) question marks
+  const descMatch = description.match(/^(.+?[?؟])\s/);
   if (descMatch) {
     return [{ question: descMatch[1], slug, episodeTitle, source: "description" }];
   }
