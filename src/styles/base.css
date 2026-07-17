@@ -1515,7 +1515,7 @@ body:has(#chat-header) #theme-toggle {
   content: "?";
   position: absolute;
   top: -1rem;
-  right: 0;
+  inset-inline-end: 0;
   font-size: min(24rem, 44vw);
   font-weight: 700;
   color: var(--color-his-hr);
@@ -1537,7 +1537,7 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .question-item:nth-child(3n+1) {
-  text-align: left;
+  text-align: start;
 }
 
 .question-item:nth-child(3n+2) {
@@ -1545,7 +1545,7 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .question-item:nth-child(3n+3) {
-  text-align: right;
+  text-align: end;
 }
 
 .question-item[data-len="short"] .question-text {
@@ -1566,7 +1566,7 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .question-item:nth-child(3n+3)[data-len="long"] .question-text {
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .question-text {
@@ -1640,11 +1640,11 @@ body:has(#chat-header) #theme-toggle {
 }
 
 .loop-item:nth-child(odd) {
-  text-align: left;
+  text-align: start;
 }
 
 .loop-item:nth-child(even) {
-  text-align: right;
+  text-align: end;
 }
 
 .loop-text {
@@ -1699,7 +1699,7 @@ body:has(#chat-header) #theme-toggle {
 .lexicon-row-episodes {
   font-size: 0.78rem;
   color: var(--color-his-text-tertiary);
-  text-align: right;
+  text-align: end;
 }
 
 .lexicon-row-episodes a {
