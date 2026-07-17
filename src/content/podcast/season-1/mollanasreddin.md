@@ -6,6 +6,9 @@ time: "26"
 description: "ملانصرالدین مجله‌سی (1906-1933) اسلام دونیاسیندا، زمانیندا (و حتی شاید ایندی)، بدیلی اولمیان ترکی مصور مجله ایدی. منابع: ملانصرالدین مجله‌سی (میرزا جلیل et al.)    Molla Nasreddin: The Magazine That Would’ve, Could’ve, Should’ve. by Slavs and Tatars."
 episodeLink: https://s3.castbox.fm/2d/0a/93/72e0af4ded83ab5949b18e3d89.mp3
 embedUrl: https://podcasters.spotify.com/pod/show/pisikyolu/episodes/11-City-as-Liturgy-Bonus-e2su9hg
+video:
+  url: "https://youtu.be/zLaic_-ovSY?si=iYDGPy0hIDdZ7MLK"
+  offsetSeconds: 00
 sidebar:
   order: 1
 speakers:
