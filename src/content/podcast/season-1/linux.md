@@ -15,7 +15,7 @@ speakers:
   Henry: other
   Nadia: right
   Timothy: left
-  - text: "To be in a relationship is actually to be inefficient."
+- text: "To be in a relationship is actually to be inefficient."
     speaker: "Henry"
     timestamp: "30:56"
     topic: "Time & Memory"
