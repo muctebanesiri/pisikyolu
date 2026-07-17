@@ -6,6 +6,9 @@ time: "19"
 description: "بو بولومده روتا گوره دانیشاجام. اگر لینوکس ایشلدیبسیز بیلیسیز کی لینوکسدا سوپریوزر یا روت اکسس دیه بی حالت وار کی اوندا دا سیز تقریبا هر ایش گوره بیلرسیز: سیستم فایلاری اوخویوب دییشماخ، یا هر فایلی اوخویوب یازماخ اولار."
 episodeLink: https://s3.castbox.fm/64/87/9a/2c106742939bdf856ae14cafee.mp3
 embedUrl: https://podcasters.spotify.com/pod/show/pisikyolu/episodes/11-City-as-Liturgy-Bonus-e2su9hg
+video:
+  url: "https://youtu.be/bsLl1CIsqfU?si=sEBugPr7ibvmBKQz"
+  offsetSeconds: 00
 sidebar:
   order: 2
 speakers:
