@@ -20,7 +20,7 @@ const allExcerpts = episodes.flatMap((ep) =>
 const previewExcerpts = allExcerpts.slice(0, 6);
 ---
 
-<HomeContentLayout activeLayout="B" title="گزیده‌ها" description="گزیده‌هایی از اپیزودهای پادکست پیشیک‌یولو." episodeData={episodeData}>
+<HomeContentLayout activeLayout="B" title="سئچیلمیشلر" description=" پیشیک یولو پادکستیندن سئچیلمیشلر" episodeData={episodeData}>
   <section aria-label="گزیده‌ها">
     <div id="home-dialogue">
       <div class="convo-flow">
@@ -45,7 +45,7 @@ const previewExcerpts = allExcerpts.slice(0, 6);
       </div>
       {allExcerpts.length > 6 && (
         <a href="/quotes" class="lab-show-more w-fit no-underline">
-          نمایش {toPersianDigits(allExcerpts.length - 6)} مورد دیگر
+          دیگرلرین {toPersianDigits(allExcerpts.length - 6)} گوستر
         </a>
       )}
     </div>
