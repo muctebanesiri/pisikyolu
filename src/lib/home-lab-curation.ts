@@ -24,7 +24,7 @@ export interface EpisodeLabCuration {
 // Add entries episode-by-episode as you read transcripts.
 export const HOME_LAB_CURATION: EpisodeLabCuration[] = [
   {
-    slug: "totems",
+    slug: "linux",
     assertion: {
       at: 1539,
       text: "واژه‌ها توتم‌هایی‌اند. اگر ریشه‌شناسی را بدانی. اگر نه، فقط به بالای توتم نگاه می‌کنی.",
@@ -40,7 +40,7 @@ export const HOME_LAB_CURATION: EpisodeLabCuration[] = [
     ],
   },
   {
-    slug: "snow",
+    slug: "ffmpeg",
     assertion: {
       at: 3343,
       text: "در این عصر هوش مصنوعی، تنها چیزی که داریم، تجربه‌های منحصربه‌فرد خودمان است.",
