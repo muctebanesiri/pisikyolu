@@ -28,7 +28,7 @@ body:has(#chat-header) #theme-toggle {
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 
   /* Colors */
-  --color-his-green: oklch(0.88 0.12 142.49);
+  --color-his-green: #a68adf;
   --color-his-bg: var(--color-flexoki-dark-bg);
   --color-his-text: var(--color-flexoki-paper);
   --color-his-text-secondary: var(--color-flexoki-base-200);
