@@ -6,6 +6,9 @@ time: "91"
 description: سربازلیخ نجور باشلار و نجور قوتولار و کسری نجور آلماق اولار؟ بو ائیزوددا عجبشیردن، آموزشی‌دن و یگاندان دانیشیرام. 
 episodeLink: https://s3.castbox.fm/e0/7d/ad/eab52b41e7b2799600d4fee8d7.mp3
 embedUrl: https://podcasters.spotify.com/pod/show/pisikyolu/episodes/11-City-as-Liturgy-Bonus-e2su9hg
+video:
+  url: "https://youtu.be/H8iUvIrJv2w?si=JCWkXhVYE27nLMKH"
+  offsetSeconds: 00
 sidebar:
   order: 3
 speakers:
