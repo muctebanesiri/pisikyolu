@@ -1,5 +1,5 @@
 ---
-title: FFmpeg (مجتبی نصیری)
+title: ففمپگ (مجتبی نصیری)
 season: 1
 date: 2026-05-02
 time: "31"
