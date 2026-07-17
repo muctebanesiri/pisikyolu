@@ -234,7 +234,7 @@ body:has(#chat-header) #theme-toggle {
     --color-his-hover: var(--color-flexoki-base-100);
     --color-his-active: var(--color-flexoki-base-200);
     /* Lighter active state for light mode */
-    --color-his-green: oklch(0.45 0.12 142.49);
+    --color-his-green: #a68adf;
     --color-his-chat-bg: var(--color-flexoki-base-50);
   }
 
@@ -506,7 +506,7 @@ body:has(#chat-header) #theme-toggle {
 .search-backdrop {
   position: fixed;
   inset: 0;
-  background: oklch(0.15 0 0 / 0.85);
+  background: #a68adf;
   z-index: 999;
   opacity: 0;
   pointer-events: none;
