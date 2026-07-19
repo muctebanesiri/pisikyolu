@@ -32,12 +32,20 @@ interface SearchSession {
 }
 
 /**
+ * Extract plain text from an HTML snippet.
+ */
+function stripHtmlToText(html: string): string {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.documentElement.textContent ?? '';
+}
+
+/**
  * Extract the first timestamp [MM:SS] from an HTML excerpt and convert to seconds.
  * This allows us to construct precise #msg-{seconds} anchors even when indexing by bucket.
  */
 function extractTimestampSeconds(excerpt: string): number | null {
     // Pagefind may wrap matches in <mark>, so we need to strip HTML first
-    const textOnly = excerpt.replace(/<[^>]*>/g, '');
+    const textOnly = stripHtmlToText(excerpt);
 
     // Look for patterns like [00:31] or [1:05:30]
     const timestampMatch = textOnly.match(/\[(\d{1,2}):(\d{2})(?::(\d{2}))?\]/);
@@ -55,7 +63,7 @@ function extractTimestampSeconds(excerpt: string): number | null {
 function extractTimestampFromRawContent(result: PagefindData): number | null {
     if (!result.raw_content) return null;
 
-    const plainExcerpt = result.plain_excerpt ?? result.excerpt.replace(/<[^>]*>/g, '');
+    const plainExcerpt = result.plain_excerpt ?? stripHtmlToText(result.excerpt);
     if (!plainExcerpt) return null;
 
     const excerptIndex = result.raw_content.indexOf(plainExcerpt);
