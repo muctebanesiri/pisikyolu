@@ -35,7 +35,7 @@ export const HOME_LAB_CURATION: EpisodeLabCuration[] = [
     },
     openLoop: {
       at: 1029,
-      text: "ما حتی کووید را هم درست سوگ‌وگار نگرفتیم، فقط تمام شد، اما کسی نگفت که تمام شده. آیین‌های ما چه شدند؟",
+      text: "",
     },
     lexicon: [
       { term: "GNU", anchors: [622] },
