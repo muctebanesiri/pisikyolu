@@ -24,7 +24,7 @@
   "dependencies": {
     "@astrojs/check": "^0.9.9",
     "@astrojs/preact": "^5.1.2",
-    "astro": "^6.1.10",
+    "astro": "^6.4.6",
     "gray-matter": "^4.0.3",
     "pagefind": "^1.5.2",
     "preact": "^10.29.1",
