@@ -1,43 +1,20 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
 version: 2
 updates:
-  # Enable version updates for npm (Node.js) dependencies
-  - package-ecosystem: "npm"          # ✅ fixed: was "test"
-    directory: "/"                    # Location of package manifests (root folder)
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
-      interval: "weekly"              # Check for updates every week
-    # Optional: group related dependencies to reduce PR noise
-    groups:
-      astro:
-        patterns:
-          - "astro"
-          - "@astrojs/*"
-      tailwind:
-        patterns:
-          - "tailwindcss"
-          - "@tailwindcss/*"
-      preact:
-        patterns:
-          - "preact"
-          - "@preact/*"
-      typescript:
-        patterns:
-          - "typescript"
-          - "@types/*"
-    # Optional: assign labels to Dependabot PRs
-    labels:
-      - "dependencies"
-      - "npm"
-    # Optional: set a custom commit message prefix
+      interval: "weekly"
+    # Prevent pnpm detection by ignoring lockfiles we don't use
+    ignore:
+      - dependency-name: "pnpm"
+        versions: ["*"]
     commit-message:
       prefix: "build(deps)"
       prefix-development: "build(deps-dev)"
+    labels:
+      - "dependencies"
+      - "npm"
 
-  # Also keep GitHub Actions up to date
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
