@@ -16,7 +16,7 @@ speakers:
   وحید: right
   محمد: left
 quotes:
-  - text: "GNU project و Linux Kernal بیرلشیب و دنیانبن لاپ خفن OS وجودا گلدی"
+  - text: "GNU project و Linux Kernal بیرلشیب و دنیانین لاپ خفن OS وجودا گلدی"
     speaker: "مچتبی"
     timestamp: "30:21"
     topic: "Knowledge & Embodiment"
