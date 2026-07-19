@@ -31,7 +31,7 @@ export const HOME_LAB_CURATION: EpisodeLabCuration[] = [
     },
     assertion: {
       at: 522,
-      text: "GNU project و Linux Kernal بیرلشیب و دنیانبن لاپ خفن OS وجودا گلدی",
+      text: "GNU project و Linux Kernal بیرلشیب و دنیانین لاپ خفن OS وجودا گلدی",
     },
     openLoop: {
       at: 1029,
