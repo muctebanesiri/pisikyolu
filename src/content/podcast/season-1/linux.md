@@ -12,16 +12,16 @@ video:
 sidebar:
   order: 5
 speakers:
-  Henry: other
-  Nadia: right
-  Timothy: left
+  مجتبی: other
+  وحید: right
+  محمد: left
 quotes:
   - text: "You can spend your whole life, you can go to a seminary and study about God, you can read about God, you can listen to podcasts about God, you can talk about it. And yet in the end, you might not actually know him at all, because you turned it into this kind of game where there's a number attached to it."
-    speaker: "Henry"
+    speaker: "مچتبی"
     timestamp: "30:21"
     topic: "Knowledge & Embodiment"
   - text: "To be in a relationship is actually to be inefficient."
-    speaker: "Henry"
+    speaker: "مجتبی"
     timestamp: "30:56"
     topic: "Time & Memory"
 draft: false
