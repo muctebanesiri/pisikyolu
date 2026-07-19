@@ -53,7 +53,7 @@ export const HOME_LAB_CURATION: EpisodeLabCuration[] = [
       { term: "پهنای باند زمانی", anchors: [4478] },
       { term: "وو-وی", anchors: [2754] },
       { term: "پیش‌زمینه-پس‌زمینه", anchors: [3844] },
-    ],
+    ]
 
 export const HOME_LAB_CURATION_BY_SLUG = new Map(
   HOME_LAB_CURATION.map((entry) => [entry.slug, entry]),
