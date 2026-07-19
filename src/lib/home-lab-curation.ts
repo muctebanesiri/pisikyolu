@@ -27,7 +27,7 @@ export const HOME_LAB_CURATION: EpisodeLabCuration[] = [
     slug: "linux",
     assertion: {
       at: 1539,
-      text: "واژه‌ها توتم‌هایی‌اند. اگر ریشه‌شناسی را بدانی. اگر نه، فقط به بالای توتم نگاه می‌کنی.",
+      text: "GPL لایسنسی ویروس کیمی بیر شئ دی",
     },
     openLoop: {
       at: 1029,
