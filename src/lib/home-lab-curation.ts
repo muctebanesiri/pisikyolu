@@ -29,6 +29,10 @@ export const HOME_LAB_CURATION: EpisodeLabCuration[] = [
       at: 322,
       text: "GPL لایسنسی ویروس کیمی بیر شئ دی",
     },
+    assertion: {
+      at: 522,
+      text: "GNU project و Linux Kernal بیرلشیب و دنیانبن لاپ خفن OS وجودا گلیب",
+    },
     openLoop: {
       at: 1029,
       text: "ما حتی کووید را هم درست سوگ‌وگار نگرفتیم، فقط تمام شد، اما کسی نگفت که تمام شده. آیین‌های ما چه شدند؟",
