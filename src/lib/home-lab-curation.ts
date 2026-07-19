@@ -26,7 +26,7 @@ export const HOME_LAB_CURATION: EpisodeLabCuration[] = [
   {
     slug: "linux",
     assertion: {
-      at: 1539,
+      at: 322,
       text: "GPL لایسنسی ویروس کیمی بیر شئ دی",
     },
     openLoop: {
