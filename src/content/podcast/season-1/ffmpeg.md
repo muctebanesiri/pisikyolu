@@ -13,15 +13,6 @@ sidebar:
   order: 6
 speakers:
   مجتبی: right
-quotes:
-  - text: "Being firm allows you to not have that pent up aggression and be kinder overall."
-    speaker: "Stephanie"
-    timestamp: "16:07"
-    topic: "Community & Belonging"
-  - text: "Boundaries are always most compassionate if set early."
-    speaker: "Stephanie"
-    timestamp: "44:23"
-    topic: "Faith & Practice"
 draft: false
 ---
 
