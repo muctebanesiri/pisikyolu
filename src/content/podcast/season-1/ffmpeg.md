@@ -11,8 +11,6 @@ video:
   offsetSeconds: 00
 sidebar:
   order: 6
-speakers:
-  مجتبی: right
 draft: false
 ---
 
