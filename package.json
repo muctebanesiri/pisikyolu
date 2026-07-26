@@ -36,6 +36,6 @@
     "@types/mdast": "^4.0.4",
     "@types/unist": "^3.0.3",
     "sharp": "^0.34.5",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   }
 }
