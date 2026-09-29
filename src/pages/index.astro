@@ -1,130 +1,285 @@
 ---
 import HomeContentLayout from "@/layouts/HomeContentLayout.astro";
-import { formatEpisodeDate } from "@/lib/dates";
 import { getEpisodeData } from "@/lib/episodes";
+import { HOME_MOMENTS, formatMomentTime } from "@/lib/home-moments";
 
 const episodeData = await getEpisodeData();
-const { archiveGroups } = episodeData;
+const episodesBySlug = new Map(episodeData.episodes.map((episode) => [episode.slug, episode]));
+const conversations = HOME_MOMENTS.filter((moment) => moment.context);
+const moments = conversations.toSorted((a, b) => {
+  const episodeA = episodesBySlug.get(a.slug);
+  const episodeB = episodesBySlug.get(b.slug);
+  return (episodeB?.data.date.getTime() ?? 0) - (episodeA?.data.date.getTime() ?? 0)
+    || (episodeB?.epNumber ?? 0) - (episodeA?.epNumber ?? 0);
+}).map((moment) => ({
+  ...moment,
+  episodeTitle: episodesBySlug.get(moment.slug)?.episodeTitle ?? moment.slug,
+  time: formatMomentTime(moment.seconds),
+}));
+const initialSlots = moments.map((_, index) =>
+  index === 0 ? "focus" : index === 1 ? "up-next" : index === moments.length - 1 ? "previous" : undefined
+);
 ---
 
-<HomeContentLayout activeLayout="A" title="All Episodes" description="Browse every Hope in Source episode by season." episodeData={episodeData}>
-  <section id="home-archive" aria-label="Episodes by season">
-    <div class="space-y-7 sm:space-y-8">
-      {archiveGroups.map((group) => {
-        const seasonEpisodes = group.episodes;
-        return (
-          <details
-            id={`home-season-${group.id}`}
-            class="season-block"
-            open
+<HomeContentLayout page="home">
+  <section id="home-moments" aria-label="Moments from Hope in Source conversations">
+    {moments.map((moment, index) => (
+      <div
+        class="home-moment"
+        data-moment
+        data-title={moment.episodeTitle}
+        data-slot={initialSlots[index]}
+        hidden={!initialSlots[index]}
+      >
+        <button
+          class:list={["home-moment-preview", "message", moment.side === "sent" ? "message-sent" : "message-received"]}
+          type="button"
+          data-preview
+          aria-label={`Show conversation from ${moment.episodeTitle}`}
+        >
+          <span class="home-moment-teaser-label"><span data-teaser-direction>{index === 1 ? "Up next" : "Previous"}</span> <span aria-hidden="true">·</span> {moment.episodeTitle}</span>
+          <span class="message-speaker"><strong>{moment.speaker}</strong></span>
+          <span class="message-bubble">{moment.preview ?? moment.text}<span class="message-time">{moment.time}</span></span>
+        </button>
+        <div class="home-moment-progress" aria-hidden="true">
+          <span class="home-progress-track"><span class="home-progress-fill" data-progress-fill></span></span>
+          <span class="home-progress-count">{String(index + 1).padStart(2, "0")} / {String(moments.length).padStart(2, "0")}</span>
+        </div>
+        {moment.context && (
+          <a
+            class:list={["home-moment-context", "message", moment.context.before.side === "sent" ? "message-sent" : "message-received"]}
+            href={`/${moment.slug}#msg-${moment.context.before.seconds}`}
           >
-            <summary class="season-heading season-summary">
-              <h2 class="m-0 text-xl font-semibold tracking-wide text-his-green">{group.label}</h2>
-              <div class="season-summary-meta">
-                <span class="season-count">{seasonEpisodes.length}</span>
-                <span class="season-caret" aria-hidden="true">+</span>
-              </div>
-            </summary>
-
-            <div class="season-episodes divide-y divide-his-hr/30">
-              {seasonEpisodes.map((episode) => (
-                <article
-                  class="episode-card group rounded-lg px-3 py-3 transition-colors duration-200 hover:bg-his-hover/20 sm:px-4"
-                  title={formatEpisodeDate(episode.data.date)}
-                >
-                  <a href={`/${episode.slug}`} class="block">
-                    <h3 class="card-title min-w-0 text-lg font-medium leading-snug transition-colors group-hover:text-his-green">
-                      {episode.episodeTitle}
-                      <span class="ep-badge ml-1.5 align-middle">
-                        {episode.epNumber}
-                      </span>
-                    </h3>
-
-                    <div class="card-meta mt-0.5 flex flex-wrap items-center gap-x-2 text-sm text-his-text-tertiary md:flex-nowrap">
-                      {episode.guestDisplays.length > 0 && (
-                        <>
-                          <span class="text-his-text-secondary">
-                            {episode.guestDisplays.map((g, i) => (
-                              <>
-                                {i > 0 && ", "}
-                                {g.name}
-                                {g.count > 1 && (
-                                  <sup class="ml-0.5 text-[0.65em] font-normal text-his-green/50">&times;{g.count}</sup>
-                                )}
-                              </>
-                            ))}
-                          </span>
-                          <span class="text-his-text-tertiary/50">&middot;</span>
-                        </>
-                      )}
-
-                      <span>
-                        {formatEpisodeDate(episode.data.date)}
-                      </span>
-
-                      {(episode.data.video?.url || episode.data.sauntercast || episode.data.time) && (
-                        <>
-                          <span class="text-his-text-tertiary/50">&middot;</span>
-                          <span class="inline-flex items-center gap-1.5">
-                            {episode.data.sauntercast && (
-                              <span
-                                class="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border border-his-green/40 bg-his-green/15 text-his-green"
-                                title="Sauntercast"
-                              >
-                                <svg class="h-2.5 w-2.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                  <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7" />
-                                </svg>
-                                <span class="sr-only">Sauntercast</span>
-                              </span>
-                            )}
-                            {episode.data.video?.url && (
-                              <span
-                                class="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full border border-his-green/40 bg-his-green/15 text-his-green"
-                                title="Video episode"
-                              >
-                                <svg class="h-2.5 w-2.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                  <path d="M8 5v14l11-7z" />
-                                </svg>
-                                <span class="sr-only">Video episode</span>
-                              </span>
-                            )}
-                            {episode.data.time && <span>{episode.data.time} min</span>}
-                          </span>
-                        </>
-                      )}
-                    </div>
-
-                    {(() => {
-                      const desc = episode.data.description;
-                      const match = desc.match(/^([^?]+\?)\s*(.*)$/);
-                      if (match) {
-                        const [, firstSentence, rest] = match;
-                        return (
-                          <div class="card-description">
-                            <p class="mt-1 line-clamp-2 text-sm font-medium leading-relaxed text-his-text">{firstSentence}</p>
-                            {rest && (
-                              <p class="mt-0.5 line-clamp-2 text-sm leading-relaxed text-his-text-secondary/80 transition-colors group-hover:text-his-text-secondary">
-                                {rest}
-                              </p>
-                            )}
-                          </div>
-                        );
-                      }
-                      return (
-                        <div class="card-description">
-                          <p class="mt-1 line-clamp-2 text-sm leading-relaxed text-his-text-secondary/80 transition-colors group-hover:text-his-text-secondary">
-                            {desc}
-                          </p>
-                        </div>
-                      );
-                    })()}
-                  </a>
-                </article>
-              ))}
-            </div>
-          </details>
-        );
-      })}
-    </div>
+            <span class="message-speaker"><strong>{moment.context.before.speaker}</strong></span>
+            <span class="message-bubble">{moment.context.before.text}<span class="message-time">{formatMomentTime(moment.context.before.seconds)}</span></span>
+          </a>
+        )}
+        <a
+          class:list={["home-moment-link", "message", moment.side === "sent" ? "message-sent" : "message-received", moment.context?.before.speaker === moment.speaker && "hide-speaker"]}
+          href={`/${moment.slug}#msg-${moment.seconds}`}
+          aria-label={`${moment.speaker} in ${moment.episodeTitle}: ${moment.text} At ${moment.time}.`}
+        >
+          <span class="message-speaker"><strong>{moment.speaker}</strong></span>
+          <span class="message-bubble"><span class="home-moment-text">{moment.text}</span><span class="message-time">{moment.time}</span></span>
+        </a>
+        {moment.context?.after && (
+          <a
+            class:list={["home-moment-context", "message", moment.context.after.side === "sent" ? "message-sent" : "message-received", moment.context.after.speaker === moment.speaker && "hide-speaker"]}
+            href={`/${moment.slug}#msg-${moment.context.after.seconds}`}
+          >
+            <span class="message-speaker"><strong>{moment.context.after.speaker}</strong></span>
+            <span class="message-bubble">{moment.context.after.text}<span class="message-time">{formatMomentTime(moment.context.after.seconds)}</span></span>
+          </a>
+        )}
+        <div class="home-moment-actions">
+          <div class="home-moment-transport" role="group" aria-label="Conversation controls">
+            <button type="button" data-previous aria-label="Previous conversation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+            <button type="button" data-pause aria-label="Pause automatic advance" aria-pressed="false">
+              <svg class="icon-pause" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6v12M15 6v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+              <svg class="icon-play" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 6 9 6-9 6V6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" /></svg>
+            </button>
+            <button type="button" data-next aria-label="Next conversation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m10 5 7 7-7 7m7-7H6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
+          </div>
+          <a class="home-moment-source" href={`/${moment.slug}#msg-${moment.seconds}`}>{moment.episodeTitle} <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    ))}
+    <span class="sr-only" aria-live="polite" data-status></span>
   </section>
+
+  <script src="../scripts/home-showcase.ts"></script>
 </HomeContentLayout>
+
+<style>
+  #home-moments {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    max-width: 52rem;
+    min-height: 40rem;
+    margin: 0 auto;
+    padding-block: 3rem;
+    overflow: hidden;
+  }
+
+  @media (min-width: 960px) {
+    #home-moments { min-height: max(40rem, calc(100svh - 5rem)); }
+  }
+
+  .home-moment {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    max-width: min(80%, 36rem);
+    margin: 0;
+    color: var(--color-his-text);
+  }
+
+  .home-moment[hidden] { display: none; }
+  .home-moment :is(.home-moment-link, .home-moment-context) { color: var(--color-his-text); text-decoration: none; }
+  .home-moment :is(.home-moment-link, .home-moment-context):hover { color: var(--color-his-text); }
+  .home-moment .message { max-width: 100%; }
+  .home-moment .message-bubble { font-size: 1rem; }
+
+  .home-moment-preview { display: none; }
+  .home-moment:not([data-slot="focus"]) .home-moment-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: inherit;
+    width: 100%;
+    min-height: 40px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .home-moment-teaser-label {
+    margin-bottom: 0.45rem;
+    color: var(--color-his-text-tertiary);
+    font-size: 0.68rem;
+    line-height: 1.35;
+  }
+  .home-moment:not([data-slot="focus"]) :is(.home-moment-link, .home-moment-context, .home-moment-actions, .home-moment-progress) { display: none; }
+  .home-moment-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+  .home-progress-track {
+    flex: 1;
+    height: 3px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: color-mix(in oklab, var(--color-his-green) 16%, var(--color-his-bg));
+  }
+  .home-progress-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--color-his-green);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  .home-progress-count {
+    color: var(--color-his-text-tertiary);
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .home-moment-context { display: none; }
+  .home-moment[data-slot="focus"] .home-moment-context {
+    display: flex;
+    max-width: 94%;
+  }
+  .home-moment[data-slot="focus"] .home-moment-context .message-bubble {
+    font-size: 0.94rem;
+  }
+  .home-moment[data-slot="focus"] .home-moment-link {
+    position: relative;
+    z-index: 1;
+    margin-block: 0.45rem;
+  }
+
+  .home-moment-actions { display: none; }
+  .home-moment[data-slot="focus"] .home-moment-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    width: 100%;
+    margin-top: 0.3rem;
+  }
+  .home-moment-source {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    color: var(--color-his-green);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    text-decoration: none;
+  }
+  .home-moment-source:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .home-moment-transport { display: flex; align-items: center; gap: 0.1rem; }
+  .home-moment-transport button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--color-his-text-secondary);
+    font: inherit;
+    cursor: pointer;
+  }
+  .home-moment-transport button:hover { color: var(--color-his-green); }
+  .home-moment-transport svg { width: 18px; height: 18px; }
+  .home-moment-transport .icon-play { display: none; }
+  #home-moments[data-user-paused="true"] .home-moment-transport .icon-pause { display: none; }
+  #home-moments[data-user-paused="true"] .home-moment-transport .icon-play { display: block; }
+
+  .home-moment[data-slot="focus"] {
+    position: relative;
+    z-index: 2;
+    width: min(36rem, 90%);
+    opacity: 1;
+  }
+  .home-moment:not([data-slot="focus"]) {
+    color: var(--color-his-text-tertiary);
+  }
+  .home-moment:not([data-slot="focus"]) .message-speaker,
+  .home-moment:not([data-slot="focus"]) .message-time {
+    color: var(--color-his-text-tertiary);
+  }
+  .home-moment:not([data-slot="focus"]) .message-bubble {
+    color: var(--color-his-text-tertiary);
+    background: color-mix(in oklab, var(--color-his-chat-bg) 24%, var(--color-his-bg));
+    font-size: 0.875rem;
+    transition: background-color 160ms ease, color 160ms ease;
+  }
+  .home-moment-preview:hover .message-bubble {
+    color: var(--color-his-text-secondary);
+    background: color-mix(in oklab, var(--color-his-chat-bg) 45%, var(--color-his-bg));
+  }
+
+  .home-moment[data-slot="previous"] {
+    top: 1%; left: 5%; max-width: 17rem;
+  }
+  .home-moment[data-slot="up-next"] {
+    bottom: 1%; right: 1%; max-width: 17rem;
+  }
+
+  @media (min-width: 960px) {
+    .home-moment[data-slot="previous"] { top: calc(50% - 20rem); }
+    .home-moment[data-slot="up-next"] { bottom: calc(50% - 20rem); }
+  }
+
+  .home-moment :is(.home-moment-link, .home-moment-context, .home-moment-preview):focus-visible { outline: none; }
+  .home-moment :is(.home-moment-link, .home-moment-context, .home-moment-preview):focus-visible .message-bubble {
+    box-shadow: inset 0 0 0 2px var(--color-his-green);
+  }
+  .home-moment :is(.home-moment-source, .home-moment-transport button):focus-visible {
+    outline: 2px solid var(--color-his-green);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 767px) {
+    #home-moments { min-height: 0; padding-block: 0.75rem 1.5rem; }
+    .home-moment .message-bubble { font-size: 0.94rem; }
+    .home-moment[data-slot="focus"] { width: 96%; }
+    .home-moment[data-slot="focus"] .home-moment-actions { flex-direction: column-reverse; align-items: flex-end; gap: 0; }
+    .home-moment:not([data-slot="focus"]) { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-moment:not([data-slot="focus"]) .message-bubble { transition: none; }
+    .home-moment-transport [data-pause] { display: none; }
+  }
+</style>

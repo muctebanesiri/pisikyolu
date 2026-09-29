@@ -1,135 +1,104 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import Testimonial from "@/components/Testimonial.astro";
 import Footer from "@/components/Footer.astro";
 import Subscribe from "@/components/Subscribe.astro";
-import { Image } from "astro:assets";
+import Search from "@/components/Search.astro";
+import { getImage } from "astro:assets";
 import his_cover from "@/assets/his.jpg";
-import { HOME_LAYOUTS, type HomeLayoutId } from "@/lib/home-layouts";
-import { getEpisodeData, type EpisodeData } from "@/lib/episodes";
-import { toPersianDigits } from "@/lib/localization";  // ✅ added
-import {
-  formatEpisodeDate,
-  formatEpisodeDateValue,
-  formatEpisodeRelativeDate,
-} from "@/lib/dates";
 
 interface Props {
-  activeLayout: HomeLayoutId;
+  page: "home" | "episodes";
   title?: string;
   description?: string;
-  episodeData?: EpisodeData;
 }
 
-const { activeLayout, title, description, episodeData } = Astro.props;
-const currentLayout = HOME_LAYOUTS.find((l) => l.id === activeLayout);
-const slug = currentLayout?.href ?? "/";
-const { episodes, archiveGroups } = episodeData ?? await getEpisodeData();
-const latestEpisode = episodes.toSorted((a, b) => b.data.date.getTime() - a.data.date.getTime())[0];
-const seasonLinks = archiveGroups.map((group) => ({
-  href: `/#home-season-${group.id}`,
-  label: group.label,
-  count: group.episodes.length,
-}));
+const { page, title, description } = Astro.props;
+const isHome = page === "home";
+const slug = isHome ? "/" : "/episodes";
+const cover = await getImage({
+  src: his_cover,
+  width: 472,
+  height: 472,
+  widths: [128, 472, 944],
+  format: "webp",
+  quality: 90,
+});
+const smallCover = cover.srcSet.values.find((value) => value.descriptor === "128w")?.url ?? cover.src;
+const coverClass = "brand-cover w-full max-w-[472px] h-auto aspect-square object-contain mb-4 sm:max-w-[90%]";
+const emptyImage = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 ---
 
 <Layout frontmatter={{ title, description }} slug={slug}>
-  <div id="home-layout-root" class="home-root" dir="rtl">
-    <section id="home-brand">
+  <div id="home-layout-root" class:list={["home-root", !isHome && "home-secondary"]}>
+    <header id="home-brand">
       <div class="brand-inner">
         <div class="brand-content flex flex-col items-center text-center max-w-[472px] mx-auto">
-          <h1 class="brand-title m-0">پیشیک یولو pişikyolu</h1>
-          <Image
-            src={his_cover}
-            alt="pişikyolu Cover Art"
-            width={472}
-            height={472}
-            widths={[320, 472, 944]}
-            class="brand-cover w-full max-w-[472px] h-auto aspect-square object-contain mb-4 sm:max-w-[90%]"
-            priority
-            format="webp"
-            quality={90}
-          />
+          {isHome
+            ? <h1 class="brand-title m-0">Hope in Source</h1>
+            : <span class="brand-title m-0">Hope in Source</span>}
+          <picture class="contents">
+            <source media={isHome ? "(min-width: 960px)" : "(min-width: 1200px)"} type="image/webp" srcset={cover.srcSet.attribute} sizes="352px" />
+            <img
+              src={isHome ? smallCover : emptyImage}
+              alt="Hope in Source Cover Art"
+              width="472"
+              height="472"
+              class={coverClass}
+              loading={isHome ? "eager" : "lazy"}
+              fetchpriority={isHome ? "high" : undefined}
+              decoding="async"
+            />
+          </picture>
           <div class="brand-taglines text-center space-y-1">
-            <p class="m-0 text-lg font-medium tracking-wide opacity-0 animate-[fadeIn_0.8s_ease_0.2s_forwards]">
-              نظریمه جالب گلن موضوعاتدان دانیشیرام
+            <p class="m-0 text-lg font-medium tracking-wide">
+              off-the-cuff conversations between friends
             </p>
-            <p class="m-0 text-[0.85rem] text-his-text-secondary italic opacity-0 animate-[fadeIn_0.8s_ease_0.5s_forwards]">
-              بعضا حقوق
+            <p class="m-0 text-[0.85rem] text-his-text-secondary italic">
+              finding the sacred in the ordinary
             </p>
-            <p class="m-0 text-[0.85rem] text-his-text-secondary italic opacity-0 animate-[fadeIn_0.8s_ease_0.7s_forwards]">
-              بعضا تکنولوژی
+            <p class="m-0 text-[0.85rem] text-his-text-secondary italic">
+              universal within the particular
             </p>
-            <p class="m-0 text-[0.85rem] text-his-text-secondary italic opacity-0 animate-[fadeIn_0.8s_ease_0.9s_forwards]">
-              و بعضا ادبیات
+            <p class="m-0 text-[0.85rem] text-his-text-secondary italic">
+              where word becomes flesh
             </p>
           </div>
           <div class="brand-meta mt-5 space-y-1.5 text-xs text-his-text-tertiary">
-            <div class="opacity-0 animate-[fadeIn_0.8s_ease_1.1s_forwards]">
+            <div>
               <Subscribe />
             </div>
-            <p class="m-0 opacity-0 animate-[fadeIn_0.8s_ease_1.3s_forwards]">
-              with <a href="https://mucteba.ir">Mücteba Nesiri</a>
+            <p class="m-0">
+              Hosts <a href="https://nadia.xyz/public-faith">Nadia</a> & <a href="https://henryzoo.com/living-out-in-faith">Henry</a>
             </p>
+            <p class="m-0">
+              Art Jessica Han <span aria-hidden="true">·</span> Music <a href="https://twitter.com/kenwheeler">Ken Wheeler</a>
+            </p>
+            <p class="m-0"><a href="https://github.com/sponsors/hzoo">Sponsor</a></p>
           </div>
-          {latestEpisode && (
-            <div class="brand-latest">
-              <a href={`/${latestEpisode.slug}`} class="brand-latest-link">
-                {latestEpisode.episodeTitle}
-                <span aria-hidden="true" class="brand-latest-arrow">&nearr;</span>
-              </a>
-              <p class="brand-latest-meta">
-                <time datetime={formatEpisodeDateValue(latestEpisode.data.date)}>
-                  {formatEpisodeDate(latestEpisode.data.date)}
-                </time>
-                <span aria-hidden="true">&middot;</span>
-                <span data-relative-date={formatEpisodeDateValue(latestEpisode.data.date)}>
-                  {formatEpisodeRelativeDate(latestEpisode.data.date)}
-                </span>
-              </p>
-            </div>
-          )}
-          {seasonLinks.length > 0 && (
-            <nav class="brand-season-links" aria-label="آرشیو فصل‌ها">
-              {seasonLinks.map((season) => (
-                <a href={season.href} class="brand-season-link">
-                  <span>{season.label}</span>
-                  <span class="brand-season-count">{toPersianDigits(season.count)} اپیزود</span>
-                </a>
-              ))}
-            </nav>
-          )}
         </div>
       </div>
-    </section>
+    </header>
 
     <nav id="home-top-controls" aria-label="ناوبری سایت">
       <div class="home-controls-inner">
+        {!isHome && <a href="/" class="home-compact-link">Hope in Source</a>}
         <div class="home-view-list">
-          {HOME_LAYOUTS.map((layout) => (
-            <a
-              href={layout.href}
-              class="home-view-button"
-              data-active={layout.id === activeLayout ? "true" : "false"}
-              aria-current={layout.id === activeLayout ? "page" : undefined}
-            >
-              {layout.label}
-            </a>
-          ))}
+          <a
+            href="/episodes"
+            class="home-view-button"
+            data-active={!isHome ? "true" : "false"}
+            aria-current={!isHome ? "page" : undefined}
+          >Episodes</a>
         </div>
+        <Search variant="compact" />
       </div>
     </nav>
 
-    <div id="home-layout-stage">
+    <main id="home-layout-stage">
+      {!isHome && <h1 class="sr-only">Episodes</h1>}
       <slot />
-    </div>
+    </main>
 
-    <section id="home-footer">
-      <Testimonial />
-      <Footer compact />
-    </section>
+    {!isHome && <div id="home-footer"><Footer compact /></div>}
   </div>
-
-  {activeLayout !== "A" && <script src="../scripts/home-layout-lab.ts"></script>}
-  <script src="../scripts/relative-dates.ts"></script>
 </Layout>
