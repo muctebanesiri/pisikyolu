@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import { unified } from "@astrojs/markdown-remark";
 import tailwindcss from "@tailwindcss/vite";
+import path from "node:path";
 
 import { remarkTranscriptPlugin } from "./src/remark-transcript-plugin/plugin";
 import { remarkResponsiveImages } from './src/plugins/remark-responsive-images';
@@ -12,6 +13,11 @@ export default defineConfig({
   compressHTML: true,
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve('./src'),
+      },
+    },
     build: {
       rollupOptions: {
         external: ['/pagefind/pagefind.js'],
