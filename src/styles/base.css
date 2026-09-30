@@ -561,6 +561,11 @@ body:has(#home-layout-root) #theme-toggle {
     border-bottom-right-radius: 0.35rem;
   }
 
+  .message-sent.consecutive:not(.consecutive-start) .message-bubble,
+  .message-system.consecutive:not(.consecutive-start) .message-bubble {
+    border-top-right-radius: 0.35rem;
+  }
+
   .message-system .message-bubble {
     background: color-mix(in oklab, var(--color-his-chat-bg) 88%, var(--color-flexoki-cyan-400));
     border-bottom-right-radius: 0.35rem;
@@ -574,16 +579,20 @@ body:has(#home-layout-root) #theme-toggle {
     border-bottom-left-radius: 0.35rem;
   }
 
+  .message-received.consecutive:not(.consecutive-start) .message-bubble {
+    border-top-left-radius: 0.35rem;
+  }
+
   .message-time {
-    display: inline-block;
+    float: right;
     margin-left: 0.7rem;
+    margin-top: 0.3em;
     color: color-mix(in oklab, var(--color-his-text-secondary) 75%, var(--color-his-text-tertiary));
     font-size: 0.72rem;
     font-variant-numeric: tabular-nums;
-    line-height: 1;
+    line-height: 1.35;
     white-space: nowrap;
     text-decoration: none;
-    vertical-align: 0.15em;
     transition: color 150ms ease;
   }
 
@@ -1333,69 +1342,6 @@ body:has(#home-layout-root) #theme-toggle {
 #home-archive {
   max-width: 52rem;
   margin: 0 auto;
-}
-
-.season-heading {
-  position: sticky;
-  top: 0.55rem;
-  z-index: 6;
-  padding: 0.2rem 0;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in oklab, var(--color-his-bg) 96%, transparent) 72%,
-    transparent
-  );
-}
-
-.season-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-  min-height: 44px;
-  cursor: pointer;
-  list-style: none;
-}
-
-.season-summary::-webkit-details-marker {
-  display: none;
-}
-
-.season-summary-meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.season-count {
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-his-text-tertiary);
-}
-
-.season-caret {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1rem;
-  height: 1rem;
-  border-radius: 9999px;
-  color: var(--color-his-text-tertiary);
-  transition: transform 0.2s ease, color 0.15s ease;
-}
-
-.season-block[open] .season-caret {
-  transform: rotate(45deg);
-  color: var(--color-his-green);
-}
-
-.season-summary:hover .season-caret {
-  color: var(--color-his-green);
-}
-
-.season-episodes {
-  margin-top: 0.2rem;
 }
 
 .ep-badge {

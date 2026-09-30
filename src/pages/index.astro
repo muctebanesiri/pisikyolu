@@ -11,11 +11,17 @@ const moments = conversations.toSorted((a, b) => {
   const episodeB = episodesBySlug.get(b.slug);
   return (episodeB?.data.date.getTime() ?? 0) - (episodeA?.data.date.getTime() ?? 0)
     || (episodeB?.epNumber ?? 0) - (episodeA?.epNumber ?? 0);
-}).map((moment) => ({
-  ...moment,
-  episodeTitle: episodesBySlug.get(moment.slug)?.episodeTitle ?? moment.slug,
-  time: formatMomentTime(moment.seconds),
-}));
+}).map((moment) => {
+  const groupedBefore = moment.context?.before.speaker === moment.speaker;
+  const groupedAfter = moment.context?.after?.speaker === moment.speaker;
+  return {
+    ...moment,
+    episodeTitle: episodesBySlug.get(moment.slug)?.episodeTitle ?? moment.slug,
+    time: formatMomentTime(moment.seconds),
+    groupedBefore,
+    groupedAfter,
+  };
+});
 const initialSlots = moments.map((_, index) =>
   index === 0 ? "focus" : index === 1 ? "up-next" : index === moments.length - 1 ? "previous" : undefined
 );
@@ -37,50 +43,64 @@ const initialSlots = moments.map((_, index) =>
           data-preview
           aria-label={`Show conversation from ${moment.episodeTitle}`}
         >
-          <span class="home-moment-teaser-label"><span data-teaser-direction>{index === 1 ? "Up next" : "Previous"}</span> <span aria-hidden="true">·</span> {moment.episodeTitle}</span>
           <span class="message-speaker"><strong>{moment.speaker}</strong></span>
           <span class="message-bubble">{moment.preview ?? moment.text}<span class="message-time">{moment.time}</span></span>
+          <span class="home-moment-teaser-label">
+            <span data-teaser-direction>{index === 1 ? "Up next" : "Previous"}</span>
+            <span aria-hidden="true">·</span>
+            <span class="home-moment-teaser-title">{moment.episodeTitle}</span>
+          </span>
         </button>
-        <div class="home-moment-progress" aria-hidden="true">
-          <span class="home-progress-track"><span class="home-progress-fill" data-progress-fill></span></span>
-          <span class="home-progress-count">{String(index + 1).padStart(2, "0")} / {String(moments.length).padStart(2, "0")}</span>
+        <div class="home-moment-conversation">
+          {moment.context && (
+            <a
+              class:list={["home-moment-context", "message", moment.context.before.side === "sent" ? "message-sent" : "message-received", moment.groupedBefore && "consecutive consecutive-start"]}
+              href={`/${moment.slug}#msg-${moment.context.before.seconds}`}
+            >
+              <span class="message-speaker"><strong>{moment.context.before.speaker}</strong></span>
+              <span class="message-bubble">{moment.context.before.text}<span class="message-time">{formatMomentTime(moment.context.before.seconds)}</span></span>
+            </a>
+          )}
+          <a
+            class:list={[
+              "home-moment-link", "message", moment.side === "sent" ? "message-sent" : "message-received",
+              (moment.groupedBefore || moment.groupedAfter) && "consecutive",
+              !moment.groupedBefore && moment.groupedAfter && "consecutive-start",
+              moment.groupedBefore && !moment.groupedAfter && "consecutive-end",
+              moment.groupedBefore && "hide-speaker",
+            ]}
+            href={`/${moment.slug}#msg-${moment.seconds}`}
+            aria-label={`${moment.speaker} in ${moment.episodeTitle}: ${moment.text} At ${moment.time}.`}
+          >
+            <span class="message-speaker"><strong>{moment.speaker}</strong></span>
+            <span class="message-bubble"><span class="home-moment-text">{moment.text}</span><span class="message-time">{moment.time}</span></span>
+          </a>
+          {moment.context?.after && (
+            <a
+              class:list={["home-moment-context", "message", moment.context.after.side === "sent" ? "message-sent" : "message-received", moment.groupedAfter && "consecutive consecutive-end hide-speaker"]}
+              href={`/${moment.slug}#msg-${moment.context.after.seconds}`}
+            >
+              <span class="message-speaker"><strong>{moment.context.after.speaker}</strong></span>
+              <span class="message-bubble">{moment.context.after.text}<span class="message-time">{formatMomentTime(moment.context.after.seconds)}</span></span>
+            </a>
+          )}
         </div>
-        {moment.context && (
-          <a
-            class:list={["home-moment-context", "message", moment.context.before.side === "sent" ? "message-sent" : "message-received"]}
-            href={`/${moment.slug}#msg-${moment.context.before.seconds}`}
-          >
-            <span class="message-speaker"><strong>{moment.context.before.speaker}</strong></span>
-            <span class="message-bubble">{moment.context.before.text}<span class="message-time">{formatMomentTime(moment.context.before.seconds)}</span></span>
-          </a>
-        )}
-        <a
-          class:list={["home-moment-link", "message", moment.side === "sent" ? "message-sent" : "message-received", moment.context?.before.speaker === moment.speaker && "hide-speaker"]}
-          href={`/${moment.slug}#msg-${moment.seconds}`}
-          aria-label={`${moment.speaker} in ${moment.episodeTitle}: ${moment.text} At ${moment.time}.`}
-        >
-          <span class="message-speaker"><strong>{moment.speaker}</strong></span>
-          <span class="message-bubble"><span class="home-moment-text">{moment.text}</span><span class="message-time">{moment.time}</span></span>
-        </a>
-        {moment.context?.after && (
-          <a
-            class:list={["home-moment-context", "message", moment.context.after.side === "sent" ? "message-sent" : "message-received", moment.context.after.speaker === moment.speaker && "hide-speaker"]}
-            href={`/${moment.slug}#msg-${moment.context.after.seconds}`}
-          >
-            <span class="message-speaker"><strong>{moment.context.after.speaker}</strong></span>
-            <span class="message-bubble">{moment.context.after.text}<span class="message-time">{formatMomentTime(moment.context.after.seconds)}</span></span>
-          </a>
-        )}
         <div class="home-moment-actions">
           <div class="home-moment-transport" role="group" aria-label="Conversation controls">
-            <button type="button" data-previous aria-label="Previous conversation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
             <button type="button" data-pause aria-label="Pause automatic advance" aria-pressed="false">
+              <svg class="home-progress-ring" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                <circle class="home-progress-track" cx="20" cy="20" r="17" />
+                <circle class="home-progress-fill" data-progress-fill cx="20" cy="20" r="17" pathLength="100" />
+              </svg>
               <svg class="icon-pause" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6v12M15 6v12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
               <svg class="icon-play" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 6 9 6-9 6V6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" /></svg>
             </button>
             <button type="button" data-next aria-label="Next conversation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m10 5 7 7-7 7m7-7H6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
           </div>
-          <a class="home-moment-source" href={`/${moment.slug}#msg-${moment.seconds}`}>{moment.episodeTitle} <span aria-hidden="true">↗</span></a>
+          <a class="home-moment-source" href={`/${moment.slug}#msg-${moment.seconds}`}>
+            {moment.episodeTitle}
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12 12 4M5 4h7v7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </a>
         </div>
       </div>
     ))}
@@ -98,14 +118,14 @@ const initialSlots = moments.map((_, index) =>
     place-items: center;
     width: 100%;
     max-width: 52rem;
-    min-height: 40rem;
+    min-height: 42rem;
     margin: 0 auto;
     padding-block: 3rem;
     overflow: hidden;
   }
 
   @media (min-width: 960px) {
-    #home-moments { min-height: max(40rem, calc(100svh - 5rem)); }
+    #home-moments { min-height: max(42rem, calc(100svh - 5rem)); }
   }
 
   .home-moment {
@@ -139,38 +159,28 @@ const initialSlots = moments.map((_, index) =>
     cursor: pointer;
   }
   .home-moment-teaser-label {
-    margin-bottom: 0.45rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+    padding-inline: 0.25rem;
     color: var(--color-his-text-tertiary);
     font-size: 0.68rem;
     line-height: 1.35;
   }
-  .home-moment:not([data-slot="focus"]) :is(.home-moment-link, .home-moment-context, .home-moment-actions, .home-moment-progress) { display: none; }
-  .home-moment-progress {
+  .home-moment-teaser-title {
+    color: var(--color-his-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .home-moment:not([data-slot="focus"]) :is(.home-moment-link, .home-moment-context, .home-moment-actions) { display: none; }
+  .home-moment-conversation { display: none; }
+  .home-moment[data-slot="focus"] .home-moment-conversation {
     display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 1rem;
-  }
-  .home-progress-track {
     flex: 1;
-    height: 3px;
-    overflow: hidden;
-    border-radius: 8px;
-    background: color-mix(in oklab, var(--color-his-green) 16%, var(--color-his-bg));
-  }
-  .home-progress-fill {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background: var(--color-his-green);
-    transform: scaleX(0);
-    transform-origin: left center;
-  }
-  .home-progress-count {
-    color: var(--color-his-text-tertiary);
-    font-size: 0.7rem;
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
+    min-height: 0;
+    flex-direction: column;
+    justify-content: center;
   }
   .home-moment-context { display: none; }
   .home-moment[data-slot="focus"] .home-moment-context {
@@ -183,12 +193,12 @@ const initialSlots = moments.map((_, index) =>
   .home-moment[data-slot="focus"] .home-moment-link {
     position: relative;
     z-index: 1;
-    margin-block: 0.45rem;
   }
 
   .home-moment-actions { display: none; }
   .home-moment[data-slot="focus"] .home-moment-actions {
     display: flex;
+    flex: none;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -199,13 +209,16 @@ const initialSlots = moments.map((_, index) =>
   .home-moment-source {
     display: inline-flex;
     align-items: center;
+    gap: 0.2rem;
     min-height: 40px;
-    color: var(--color-his-green);
-    font-size: 0.75rem;
+    color: var(--color-his-text);
+    font-size: 0.8125rem;
+    font-weight: 500;
     line-height: 1.4;
     text-decoration: none;
   }
-  .home-moment-source:hover { text-decoration: underline; text-underline-offset: 2px; }
+  .home-moment-source svg { flex: none; width: 13px; height: 13px; color: var(--color-his-green); }
+  .home-moment-source:hover { color: var(--color-his-green); text-decoration: underline; text-underline-offset: 2px; }
   .home-moment-transport { display: flex; align-items: center; gap: 0.1rem; }
   .home-moment-transport button {
     display: grid;
@@ -221,6 +234,11 @@ const initialSlots = moments.map((_, index) =>
   }
   .home-moment-transport button:hover { color: var(--color-his-green); }
   .home-moment-transport svg { width: 18px; height: 18px; }
+  .home-moment-transport [data-pause] { position: relative; }
+  .home-moment-transport .home-progress-ring { position: absolute; width: 38px; height: 38px; transform: rotate(-90deg); }
+  .home-progress-ring circle { stroke-width: 1.4; }
+  .home-progress-track { stroke: color-mix(in oklab, var(--color-his-green) 20%, var(--color-his-bg)); }
+  .home-progress-fill { stroke: var(--color-his-green); stroke-dasharray: 100; stroke-dashoffset: 100; }
   .home-moment-transport .icon-play { display: none; }
   #home-moments[data-user-paused="true"] .home-moment-transport .icon-pause { display: none; }
   #home-moments[data-user-paused="true"] .home-moment-transport .icon-play { display: block; }
@@ -229,6 +247,7 @@ const initialSlots = moments.map((_, index) =>
     position: relative;
     z-index: 2;
     width: min(36rem, 90%);
+    height: 26.5rem;
     opacity: 1;
   }
   .home-moment:not([data-slot="focus"]) {
@@ -250,15 +269,15 @@ const initialSlots = moments.map((_, index) =>
   }
 
   .home-moment[data-slot="previous"] {
-    top: 1%; left: 5%; max-width: 17rem;
+    top: 0; left: 5%; max-width: 17rem;
   }
   .home-moment[data-slot="up-next"] {
-    bottom: 1%; right: 1%; max-width: 17rem;
+    bottom: 0; right: 1%; max-width: 17rem;
   }
 
   @media (min-width: 960px) {
-    .home-moment[data-slot="previous"] { top: calc(50% - 20rem); }
-    .home-moment[data-slot="up-next"] { bottom: calc(50% - 20rem); }
+    .home-moment[data-slot="previous"] { top: max(0px, calc(50% - 22rem)); }
+    .home-moment[data-slot="up-next"] { bottom: max(0px, calc(50% - 22rem)); }
   }
 
   .home-moment :is(.home-moment-link, .home-moment-context, .home-moment-preview):focus-visible { outline: none; }
@@ -270,11 +289,20 @@ const initialSlots = moments.map((_, index) =>
     outline-offset: 3px;
   }
 
-  @media (max-width: 767px) {
-    #home-moments { min-height: 0; padding-block: 0.75rem 1.5rem; }
+  @media (max-width: 959px) {
+    #home-moments { min-height: 0; padding-block: 0.75rem 1.5rem; touch-action: pan-y; }
     .home-moment .message-bubble { font-size: 0.94rem; }
-    .home-moment[data-slot="focus"] { width: 96%; }
-    .home-moment[data-slot="focus"] .home-moment-actions { flex-direction: column-reverse; align-items: flex-end; gap: 0; }
+    .home-moment[data-slot="focus"] { width: 96%; height: auto; }
+    .home-moment[data-slot="focus"] .home-moment-conversation { flex: none; }
+    .home-moment[data-slot="focus"] .home-moment-actions {
+      order: -1;
+      flex-direction: column-reverse;
+      align-items: stretch;
+      gap: 0;
+      margin: 0 0 0.75rem;
+    }
+    .home-moment-transport { align-self: flex-start; }
+    .home-moment-source { align-self: flex-end; min-height: 24px; }
     .home-moment:not([data-slot="focus"]) { display: none; }
   }
 
