@@ -34,6 +34,49 @@ test("removed filler retains anchors and same-second occurrence IDs without an e
   expect(result).not.toContain('<strong>Guest</strong>');
 });
 
+test('a reviewed occurrence override preserves a distinct passage after duplicate deletion', async () => {
+  const result = await processMarkdown('[24:47] **Michael:** <span id="msg-1533"></span>Limits can be beautiful.\n\n'
+    + '[25:06] **Michael:** Roots matter.\n\n'
+    + '[25:33] **Michael:** <span data-message-id="msg-1533-2"></span>A different smaller scale.');
+  expect(result).toContain('<p id="msg-1487"');
+  expect(result).toContain('<span id="msg-1533"></span>Limits can be beautiful.');
+  expect(result).toContain('<p id="msg-1533-2"');
+  expect(result).toContain('data-timestamp="1533"');
+  expect(result).toContain('href="#t=1533"');
+  expect(result).not.toContain('data-message-id');
+  expect(result.match(/id="msg-1533"/g)).toHaveLength(1);
+  expect(result.match(/id="msg-1533-2"/g)).toHaveLength(1);
+});
+
+test('occurrence overrides consume only the marker and keep default counting and reply rendering', async () => {
+  const result = await processMarkdown('[00:01] **Henry:** A complete thought.\n\n'
+    + '[00:02] **Guest:** <span data-message-id="msg-2-3"></span><span id="alias"></span>Yeah.\n\n'
+    + '[00:02] **Henry:** A different thought.');
+  expect(result).toContain('<p id="msg-2-3"');
+  expect(result).toContain('message-nod');
+  expect(result).toContain('<span id="alias"></span>Yeah.');
+  expect(result).toContain('<p id="msg-2-2"');
+  expect(result).not.toContain('data-message-id');
+});
+
+test('invalid, misplaced, nonempty, untimed, and conflicting occurrence overrides fail visibly', async () => {
+  const invalid = [
+    '[00:02] **Henry:** <span data-message-id="msg-3-2"></span>Wrong time.',
+    '[00:02] **Henry:** <span data-message-id="msg-2-1"></span>First occurrence.',
+    '[00:02] **Henry:** <span data-message-id="msg-2-02"></span>Noncanonical count.',
+    '[00:02] **Henry:** <span data-message-id="msg-2"></span>Missing count.',
+    '[00:02] **Henry:** <span data-message-id="msg-2-2">Nonempty.</span>',
+    '[00:02] **Henry:** Text first. <span data-message-id="msg-2-2"></span>',
+    '[00:02] **Henry:** <span data-message-id="msg-2-2"></span><span data-message-id="msg-2-3"></span>Two markers.',
+    '**Henry:** <span data-message-id="msg-0-2"></span>Untimed.',
+    '[00:02] **Henry:** <span data-message-id="msg-2-2"></span>First.\n\n[00:02] **Guest:** Second.',
+  ];
+  for (const markdown of invalid) {
+    const result = await processMarkdown(markdown).catch((error: unknown) => error);
+    expect(result).toBeInstanceOf(Error);
+  }
+});
+
 test("remarkTranscriptPlugin transforms markdown correctly", async () => {
   const input = `
 [00:28] **Speaker 1**: Hello, this is a test.
@@ -78,7 +121,7 @@ test("remarkTranscriptPlugin handles timestamps longer than 1 hour", async () =>
 
 test("remarkTranscriptPlugin groups consecutive speaker-only messages", async () => {
   const result = await processMarkdown(`
-[00:28] **Henry:** First thought.
+**Henry:** First thought.
 
 **Henry:** Second thought with **emphasis**.
 
@@ -89,6 +132,32 @@ test("remarkTranscriptPlugin groups consecutive speaker-only messages", async ()
   expect(result).toMatch(/class="message message-sent[^"]*consecutive consecutive-end hide-speaker/);
   expect(result).toContain('<span class="message-speaker"><strong>Henry</strong></span>');
   expect(result).toContain('<span class="message-text"> Second thought with <strong>emphasis</strong>.</span>');
+});
+
+test('speaker attribution resets across structural and timing boundaries', async () => {
+  for (const separator of ['---', '```js\nconst example = true;\n```', '<div>An editorial note.</div>']) {
+    const result = await processMarkdown(`[00:01] **Henry:** A complete thought.\n\n${separator}\n\n[00:02] **Henry:** Another complete thought.`);
+    expect(result.match(/<p id="msg-2"[^>]+>/)?.[0]).not.toContain('hide-speaker');
+  }
+  for (const [lead, reply, id] of [
+    ['[00:01] **Henry:** A thought.', '[02:00] **Henry:** After a pause.', 'msg-120'],
+    ['[00:03] **Henry:** A thought.', '[00:02] **Henry:** Earlier time.', 'msg-2'],
+    ['[00:01] **Henry:** A thought.', '**Henry:** Untimed thought.', 'msg-0'],
+    ['**Henry:** An untimed thought.', '[00:02] **Henry:** Timed thought.', 'msg-2'],
+  ]) {
+    const result = await processMarkdown(`${lead}\n\n${reply}`);
+    expect(result.match(new RegExp(`<p id="${id}"[^>]+>`))?.[0]).not.toContain('hide-speaker');
+    expect(result).not.toContain('consecutive-start');
+    expect(result).not.toContain('message-continuation');
+  }
+});
+
+test('provisional and third speakers retain attribution on consecutive turns', async () => {
+  for (const speaker of ['Speaker 0', 'Unconfirmed voice', 'Guest']) {
+    const prefix = speaker === 'Guest' ? '[00:00] **Henry:** First voice.\n\n[00:01] **Nadia:** Second voice.\n\n' : '';
+    const result = await processMarkdown(`${prefix}[00:02] **${speaker}:** A complete thought.\n\n[00:03] **${speaker}:** Another complete thought.`);
+    expect(result.match(/<p id="msg-3"[^>]+>/)?.[0]).not.toContain('hide-speaker');
+  }
 });
 
 test("remarkTranscriptPlugin disambiguates duplicate same-second message ids", async () => {
@@ -120,6 +189,14 @@ test("remarkTranscriptPlugin ignores non-transcript paragraphs", async () => {
   const input = "This is a regular paragraph without timestamps or speakers.";
   const result = await processMarkdown(input);
   expect(result).toBe(`<p>${input}</p>`);
+});
+
+test('episode section headings follow the page title without changing their text or aliases', async () => {
+  const result = await processMarkdown('#### A topic <span id="old-topic"></span>\n\n[00:01] **Henry:** A thought.\n\n### Show Notes');
+  expect(result).toContain('<h2>A topic <span id="old-topic"></span></h2>');
+  expect(result).toContain('<h2>Show Notes</h2>');
+  expect(result).toContain('id="msg-1"');
+  expect(result).not.toContain('<h4>');
 });
 
 test("remarkTranscriptPlugin handles custom options", async () => {
