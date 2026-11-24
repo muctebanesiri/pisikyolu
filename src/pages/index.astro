@@ -38,13 +38,14 @@ const initialSlots = moments.map((_, index) =>
         data-slot={initialSlots[index]}
       >
         <button
-          class:list={["home-moment-preview", "message", moment.side === "sent" ? "message-sent" : "message-received"]}
+          class="home-moment-preview message"
+          data-side={moment.side}
           type="button"
           data-preview
           aria-label={`Show conversation from ${moment.episodeTitle}`}
         >
-          <span class="message-speaker"><strong>{moment.speaker}</strong></span>
-          <span class="message-bubble">{moment.preview ?? moment.text}<span class="message-time">{moment.time}</span></span>
+          <b>{moment.speaker}</b>
+          <span class="message-bubble">{moment.preview ?? moment.text}<time>{moment.time}</time></span>
           <span class="home-moment-teaser-label">
             <span data-teaser-direction>{index === 1 ? "Up next" : "Previous"}</span>
             <span aria-hidden="true">·</span>
@@ -54,34 +55,34 @@ const initialSlots = moments.map((_, index) =>
         <div class="home-moment-conversation">
           {moment.context && (
             <a
-              class:list={["home-moment-context", "message", moment.context.before.side === "sent" ? "message-sent" : "message-received", moment.groupedBefore && "consecutive consecutive-start"]}
+              class="home-moment-context message"
+              data-side={moment.context.before.side}
+              data-run={moment.groupedBefore ? "start" : undefined}
               href={`/${moment.slug}#msg-${moment.context.before.seconds}`}
             >
-              <span class="message-speaker"><strong>{moment.context.before.speaker}</strong></span>
-              <span class="message-bubble">{moment.context.before.text}<span class="message-time">{formatMomentTime(moment.context.before.seconds)}</span></span>
+              <b>{moment.context.before.speaker}</b>
+              <span class="message-bubble">{moment.context.before.text}<time>{formatMomentTime(moment.context.before.seconds)}</time></span>
             </a>
           )}
           <a
-            class:list={[
-              "home-moment-link", "message", moment.side === "sent" ? "message-sent" : "message-received",
-              (moment.groupedBefore || moment.groupedAfter) && "consecutive",
-              !moment.groupedBefore && moment.groupedAfter && "consecutive-start",
-              moment.groupedBefore && !moment.groupedAfter && "consecutive-end",
-              moment.groupedBefore && "hide-speaker",
-            ]}
+            class="home-moment-link message"
+            data-side={moment.side}
+            data-run={moment.groupedBefore ? (moment.groupedAfter ? "mid" : "end") : moment.groupedAfter ? "start" : undefined}
             href={`/${moment.slug}#msg-${moment.seconds}`}
             aria-label={`${moment.speaker} in ${moment.episodeTitle}: ${moment.text} At ${moment.time}.`}
           >
-            <span class="message-speaker"><strong>{moment.speaker}</strong></span>
-            <span class="message-bubble"><span class="home-moment-text">{moment.text}</span><span class="message-time">{moment.time}</span></span>
+            {!moment.groupedBefore && <b>{moment.speaker}</b>}
+            <span class="message-bubble"><span class="home-moment-text">{moment.text}</span><time>{moment.time}</time></span>
           </a>
           {moment.context?.after && (
             <a
-              class:list={["home-moment-context", "message", moment.context.after.side === "sent" ? "message-sent" : "message-received", moment.groupedAfter && "consecutive consecutive-end hide-speaker"]}
+              class="home-moment-context message"
+              data-side={moment.context.after.side}
+              data-run={moment.groupedAfter ? "end" : undefined}
               href={`/${moment.slug}#msg-${moment.context.after.seconds}`}
             >
-              <span class="message-speaker"><strong>{moment.context.after.speaker}</strong></span>
-              <span class="message-bubble">{moment.context.after.text}<span class="message-time">{formatMomentTime(moment.context.after.seconds)}</span></span>
+              {!moment.groupedAfter && <b>{moment.context.after.speaker}</b>}
+              <span class="message-bubble">{moment.context.after.text}<time>{formatMomentTime(moment.context.after.seconds)}</time></span>
             </a>
           )}
           <a class="home-moment-source" href={`/${moment.slug}#msg-${moment.seconds}`}>
@@ -213,7 +214,7 @@ const initialSlots = moments.map((_, index) =>
     overflow: hidden;
     font-size: 0.875rem;
   }
-  .home-moment-preview .message-time { display: none; }
+  .home-moment-preview time { display: none; }
   .home-moment-teaser-label {
     display: flex;
     align-items: baseline;

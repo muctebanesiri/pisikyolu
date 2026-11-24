@@ -47,7 +47,7 @@ function initReadingPosition() {
   const container = document.getElementById('episode-scroll-container');
   const content = document.getElementById('episode-content-shell');
   if (!container || !content) return;
-  const messages = Array.from(content.querySelectorAll<HTMLElement>('.message[id][data-timestamp]'))
+  const messages = Array.from(content.querySelectorAll<HTMLElement>('.message[id]'))
     .filter((message) => isCanonicalReadingAnchor(`#${message.id}`));
   if (!messages.length) return;
 

@@ -6,6 +6,7 @@
  */
 
 import { parseTimeHash } from "./time-hash";
+import { passageSeconds, passageSelector } from "../lib/passage";
 
 type VideoMode = "read" | "watch";
 
@@ -30,9 +31,7 @@ function timeFromHash(): number | null {
     }
 
     if (!hash.startsWith("#msg-")) return null;
-    const message = document.getElementById(hash.slice(1))?.closest<HTMLElement>('[data-timestamp]');
-    const seconds = parseInt(message?.dataset.timestamp || "", 10);
-    return Number.isNaN(seconds) ? null : seconds;
+    return passageSeconds(document.getElementById(hash.slice(1))?.closest(passageSelector)?.id ?? "");
 }
 
 function updateModeUi() {

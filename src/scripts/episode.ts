@@ -87,7 +87,7 @@ function initNotes() {
 }
 
 function initLinkPreviews() {
-    const links = document.querySelectorAll<HTMLAnchorElement>('#episode-content-shell .message-bubble a[href^="http"]:not(.message-time)');
+    const links = document.querySelectorAll<HTMLAnchorElement>('#episode-content-shell .message-bubble a[href^="http"]');
     if (!links.length) return;
 
     const card = document.createElement('a');

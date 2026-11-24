@@ -7,9 +7,10 @@ test("parseTimeValue accepts seconds", () => {
 });
 
 test('time links skip relocated aliases while keeping real-time passage destinations', () => {
-  const retained = { dataset: { timestamp: '1487' }, id: 'msg-1487' };
-  const duplicateAlias = { dataset: {}, id: 'msg-1533' };
-  const distinct = { dataset: { timestamp: '1533' }, id: 'msg-1533-2' };
+  const passage = (id: string) => ({ id, matches: () => true });
+  const retained = passage('msg-1487');
+  const duplicateAlias = { id: 'msg-1533', matches: () => false };
+  const distinct = passage('msg-1533-2');
   expect(timeHashTarget(1533, duplicateAlias, distinct)).toBe(distinct);
   expect(timeHashTarget(1533, retained, distinct)).toBe(distinct);
   expect(timeHashTarget(1533, distinct, retained)).toBe(distinct);

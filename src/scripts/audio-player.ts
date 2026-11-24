@@ -4,6 +4,7 @@
  */
 
 import { parseTimeHash, timeHashTarget } from "./time-hash";
+import { passageSeconds, passageSelector } from "../lib/passage";
 
 interface MessagePoint {
     time: number;
@@ -44,9 +45,9 @@ function enterReadView() {
 
 function ensureMessagePoints() {
     if (messagePointsReady) return;
-    messagePoints = Array.from(document.querySelectorAll<HTMLElement>(".message"))
+    messagePoints = Array.from(document.querySelectorAll<HTMLElement>(".message[id]"))
         .map((message) => ({
-            time: parseInt(message.dataset.timestamp || "", 10),
+            time: passageSeconds(message.id) ?? NaN,
             el: message,
         }))
         .filter(({ time }) => !Number.isNaN(time))
@@ -213,9 +214,8 @@ function stageHashTime(options: { scroll: boolean }) {
 
     if (!hash.startsWith("#msg-")) return;
     const anchor = document.getElementById(hash.slice(1));
-    const message = anchor?.closest<HTMLElement>('[data-timestamp]');
-    const seconds = parseInt(message?.dataset.timestamp || "", 10);
-    if (!Number.isNaN(seconds)) {
+    const seconds = passageSeconds(anchor?.closest(passageSelector)?.id ?? "");
+    if (seconds !== null) {
         audio?.pause();
         setAudioPosition(seconds);
     }

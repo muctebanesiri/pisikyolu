@@ -41,7 +41,7 @@ for (const file of files.filter(file => file.endsWith(".html"))) {
     .on('meta[property="og:image"], meta[name="twitter:image"]', { element(element) {
       shareImages.push(element.getAttribute("content") ?? "");
     } })
-    .on(".message[id][data-timestamp]", { element() { passages++; } })
+    .on(".message[id]", { element() { passages++; } })
     .on("a[href]", { element(element) { page.links.push(decodeHTML(element.getAttribute("href") ?? "")); } })
     .on("[src]", { element(element) { page.assets.push(decodeHTML(element.getAttribute("src") ?? "")); } })
     .on('link[rel="stylesheet"]', { element(element) { page.assets.push(decodeHTML(element.getAttribute("href") ?? "")); } });
