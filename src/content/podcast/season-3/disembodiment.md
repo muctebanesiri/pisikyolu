@@ -1,5 +1,6 @@
 ---
 title: Digital Disembodiment (Maggie Appleton)
+shareExcerpt: "we have no affordances that suggest presence without noise."
 season: 3
 date: 2021-04-05
 time: "26"

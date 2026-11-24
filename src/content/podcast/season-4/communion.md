@@ -1,5 +1,6 @@
 ---
 title: Digital Communion (Nick Ripatrazone)
+shareExcerpt: "authentic religion is full of ambiguity, right?"
 season: 4
 date: 2022-08-29
 time: "52"

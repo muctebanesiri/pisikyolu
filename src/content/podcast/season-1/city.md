@@ -1,5 +1,6 @@
 ---
 title: "City as Liturgy (Timothy Patitsas)"
+shareExcerpt: "The young can access information but wisdom comes with time"
 season: 1
 date: 2019-03-21
 time: "54"

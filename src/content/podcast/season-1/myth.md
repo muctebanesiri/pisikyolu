@@ -1,5 +1,6 @@
 ---
 title: "Mythology and Symbolism"
+shareExcerpt: "tradition is also participatory. You have to connect to it or else it doesn't really work."
 season: 1
 date: 2018-10-16
 time: "35"

@@ -1,6 +1,6 @@
 ---
 import { hisMetadata } from "@/metadata.ts";
-import his_cover from "@/assets/his.jpg";
+import { cardWidth, cardHeight, shareImage } from "@/lib/share-card";
 
 const { 
   title = hisMetadata.title,
@@ -12,8 +12,10 @@ const {
   modifiedTime,
   author = 'Henry Zhu',
   noindex = false,
+  image = shareImage(),
 } = Astro.props;
 
+const imageURL = new URL(image.path, hisMetadata.siteUrl).href;
 ---
 
 <!-- Global Metadata -->
@@ -37,16 +39,21 @@ const {
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={`${hisMetadata.siteUrl}${his_cover.src}`} />
+<meta property="og:image" content={imageURL} />
+<meta property="og:image:type" content="image/png" />
+<meta property="og:image:width" content={String(cardWidth)} />
+<meta property="og:image:height" content={String(cardHeight)} />
+<meta property="og:image:alt" content={image.alt} />
 {publishedTime && <meta property="article:published_time" content={publishedTime} />}
 {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
 
 <!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:url" content={canonicalURL} />
-<meta property="twitter:title" content={title} />
-<meta property="twitter:description" content={description} />
-<meta property="twitter:image" content={`${hisMetadata.siteUrl}${his_cover.src}`} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalURL} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageURL} />
+<meta name="twitter:image:alt" content={image.alt} />
 <meta name="twitter:creator" content="@left_pad" />
 <meta name="twitter:site" content="@left_pad" />
 

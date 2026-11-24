@@ -11,10 +11,11 @@ interface Props {
   };
   slug?: string;
   mainId?: string;
+  image?: { path: string; alt: string };
   noindex?: boolean;
 }
 
-const { frontmatter, slug = '', mainId = 'main-content', noindex = false } = Astro.props;
+const { frontmatter, slug = '', mainId = 'main-content', noindex = false, image } = Astro.props;
 ---
 
 <!doctype html>
@@ -24,6 +25,7 @@ const { frontmatter, slug = '', mainId = 'main-content', noindex = false } = Ast
       title={frontmatter?.title}
       description={frontmatter?.description}
       slug={slug}
+      image={image}
       noindex={noindex}
     />
   </head>

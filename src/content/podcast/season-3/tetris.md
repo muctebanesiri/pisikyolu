@@ -1,5 +1,6 @@
 ---
 title: Software Tetris (Stephen Kell)
+shareExcerpt: "Losing at Tetris is basically the state of software right now"
 season: 3
 date: 2021-03-09
 time: "42"

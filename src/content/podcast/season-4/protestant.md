@@ -1,5 +1,6 @@
 ---
 title: 'Everyone is "Protestant" Online (L.M. Sacasas)'
+shareExcerpt: "there's often no way of even accounting for what you're losing."
 season: 4
 date: 2022-09-27
 time: "50"

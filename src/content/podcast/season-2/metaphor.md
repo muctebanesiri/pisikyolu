@@ -1,5 +1,6 @@
 ---
 title: "Embodiment Through Metaphors (Maggie Appleton)"
+shareExcerpt: "Socks on my feet, not dirty, socks on my plate, gross."
 season: 2
 date: 2020-05-13
 time: "54"

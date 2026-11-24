@@ -1,5 +1,6 @@
 ---
 title: "Community Membership"
+shareExcerpt: "Continuing to do it will make me continue to want to do it."
 season: 1
 date: 2018-10-16
 time: "34"

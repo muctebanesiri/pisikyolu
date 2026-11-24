@@ -1,5 +1,6 @@
 ---
 title: The Dorean Principle (Conley Owens)
+shareExcerpt: "If Christ is offering it freely, then his servant that's a messenger should not be then charging a premium."
 season: 4
 date: 2022-08-24
 time: "29"

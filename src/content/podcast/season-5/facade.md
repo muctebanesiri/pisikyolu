@@ -1,5 +1,6 @@
 ---
 title: The Façade of Control (Melody Kim)
+shareExcerpt: "But much of being a Christian is about the giving up of control."
 season: 5
 date: 2025-05-09
 time: "46"

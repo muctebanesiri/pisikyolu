@@ -1,5 +1,6 @@
 ---
 title: "Mastery and Learning through Games (Anthony Giovannetti)"
+shareExcerpt: "It's very hard to learn all kinds of domains just by observing and reading."
 season: 2
 date: 2019-06-21
 time: "57"

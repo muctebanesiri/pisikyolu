@@ -1,5 +1,6 @@
 ---
 title: "Inhabiting Heritage (Bernardo Hidalgo, Marianita Palumbo)"
+shareExcerpt: "inhabiting is the best way to maintain a building alive."
 season: 3
 date: 2020-08-28
 time: "43"

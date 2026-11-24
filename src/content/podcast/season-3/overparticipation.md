@@ -1,5 +1,6 @@
 ---
 title: "Managing Over-Participation (Working in Public)"
+shareExcerpt: "imagine trying to have to collaborate with your comment section"
 season: 3
 date: 2020-08-04
 time: "47"

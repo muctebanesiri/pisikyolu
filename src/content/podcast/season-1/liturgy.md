@@ -1,5 +1,6 @@
 ---
 title: "Liturgy"
+shareExcerpt: "through the practice of doing open source I learned to love it more."
 season: 1
 date: 2018-10-16
 time: "32"

@@ -1,5 +1,6 @@
 ---
 title: "The Commitment to Infinite Uptime (Jonathan Farbowitz)"
+shareExcerpt: "our purpose is not to make something better. It's to make it as faithful to the original as possible."
 season: 2
 date: 2019-07-15
 time: "75"

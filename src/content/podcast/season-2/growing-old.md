@@ -1,5 +1,6 @@
 ---
 title: "Growing Old with the Web (Philip Gee)"
+shareExcerpt: "you don't sound like what I thought you sound like on paper."
 season: 2
 date: 2019-05-31
 time: "64"

@@ -1,5 +1,6 @@
 ---
 title: "Boundaries (Stephanie Hurlburt)"
+shareExcerpt: "Boundaries are always most compassionate if set early."
 season: 2
 date: 2019-04-12
 time: "49"

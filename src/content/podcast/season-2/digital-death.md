@@ -1,5 +1,6 @@
 ---
 title: "Life After Digital Death (Philip Gee)"
+shareExcerpt: "For them the small scale is the only scale, right?"
 season: 2
 date: 2020-09-23
 time: "33"

@@ -1,5 +1,6 @@
 ---
 title: Finding Hope Amid Burnout (Alex Kim)
+shareExcerpt: "You're just doing it for the sake of doing it because time demands it."
 season: 4
 date: 2022-09-27
 time: "43"

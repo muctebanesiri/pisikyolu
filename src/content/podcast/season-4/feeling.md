@@ -1,5 +1,6 @@
 ---
 title: Right Feeling (Sonya Mann)
+shareExcerpt: "No matter where you are in life, you can come to the table."
 season: 4
 date: 2024-08-09
 time: "47"

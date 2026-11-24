@@ -1,5 +1,6 @@
 ---
 title: Salience (Sonya Mann)
+shareExcerpt: "The very substance of life itself is shape."
 season: 5
 date: 2026-02-07
 time: "119"

@@ -1,5 +1,6 @@
 ---
 title: Internet Checkpoint (Melody Kim)
+shareExcerpt: "If it doesn't help me understand, then what's the point?"
 season: 6
 date: 2026-02-07
 time: "49"

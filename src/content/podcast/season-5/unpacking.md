@@ -1,5 +1,6 @@
 ---
 title: Unpacking Belief (Joseph Choi)
+shareExcerpt: "We feel safe when we have a lot of options, but the safest thing is committing, which is scary."
 season: 5
 date: 2025-02-17
 time: "44"

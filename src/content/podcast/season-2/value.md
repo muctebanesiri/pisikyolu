@@ -1,5 +1,6 @@
 ---
 title: "Perception of Value (Stephanie Hurlburt)"
+shareExcerpt: "People don't just use things because they're out there."
 season: 2
 date: 2019-04-19
 time: "55"

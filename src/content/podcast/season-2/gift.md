@@ -1,5 +1,6 @@
 ---
 title: "Open Source as a Gift Economy (Maggie Appleton)"
+shareExcerpt: "But when you start to look around, you realize there's tiny gift economies operating all over the place."
 season: 2
 date: 2020-03-05
 time: "55"

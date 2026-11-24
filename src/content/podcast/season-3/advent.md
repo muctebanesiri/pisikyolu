@@ -1,5 +1,6 @@
 ---
 title: Approaching Advent (Alex Kim)
+shareExcerpt: "So at least Christian history and Christian conceptions of time is both cyclical and linear. It's a spiral."
 season: 3
 date: 2020-12-09
 time: "35"

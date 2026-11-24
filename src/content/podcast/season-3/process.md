@@ -1,5 +1,6 @@
 ---
 title: Technology as Process (Maggie Appleton)
+shareExcerpt: "the door knob asks to be turned by the way it's designed."
 season: 3
 date: 2020-11-02
 time: "33"

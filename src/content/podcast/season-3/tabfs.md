@@ -1,5 +1,6 @@
 ---
 title: TabFS (Omar Rizwan)
+shareExcerpt: "a good project idea comes out of some kind of personal history or personal relationship that you have with the concepts or with the system."
 season: 3
 date: 2021-02-19
 time: "26"

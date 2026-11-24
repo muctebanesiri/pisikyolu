@@ -1,5 +1,6 @@
 ---
 title: Embodied Knowledge (Maggie Appleton)
+shareExcerpt: "wouldn't you rather just actually talk to them?"
 season: 3
 date: 2020-11-02
 time: "25"

@@ -1,5 +1,6 @@
 ---
 title: Artificial Physicality (Drew Austin)
+shareExcerpt: "you can be silent and present at the same time."
 season: 4
 date: 2024-08-07
 time: "50"

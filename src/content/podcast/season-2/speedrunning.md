@@ -1,5 +1,6 @@
 ---
 title: "Speedrunning as Research (Omnigamer)"
+shareExcerpt: "at the end, it's somebody pressing buttons to make this happen."
 season: 2
 date: 2019-04-10
 time: "87"

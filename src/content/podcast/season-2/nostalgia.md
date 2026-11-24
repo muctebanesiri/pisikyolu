@@ -1,5 +1,6 @@
 ---
 title: "Nostalgia and Not Taking Yourself Too Seriously (Jordan Scales)"
+shareExcerpt: "So I grew up playing games on Windows 98. Really, my first time on the computer was Windows 98."
 season: 2
 date: 2020-05-26
 time: "76"

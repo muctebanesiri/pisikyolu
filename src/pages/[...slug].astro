@@ -9,6 +9,7 @@ import { hisMetadata } from "@/metadata.ts";
 import type { ExtractedLink } from "@/plugins/remark-links-extractor";
 import { formatEpisodeDate, formatEpisodeDateValue } from "@/lib/dates";
 import { getEpisodeData } from "@/lib/episodes";
+import { episodeCard, shareImage } from "@/lib/share-card";
 import { getEpisodeAudioSource } from "@/lib/audio";
 
 export async function getStaticPaths() {
@@ -35,6 +36,7 @@ export async function getStaticPaths() {
         params: { slug: episode.slug },
         props: {
           slug: episode.slug,
+          image: shareImage(episodeCard(episode)),
           Content,
           headings: chapterHeadings,
           frontmatter: episode.data,
@@ -52,7 +54,7 @@ export async function getStaticPaths() {
   return pages;
 }
 
-const { slug, Content, headings, frontmatter, episodeNumber, extractedLinks, episodeTitle, guests, relatedByGuest, hasBody } = Astro.props;
+const { slug, Content, headings, frontmatter, episodeNumber, extractedLinks, episodeTitle, guests, relatedByGuest, hasBody, image } = Astro.props;
 
 const videoUrl = frontmatter.video?.url ?? null;
 const videoOffsetSeconds = frontmatter.video?.offsetSeconds ?? 0;
@@ -81,7 +83,7 @@ const audioSource = getEpisodeAudioSource(frontmatter.episodeLink);
 const hasLongDescription = hasBody && frontmatter.description.length > 135;
 ---
 
-<Layout frontmatter={frontmatter} slug={`/${slug}`} mainId="episode-content-shell">
+<Layout frontmatter={frontmatter} slug={`/${slug}`} image={image} mainId="episode-content-shell">
   <EpisodeSidebar currentSlug={slug} />
 
   <div

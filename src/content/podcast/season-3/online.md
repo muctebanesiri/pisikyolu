@@ -1,5 +1,6 @@
 ---
 title: Very Online (Strange Rites)
+shareExcerpt: "What is a religion? What needs might this fulfill?"
 season: 3
 date: 2020-07-23
 time: "63"

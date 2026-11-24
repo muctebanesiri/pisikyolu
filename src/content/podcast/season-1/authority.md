@@ -1,5 +1,6 @@
 ---
 title: "Authority and Leadership"
+shareExcerpt: "what do I feel most intrinsically motivated to contribute to this project?"
 season: 1
 date: 2018-10-16
 time: "26"

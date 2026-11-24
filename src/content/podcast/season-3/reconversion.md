@@ -1,5 +1,6 @@
 ---
 title: Reconversion (Sonya Mann)
+shareExcerpt: "I see reality overall as being kind of fractal, where you have patterns that repeat on every scale."
 season: 3
 date: 2021-01-03
 time: "34"

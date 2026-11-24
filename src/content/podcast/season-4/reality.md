@@ -1,5 +1,6 @@
 ---
 title: Reality is Personal (Esther Meek)
+shareExcerpt: "Reality really is in the driver's seat."
 season: 4
 date: 2022-08-25
 time: "43"

@@ -1,5 +1,6 @@
 ---
 title: "Natural Limits (L.M. Sacasas)"
+shareExcerpt: "What will those habits make of me in the long run?"
 season: 3
 date: 2020-10-12
 time: "30"

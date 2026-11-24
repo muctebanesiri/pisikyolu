@@ -1,5 +1,6 @@
 ---
 title: "Funding One's Freedom (Evan You)"
+shareExcerpt: "It's almost a relief to be able to just work on a side project."
 season: 2
 date: 2019-05-06
 time: "86"

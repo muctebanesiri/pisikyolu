@@ -1,5 +1,6 @@
 ---
 title: "Faith and Open Source"
+shareExcerpt: "We have habits that affect how we actually live and what we believe"
 season: 1
 date: 2018-10-16
 time: "33"

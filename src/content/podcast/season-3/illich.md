@@ -1,5 +1,6 @@
 ---
 title: "Ivan Illich (L.M. Sacasas)"
+shareExcerpt: "the only thing Facebook can ever offer you is more Facebook."
 season: 3
 date: 2021-06-18
 time: "50"

@@ -1,5 +1,6 @@
 ---
 title: "Attending to Silence (L.M. Sacasas)"
+shareExcerpt: "Do I live in such a way that I am prepared to be surprised?"
 season: 3
 date: 2021-09-01
 time: "57"

@@ -1,5 +1,6 @@
 ---
 title: "Evangelism"
+shareExcerpt: "it's really important for a community to act as though everyone is watching"
 season: 1
 date: 2018-10-16
 time: "34"

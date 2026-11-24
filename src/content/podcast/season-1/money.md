@@ -1,5 +1,6 @@
 ---
 title: "Money"
+shareExcerpt: "I like this idea of money and time being an \"and\" and not an \"or\" thing"
 season: 1
 date: 2018-10-16
 time: "44"

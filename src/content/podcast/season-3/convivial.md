@@ -1,5 +1,6 @@
 ---
 title: "The Convivial Society (L.M. Sacasas)"
+shareExcerpt: "to simply look at the world is not to see it."
 season: 3
 date: 2020-10-13
 time: "24"

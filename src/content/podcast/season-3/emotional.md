@@ -1,5 +1,6 @@
 ---
 title: Emotional Programming (Omar Rizwan)
+shareExcerpt: "I think most of the work in programming is managing your own feelings about it."
 season: 3
 date: 2020-10-05
 time: "40"

@@ -1,5 +1,6 @@
 ---
 title: "Words are Totems (of Etymology) (Xiq)"
+shareExcerpt: "Words are totems. Definitely. If you know the etymology. If you don't, you're just looking at the top of the totem."
 season: 5
 date: 2026-03-27
 time: "54"

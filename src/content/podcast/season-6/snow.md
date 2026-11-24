@@ -1,5 +1,6 @@
 ---
 title: "Snow is a Commons (Melody Kim)"
+shareExcerpt: "what do you think the snowman has to think about open source?"
 season: 6
 date: 2026-03-05
 time: "80"

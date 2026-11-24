@@ -1,5 +1,6 @@
 ---
 title: "Preserving the (Digital) Past (Wendy Hagenmaier)"
+shareExcerpt: "it's also the unique stuff that somebody has decided is worth saving for the long term."
 season: 2
 date: 2019-07-08
 time: "42"

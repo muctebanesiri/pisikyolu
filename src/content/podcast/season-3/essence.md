@@ -1,5 +1,6 @@
 ---
 title: Essence (Sonya Mann)
+shareExcerpt: "And it almost changes the shape of how you see the world."
 season: 3
 date: 2021-02-18
 time: "44"

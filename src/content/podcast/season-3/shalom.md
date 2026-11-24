@@ -1,5 +1,6 @@
 ---
 title: Towards Shalom (Nicole Williams)
+shareExcerpt: "a lot of the way we can frame our purpose as human beings is to be sub-creators and sub-restorers of Shalom."
 season: 3
 date: 2020-07-08
 time: "56"

@@ -1,5 +1,6 @@
 ---
 title: "Unlisting Yourself (Philip Gee)"
+shareExcerpt: "But by just kind of quitting you just free up your mind."
 season: 2
 date: 2020-09-16
 time: "46"

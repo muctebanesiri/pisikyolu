@@ -1,5 +1,6 @@
 ---
 title: "Getting Old in Open Source (Mikeal Rogers)"
+shareExcerpt: "leadership is not a lifetime task that you've taken on."
 season: 2
 date: 2019-04-29
 time: "83"

@@ -1,5 +1,6 @@
 ---
 title: Sacred Charity (Austin Chen)
+shareExcerpt: "people are just individually irreplaceable."
 season: 4
 date: 2024-08-28
 time: "34"

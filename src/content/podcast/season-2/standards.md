@@ -1,5 +1,6 @@
 ---
 title: "The Significance of Standards (Jory Burson)"
+shareExcerpt: "People are the hardest part of software."
 season: 2
 date: 2019-05-24
 time: "65"

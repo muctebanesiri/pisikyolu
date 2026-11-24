@@ -1,5 +1,6 @@
 ---
 title: "Haircut (Jonathan Tsao)"
+shareExcerpt: "But reality is so complicated that it actually makes more sense to treat it as living"
 season: 1
 date: 2020-02-14
 time: "27"

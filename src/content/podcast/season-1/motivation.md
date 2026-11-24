@@ -1,5 +1,6 @@
 ---
 title: "Intrinsic Motivation"
+shareExcerpt: "how do I take fear and turn it into hope and excitement for the future?"
 season: 1
 date: 2018-10-16
 time: "43"

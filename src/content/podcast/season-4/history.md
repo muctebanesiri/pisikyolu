@@ -1,5 +1,6 @@
 ---
 title: History is Necromancy (David Cayley)
+shareExcerpt: "And if you can't be surprised, that's really the end."
 season: 4
 date: 2022-08-29
 time: "49"

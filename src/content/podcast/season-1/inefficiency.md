@@ -1,5 +1,6 @@
 ---
 title: "Holy Inefficiency"
+shareExcerpt: "to be in a relationship is actually to be inefficient."
 season: 1
 date: 2018-10-16
 time: "37"

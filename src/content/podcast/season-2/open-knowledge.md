@@ -1,5 +1,6 @@
 ---
 title: "Open Knowledge (Shawn Wang)"
+shareExcerpt: "But the way that we treat our knowledge is very close source."
 season: 2
 date: 2020-09-02
 time: "54"
