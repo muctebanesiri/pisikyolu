@@ -14,7 +14,7 @@
     "dev": "astro dev",
     "check:site": "bun run scripts/check-site.ts",
     "test": "bun test",
-    "build": "bun check && astro build --force && bun run build:search",
+    "build": "astro sync && bun check && astro build --force && bun run build:search",
     "preview": "astro preview",
     "deploy": "bun run build && bun run check:site && CLOUDFLARE_ACCOUNT_ID=899db3f6d2659dfb20376c7e752c862d bunx wrangler@4.140.0 pages deploy dist --project-name hopeinsource-com --branch=main",
     "deploy:preview": "bun run build && bun run check:site && CLOUDFLARE_ACCOUNT_ID=899db3f6d2659dfb20376c7e752c862d bunx wrangler@4.140.0 pages deploy dist --project-name hopeinsource-com --branch=preview",
