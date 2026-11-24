@@ -46,7 +46,7 @@ export function passageCredit(passage: SharePassage): string {
 export function shareImage(card?: EpisodeCard) {
   if (!card) return {
     path: "/share/show.png",
-    alt: "Hope in Source. Off-the-cuff conversations between friends. A two-leaf seedling stands against a teal and gold sunrise.",
+    alt: "Hope in Source. Off-the-cuff conversations between friends. A two-leaf seedling with pale roots grows from dark soil under green and gold northern lights.",
   };
   const line = card.passage ? ` “${card.passage.text}” — ${passageCredit(card.passage)}.` : "";
   return {

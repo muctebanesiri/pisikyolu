@@ -27,9 +27,8 @@ bun run preview
 | `bun run check:site` | Validate the completed build's links, IDs, assets, and deployment limits |
 | `bun run test` | Run frontend, Markdown plugin, and search-builder regression tests |
 | `bun run test:transcripts` | Run the Python review/pipeline tests without processing recordings |
-| `bun run build` | Generate covers, check types, render the site, and build search in `dist/` |
+| `bun run build` | Check types, render the site, and build search in `dist/` |
 | `bun run preview` | Serve the completed `dist/` build locally |
-| `bun run build:images` | Generate the three WebP cover sizes in `public/artwork/` |
 | `bun run build:search` | Rebuild Pagefind from already-rendered episode HTML in `dist/` |
 
 `build` deliberately uses `astro build --force`. Astro's content cache can retain stale rendered Markdown after a local remark plugin changes; a normal build can succeed while still serving the old transcript structure.

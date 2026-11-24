@@ -21,9 +21,6 @@ let pauseIcon: HTMLElement | null = null;
 let muteButton: HTMLElement | null = null;
 let volumeIcon: HTMLElement | null = null;
 let muteIcon: HTMLElement | null = null;
-let shortcutsButton: HTMLElement | null = null;
-let shortcutsDialog: HTMLDialogElement | null = null;
-let closeShortcuts: HTMLElement | null = null;
 let volumeSlider: HTMLInputElement | null = null;
 let playerFeedback: HTMLElement | null = null;
 let feedbackText: HTMLElement | null = null;
@@ -34,7 +31,6 @@ let lastHighlightedMessage: HTMLElement | null = null;
 let isLoaded = false;
 let pendingTime = 0;
 let src = "";
-let shortcutReturnFocus: HTMLElement | null = null;
 
 function isWatchView(): boolean {
     return document.getElementById("episode-shell")?.dataset.videoMode === "watch";
@@ -109,7 +105,7 @@ function updateTimeDisplay() {
         "aria-valuetext",
         `${formatTime(audio.currentTime)} of ${formatTime(audio.duration)}`,
     );
-    progressBar.style.width = `${percent}%`;
+    progressBar.style.width = `calc(${percent}% + ${6 - percent * 0.12}px)`;
     highlightTime(audio.currentTime);
 }
 
@@ -118,7 +114,7 @@ function setPlaybackUi(isPaused: boolean) {
     pauseIcon?.classList.toggle("hidden", isPaused);
     const position = isLoaded && audio ? audio.currentTime : pendingTime;
     const playLabel = document.getElementById("play-label");
-    if (playLabel) playLabel.textContent = position > 0 ? `Play ${formatTime(position)}` : "Play";
+    if (playLabel) playLabel.textContent = position > 0 ? formatTime(position) : "";
     playPauseButton?.setAttribute("aria-label", isPaused
         ? (position > 0 ? `Play from ${formatTime(position)}` : "Play episode")
         : "Pause episode");
@@ -239,7 +235,7 @@ function seekRelative(seconds: number) {
 }
 
 function handleAudioKeydown(event: KeyboardEvent) {
-    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey || shortcutsDialog?.open) return;
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
     const target = event.target;
     if (target instanceof HTMLElement && (target.isContentEditable || target.closest("input, textarea, select, button, a, [role='button']"))) return;
     if (!audio || isWatchView()) return;
@@ -262,20 +258,6 @@ function handleAudioKeydown(event: KeyboardEvent) {
             toggleMute();
             break;
     }
-}
-
-function openShortcutsDialog() {
-    if (!shortcutsDialog || shortcutsDialog.open) return;
-    shortcutReturnFocus = document.activeElement as HTMLElement | null;
-    shortcutsDialog.classList.remove("hidden");
-    shortcutsDialog.classList.add("flex");
-    shortcutsDialog.setAttribute("aria-hidden", "false");
-    shortcutsDialog.showModal();
-    closeShortcuts?.focus();
-}
-
-function closeShortcutsDialog() {
-    shortcutsDialog?.close();
 }
 
 function handleGlobalClick(event: MouseEvent) {
@@ -304,9 +286,6 @@ function initAudioPlayer() {
     muteButton = document.getElementById("mute-button");
     volumeIcon = document.getElementById("volume-icon");
     muteIcon = document.getElementById("mute-icon");
-    shortcutsButton = document.getElementById("shortcuts-button");
-    shortcutsDialog = document.getElementById("shortcuts-dialog") as HTMLDialogElement | null;
-    closeShortcuts = document.getElementById("close-shortcuts");
     volumeSlider = document.getElementById("volume-slider") as HTMLInputElement | null;
     playerFeedback = document.getElementById("player-feedback");
     feedbackText = document.getElementById("feedback-text");
@@ -359,19 +338,6 @@ function initAudioPlayer() {
         }
     });
     muteButton?.addEventListener("click", toggleMute);
-
-    shortcutsButton?.addEventListener("click", openShortcutsDialog);
-    closeShortcuts?.addEventListener("click", closeShortcutsDialog);
-    shortcutsDialog?.addEventListener("close", () => {
-        shortcutsDialog?.classList.add("hidden");
-        shortcutsDialog?.classList.remove("flex");
-        shortcutsDialog?.setAttribute("aria-hidden", "true");
-        shortcutReturnFocus?.focus();
-        shortcutReturnFocus = null;
-    });
-    shortcutsDialog?.addEventListener("click", (event) => {
-        if (event.target === shortcutsDialog) closeShortcutsDialog();
-    });
 
     document.addEventListener("keydown", handleAudioKeydown);
     document.addEventListener("click", handleGlobalClick);

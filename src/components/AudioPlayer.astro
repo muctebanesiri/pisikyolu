@@ -8,7 +8,7 @@ const { src, title } = Astro.props;
 ---
 
 <div
-  class="relative z-40 mx-auto my-2 w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] max-w-xl rounded-2xl border border-his-text-tertiary/50 bg-his-hover text-his-text"
+  class="relative z-40 mx-auto my-1.5 w-[calc(100%-1.5rem)] sm:w-[calc(100%-2rem)] max-w-xl text-his-text"
   id="audio-player-container"
   data-src={src}
   data-audio-state="idle"
@@ -16,26 +16,25 @@ const { src, title } = Astro.props;
   aria-label={`${title} audio player`}
 >
   <span class="sr-only">{title}</span>
-  <div class="px-3 sm:px-4 py-2.5 sm:py-3">
+  <div class="px-3 sm:px-4">
     <div class="flex items-center gap-2 sm:gap-4">
       <button
         id="play-pause"
-        class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-his-green/10 text-his-green transition-[color,background-color,transform] duration-200 hover:bg-his-green/20 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
+        class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-his-green/10 text-his-green transition-[color,background-color,transform] duration-200 hover:bg-his-green/20 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
         aria-label="Play episode"
       >
-        <svg id="play-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 translate-x-px" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg id="play-icon" class="h-4 w-4 translate-x-px" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M4 2.5v11l9.5-5.5z" />
         </svg>
-        <svg id="pause-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <svg id="pause-icon" class="h-4 w-4 hidden" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+          <path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z" />
         </svg>
-        <span id="play-label" class="text-sm font-medium">Play</span>
+        <span id="play-label" class="text-sm font-mono tabular-nums"></span>
       </button>
       <div id="mute-controls" class="hidden sm:flex group items-center">
         <button
           id="mute-button"
-          class="flex h-10 w-10 items-center justify-center rounded-lg bg-his-green/10 text-his-green transition-[color,background-color] duration-200 hover:bg-his-green/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
+          class="flex h-10 w-10 items-center justify-center rounded-lg text-his-text-secondary transition-[color,background-color] duration-200 hover:bg-his-hover hover:text-his-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
           aria-label="Mute"
         >
           <svg id="volume-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
@@ -58,7 +57,7 @@ const { src, title } = Astro.props;
           />
         </div>
       </div>
-      <span id="current-time" class="w-11 text-sm font-mono tabular-nums text-his-text-secondary"
+      <span id="current-time" class="min-w-11 whitespace-nowrap text-sm font-mono tabular-nums text-his-text-secondary"
         >00:00</span
       >
       <div id="seek-controls" class="flex-grow relative h-10 group">
@@ -71,7 +70,8 @@ const { src, title } = Astro.props;
         <input
           type="range"
           id="seek-slider"
-          class="absolute inset-0 h-full w-full cursor-pointer opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
+          class="absolute inset-0 m-0 h-full w-full cursor-pointer appearance-none bg-transparent opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
+          step="0.01"
           aria-label="Episode position"
           aria-valuetext="00:00 of 00:00"
           min="0"
@@ -80,17 +80,19 @@ const { src, title } = Astro.props;
           disabled
         />
       </div>
-      <span id="duration" class="w-11 text-right text-sm font-mono tabular-nums text-his-text-secondary"
+      <span id="duration" class="min-w-11 whitespace-nowrap text-right text-sm font-mono tabular-nums text-his-text-secondary"
         >00:00</span
       >
       <button
         id="shortcuts-button"
-        class="hidden sm:flex h-10 w-10 items-center justify-center rounded-lg bg-his-green/10 text-his-green transition-[color,background-color] duration-200 hover:bg-his-green/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
-        aria-label="Keyboard Shortcuts"
+        class="hidden sm:flex h-10 w-10 items-center justify-center rounded-lg text-his-text-secondary transition-[color,background-color] duration-200 hover:bg-his-hover hover:text-his-green focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
+        aria-label="Keyboard shortcuts"
+        popovertarget="shortcuts-popover"
       >
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-        <path fill-rule="evenodd" d="M7.84 1.804A1 1 0 0 1 8.82 1h2.36a1 1 0 0 1 .98.804l.331 1.652a6.993 6.993 0 0 1 1.929 1.115l1.598-.54a1 1 0 0 1 1.186.447l1.18 2.044a1 1 0 0 1-.205 1.251l-1.267 1.113a7.047 7.047 0 0 1 0 2.228l1.267 1.113a1 1 0 0 1 .206 1.25l-1.18 2.045a1 1 0 0 1-1.187.447l-1.598-.54a6.993 6.993 0 0 1-1.929 1.115l-.33 1.652a1 1 0 0 1-.98.804H8.82a1 1 0 0 1-.98-.804l-.331-1.652a6.993 6.993 0 0 1-1.929-1.115l-1.598.54a1 1 0 0 1-1.186-.447l-1.18-2.044a1 1 0 0 1 .205-1.251l1.267-1.114a7.05 7.05 0 0 1 0-2.227L1.821 7.773a1 1 0 0 1-.206-1.25l1.18-2.045a1 1 0 0 1 1.187-.447l1.598.54A6.992 6.992 0 0 1 7.51 3.456l.33-1.652ZM10 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-      </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
       </button>
     </div>
   </div>
@@ -100,77 +102,83 @@ const { src, title } = Astro.props;
 <!-- Seek feedback popup -->
 <div
   id="player-feedback"
-  class="fixed left-1/2 -translate-x-1/2 bottom-32 z-40 bg-his-hover/95 text-his-text px-4 py-2 rounded-lg border border-his-text-tertiary/50 backdrop-blur-sm opacity-0 transition-opacity duration-200 pointer-events-none flex items-center gap-2"
+  class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-40 whitespace-nowrap bg-his-hover/95 text-his-text px-4 py-2 rounded-lg border border-his-text-tertiary/50 backdrop-blur-sm opacity-0 transition-opacity duration-200 pointer-events-none flex items-center gap-2"
   role="status"
   aria-live="polite"
 >
   <span id="feedback-text" class="text-sm"></span>
 </div>
 
-<!-- Keyboard shortcuts dialog -->
-<dialog
-  id="shortcuts-dialog"
-  class="fixed inset-0 m-0 h-full max-h-none w-full max-w-none border-0 bg-black/50 p-0 backdrop-blur-sm hidden items-center justify-center z-50"
-  aria-label="Keyboard shortcuts"
-  aria-hidden="true"
->
-  <div
-    class="bg-his-hover/95 text-his-text p-6 rounded-xl border border-his-text-tertiary/50 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto"
-  >
-    <div class="flex justify-between items-center mb-4">
-      <div class="text-lg font-medium">Keyboard Shortcuts</div>
-      <button id="close-shortcuts" class="flex h-10 w-10 items-center justify-center rounded-lg text-his-text-secondary hover:bg-his-hover hover:text-his-text" aria-label="Close keyboard shortcuts">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-            clip-rule="evenodd"></path>
-        </svg>
-      </button>
-    </div>
-    <div class="grid grid-cols-2 gap-4 text-sm">
-      <div>
-        <kbd class="px-2 py-1 bg-his-hover rounded">space</kbd>
-        <span class="ml-2">Play/Pause</span>
-      </div>
-      <div>
-        <kbd class="px-2 py-1 bg-his-hover rounded">m</kbd>
-        <span class="ml-2">Mute/Unmute</span>
-      </div>
-      <div>
-        <kbd class="px-2 py-1 bg-his-hover rounded">j</kbd>
-        <span class="ml-2">Back 10 seconds</span>
-      </div>
-      <div>
-        <kbd class="px-2 py-1 bg-his-hover rounded">k</kbd>
-        <span class="ml-2">Forward 10 seconds</span>
-      </div>
-    </div>
-  </div>
-</dialog>
+<dl id="shortcuts-popover" popover aria-label="Keyboard shortcuts">
+  <dt><kbd>space</kbd></dt><dd>Play / pause</dd>
+  <dt><kbd>j</kbd></dt><dd>Back 10s</dd>
+  <dt><kbd>k</kbd></dt><dd>Forward 10s</dd>
+  <dt><kbd>m</kbd></dt><dd>Mute</dd>
+</dl>
 
 <script src="../scripts/audio-player.ts"></script>
 
 <style>
   #audio-player-container[data-audio-state="idle"] {
     width: max-content;
-    border-radius: 999px;
   }
 
   #audio-player-container[data-audio-state="idle"] > div {
-    padding: 0.3rem;
+    padding-inline: 0;
   }
 
-  #audio-player-container[data-audio-state="idle"] #play-pause {
+  #audio-player-container[data-audio-state="idle"] #play-pause:has(#play-label:not(:empty)) {
     width: auto;
-    gap: 0.4rem;
-    padding-inline: 0.75rem;
-    border-radius: 999px;
+    gap: 0.45rem;
+    padding-inline: 0.9rem;
+  }
+
+  #play-label:empty {
+    display: none;
+  }
+
+  #shortcuts-button {
+    anchor-name: --shortcuts;
+  }
+
+  #shortcuts-popover {
+    position-anchor: --shortcuts;
+    position-try-fallbacks: flip-block;
+    inset: auto;
+    top: anchor(bottom);
+    right: anchor(right);
+    margin: 0.4rem 0;
+    display: none;
+    grid-template-columns: auto auto;
+    align-items: center;
+    gap: 0.45rem 0.75rem;
+    padding: 0.75rem 0.9rem;
+    border: 0;
+    border-radius: 0.75rem;
+    background: var(--color-his-chat-bg);
+    color: var(--color-his-text);
+    font-size: 0.8125rem;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  }
+
+  #shortcuts-popover:popover-open {
+    display: grid;
+  }
+
+  #shortcuts-popover dt {
+    justify-self: end;
+  }
+
+  #shortcuts-popover dd {
+    margin: 0;
+    color: var(--color-his-text-secondary);
+  }
+
+  #shortcuts-popover kbd {
+    font: 0.75rem/1 ui-monospace, monospace;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.3rem;
+    background: var(--color-his-hover);
   }
 
   #audio-player-container[data-audio-state="idle"] :is(#mute-controls, #current-time, #seek-controls, #duration, #shortcuts-button),
@@ -178,23 +186,40 @@ const { src, title } = Astro.props;
     display: none;
   }
 
+  #seek-slider::-webkit-slider-runnable-track {
+    height: 12px;
+    background: transparent;
+  }
+
+  #seek-slider::-moz-range-track {
+    height: 12px;
+    background: transparent;
+  }
+
   #seek-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background: white;
+    background: var(--color-his-green);
     cursor: pointer;
-    margin-top: -4px;
   }
 
   #seek-slider::-moz-range-thumb {
     height: 12px;
     width: 12px;
     border-radius: 50%;
-    background: white;
+    background: var(--color-his-green);
     cursor: pointer;
     border: none;
+  }
+
+  #seek-slider:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-his-green) 35%, transparent);
+  }
+
+  #seek-slider:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-his-green) 35%, transparent);
   }
 
   /* Volume slider styles */

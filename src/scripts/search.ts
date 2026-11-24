@@ -333,9 +333,6 @@ async function openPopover() {
         && !modal.contains(document.activeElement)
         ? document.activeElement
         : trigger;
-    if (returnFocusTo?.closest('#episode-sidebar') && window.matchMedia('(max-width: 1023px)').matches) {
-        returnFocusTo = document.getElementById('header-sidebar-toggle');
-    }
     modal.removeAttribute('inert');
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('visible');
