@@ -16,7 +16,6 @@ sidebar:
   order: 1
 ---
 
-
 #### I'm from there 7,000 years ago
 
 **Timothy:** Yesterday was, the day after Julian calendar Christmas, so called old calendar, which is still the calendar kept in Bethlehem. So that's where they're celebrating Christmas. And I happened to be at the star market here and the guy behind the fish counter was chatting with me. It was very friendly. I said, where are you from? He said, where are you from? So my dad's from Greece. He said, I'm from there 7,000 years ago.
@@ -42,8 +41,6 @@ sidebar:
 #### Legibility and Fractal Societies
 
 **Henry:** There's a concept called legibility that I've been learning about recently. There's a book called [*Seeing Like a State*](https://en.wikipedia.org/wiki/Seeing_Like_a_State). The concept is viewing culture, society from the state, the government point of view and how that causes them to create policies or just act in a way that is in their interest, so that it's easier to see things from a big picture, but might not be always good. It's just one view of how society works.
-
-> [Seeing Like a State](https://en.wikipedia.org/wiki/Seeing_Like_a_State)
 
 **Henry:** One of the examples, I think it was talking about the forestry industry, getting wood from the trees. In the regular forest, there's a diversity of different tree types, plants, animals and the whole ecosystem. Then you get the wood from that, but then from an engineering point of view because it made it efficient to get the wood, oh, what if we started planting trees in a grid or something? This is similar to the high modernist view of cities. But it was not very resilient because some disease happened and all the tree, cause they were the same type of tree, they all died.
 

@@ -1,23 +1,14 @@
 import { expect, test } from "bun:test";
-import rehypeStringify from "rehype-stringify";
-import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
-import { unified } from "unified";
 
-import { remarkLinksExtractor } from "./remark-links-extractor";
+import { render } from "./test-render";
 
-const processMarkdown = (markdown: string) => unified()
-  .use(remarkParse)
-  .use(remarkLinksExtractor)
-  .use(remarkRehype)
-  .use(rehypeStringify)
-  .process(markdown);
+const processMarkdown = async (markdown: string) => render(markdown);
 
 test("scheme-less site links render correctly and reference extraction uses the normalized URL", async () => {
   const result = await processMarkdown("[Hope In Source: Emotional Programming](hopeinsource.com/emotional)\n\n> [A reference](hopeinsource.com/emotional#msg-20)");
-  expect(result.toString()).toContain('<a href="https://hopeinsource.com/emotional">Hope In Source: Emotional Programming</a>');
-  expect(result.toString()).toContain('<a href="https://hopeinsource.com/emotional#msg-20">A reference</a>');
-  expect(result.data.astro?.frontmatter?.extractedLinks).toEqual([{
+  expect(result.html).toContain('<a href="https://hopeinsource.com/emotional">Hope In Source: Emotional Programming</a>');
+  expect(result.html).toContain('<a href="https://hopeinsource.com/emotional#msg-20">A reference</a>');
+  expect(result.frontmatter.extractedLinks).toEqual([{
     text: "A reference", url: "https://hopeinsource.com/emotional#msg-20",
     quoteText: "A reference", blockquoteIndex: 0,
   }]);
@@ -30,6 +21,6 @@ test("only the exact scheme-less site host is normalized", async () => {
   ];
   const result = await processMarkdown(unchanged.map((url, i) => `[Link ${i}](${url})`).join("\n\n"));
   for (const [i, url] of unchanged.entries()) {
-    expect(result.toString()).toContain(`<a href="${url}">Link ${i}</a>`);
+    expect(result.html).toContain(`<a href="${url}">Link ${i}</a>`);
   }
 });

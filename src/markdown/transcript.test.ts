@@ -1,20 +1,8 @@
 import { expect, test } from "bun:test";
-import rehypeStringify from "rehype-stringify";
-import remarkParse from "remark-parse";
-import remarkRehype from "remark-rehype";
-import { unified } from "unified";
 
-import { remarkTranscriptPlugin } from "./plugin";
+import { render } from "./test-render";
 
-const processMarkdown = async (markdown: string, options = {}) => {
-  const result = await unified()
-    .use(remarkParse)
-    .use(remarkTranscriptPlugin, options)
-    .use(remarkRehype, { allowDangerousHtml: true })
-    .use(rehypeStringify, { allowDangerousHtml: true })
-    .process(markdown);
-  return result.toString();
-};
+const processMarkdown = async (markdown: string) => (await render(markdown)).html;
 
 test("provisional speakers keep visible acknowledgment attribution", async () => {
   for (const [lead, reply] of [["Speaker 0", "Speaker 1"], ["Henry", "Speaker unknown"], ["Unconfirmed voice", "Henry"]]) {
@@ -188,7 +176,7 @@ test("remarkTranscriptPlugin handles empty input", async () => {
 test("remarkTranscriptPlugin ignores non-transcript paragraphs", async () => {
   const input = "This is a regular paragraph without timestamps or speakers.";
   const result = await processMarkdown(input);
-  expect(result).toBe(`<p>${input}</p>`);
+  expect(result.trim()).toBe(`<p>${input}</p>`);
 });
 
 test('episode section headings follow the page title without changing their text or aliases', async () => {
@@ -197,17 +185,6 @@ test('episode section headings follow the page title without changing their text
   expect(result).toContain('<h2>Show Notes</h2>');
   expect(result).toContain('id="msg-1"');
   expect(result).not.toContain('<h4>');
-});
-
-test("remarkTranscriptPlugin handles custom options", async () => {
-  const input = "[00:28] **Speaker**: Test with custom options.";
-
-  const result = await processMarkdown(input, {
-    timestampClass: "custom-timestamp",
-  });
-
-  expect(result).toContain('class="custom-timestamp"');
-  expect(result).toContain("0:28");
 });
 
 test('short replies compact by length while questions and longer replies remain separate', async () => {

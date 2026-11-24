@@ -22,32 +22,10 @@ quotes:
     timestamp: "32:59"
     topic: "Language & Meaning"
 ---
-### Show Notes
-
-- [Building a Second Brain](https://www.buildingasecondbrain.com/)
-- [Metaphors We Live By](https://en.wikipedia.org/wiki/Metaphors_We_Live_By)
-- [Cognitive Metaphor Theory](https://en.wikipedia.org/wiki/Conceptual_metaphor)
-- [Michael Polanyi](https://en.wikipedia.org/wiki/Michael_Polanyi), [focal subsidiary integration](https://en.wikipedia.org/wiki/Michael_Polanyi#Tacit_knowledge)
-- [The Body Keeps the Score](https://en.wikipedia.org/wiki/The_Body_Keeps_the_Score)
-- [Programming as Theory Building](https://pages.cs.wisc.edu/~remzi/Naur.pdf)
-- [What Games Are Like For Someone Who Doesn't Play Games](https://www.youtube.com/watch?v=ax7f3JZJHSw)
-- [Gonzo journalism](https://en.wikipedia.org/wiki/Gonzo_journalism)
-- [auto ethnography](https://en.wikipedia.org/wiki/Autoethnography), [etic, and emic](https://en.wikipedia.org/wiki/Emic_and_etic)
-- [20 Years of JavaScript](https://bookbye.com/read/20-years-of-javascript/)
-- [Purity and Danger](https://en.wikipedia.org/wiki/Purity_and_Danger)
-- [dead metaphors](https://en.wikipedia.org/wiki/Dead_metaphor)
-- Tim Rohrer
-- [The Medium is the Message](https://en.wikipedia.org/wiki/The_medium_is_the_message)
-- [Natural Born Cyborgs](https://maggieappleton.com/cyborg-history) ([Andy Clark](https://en.wikipedia.org/wiki/Andy_Clark))
-- [cybernetics](https://en.wikipedia.org/wiki/Cybernetics)
-- [anthropomorphization](https://en.wikipedia.org/wiki/Anthropomorphism)
-- [The Cat and The Toaster](https://www.goodreads.com/book/show/42601482-the-cat-and-the-toaster)
-- [The Death and Life of Great American Cities](https://en.wikipedia.org/wiki/The_Death_and_Life_of_Great_American_Cities)
-- [How to Talk About Books You Haven't Read](https://en.wikipedia.org/wiki/How_to_Talk_About_Books_You_Haven%27t_Read)
 
 [00:00] **Henry:** Hey everyone, this is Henry for the Maintainers Anonymous podcast. I have with me **Maggie Appleton**, again! And here we want to talk about this idea of metaphor, I think we mentioned that at the end of the last episode. And I know that Maggie, you just did a talk about metaphors and embodiment.
 
-[00:14] **Maggie:** So, last time we chatted, we had mostly talked about **gift economies** in relationship to open source stuff, and then started to talk a bit about how metaphor and embodied metaphor relates to programming. And I had just done a talk the other week about how embodiment and metaphor relates to something called **Building a Second Brain**, which is a strange theory, which just essentially means being a nerdy, information collector, social community we have of people that are really into taking in notes and collecting everything that they research and turning it into useful output of some sort.
+[00:14] **Maggie:** So, last time we chatted, we had mostly talked about **gift economies** in relationship to open source stuff, and then started to talk a bit about how metaphor and embodied metaphor relates to programming. And I had just done a talk the other week about how embodiment and metaphor relates to something called [Building a Second Brain](https://www.buildingasecondbrain.com/), which is a strange theory, which just essentially means being a nerdy, information collector, social community we have of people that are really into taking in notes and collecting everything that they research and turning it into useful output of some sort.
 
 [00:46] **Maggie:** And because it's called _Building a Second Brain_, I got a bit into where ideas of body and brain come from. And the history of [René Descartes](https://en.wikipedia.org/wiki/Ren%C3%A9_Descartes), who is a French philosopher kind of initiated the original idea that all minds and our bodies are separate, which more modern science has proven to not be completely true.
 
@@ -55,7 +33,7 @@ quotes:
 
 [01:20] **Maggie:** And I think this relates a lot to programming, cause it's such a cerebral process. And yet from my understanding of it, the way that we program and build things is very physical and embodied, especially in the metaphors we use to work with it.
 
-[01:35] **Maggie:** So yes, we started to get into a bit a theory called **Metaphors We Live By**, which is a book that, [George Lakoff](https://en.wikipedia.org/wiki/George_Lakoff) wrote, and [Mark Johnson](https://en.wikipedia.org/wiki/Mark_Johnson_(philosopher)), his coauthor, who probably doesn't get as much credit for it (laughs). He's always hidden. And so he came up with this theory, I think it was in 1991 this book was published? And it established a discipline called **Cognitive Metaphor Theory**, which is this idea that everything about the way we reason in the world, everything about the way we think, everything about the way we move is metaphorical.
+[01:35] **Maggie:** So yes, we started to get into a bit a theory called [Metaphors We Live By](https://en.wikipedia.org/wiki/Metaphors_We_Live_By), which is a book that, [George Lakoff](https://en.wikipedia.org/wiki/George_Lakoff) wrote, and [Mark Johnson](https://en.wikipedia.org/wiki/Mark_Johnson_(philosopher)), his coauthor, who probably doesn't get as much credit for it (laughs). He's always hidden. And so he came up with this theory, I think it was in 1991 this book was published? And it established a discipline called [Cognitive Metaphor Theory](https://en.wikipedia.org/wiki/Conceptual_metaphor), which is this idea that everything about the way we reason in the world, everything about the way we think, everything about the way we move is metaphorical.
 
 [02:06] **Maggie:** Which is a bit difficult to understand. So if we back it up a bit and talk a bit about metaphor, it just simply means understanding one thing in terms of another, right? So that's the very basic definition. And we usually think a metaphor is something that lives in literature and poetry, right? Or it's some fancy thing you put at the beginning of an article to make it more interesting than it is, right? Every programming tutorial it goes, "Oh, well, here's how RxJS is like a big pile of cars or something." And it seems very fluffy and artistic and tangential to the point sometimes.
 
@@ -169,7 +147,7 @@ quotes:
 
 [18:16] **Maggie:** And they found out so much of the way that we reason and think about the world in what we would consider our logical way is spatial. And it's completely linked to our bodies and our emotions. And there is no separation of mind and body is like the punchline.
 
-[18:32] **Henry:** Yeah I keep seeing that kind of statement or feeling in all these different kinds of disciplines I suppose. I skimmed, but I read a book, that is called **The Body Keeps the Score**.
+[18:32] **Henry:** Yeah I keep seeing that kind of statement or feeling in all these different kinds of disciplines I suppose. I skimmed, but I read a book, that is called [The Body Keeps the Score](https://en.wikipedia.org/wiki/The_Body_Keeps_the_Score).
 
 [18:44] **Maggie:** Oh yeah.
 
@@ -263,11 +241,11 @@ quotes:
 
 [27:27] **Henry:** I think that whole idea is super interesting to me because this is the same thing in journalism, right? You want to be objective, Right? And in programming, the docs should be this vague notion of what is objective, but they're all written by people.
 
-[27:43] **Henry:** And there's actually a type of journalism called **Gonzo journalism**, I found out, which is where you purposely at admit that you are biased and you just write in that way instead of people pretending that their being objective. It's not that you should purposely try to be biased. It's just admitting that you are anyway, right.
+[27:43] **Henry:** And there's actually a type of journalism called [Gonzo journalism](https://en.wikipedia.org/wiki/Gonzo_journalism), I found out, which is where you purposely at admit that you are biased and you just write in that way instead of people pretending that their being objective. It's not that you should purposely try to be biased. It's just admitting that you are anyway, right.
 
-[27:59] **Maggie:** Anthropology has a long.. So for context, for people who didn't hear the first one. I originally studied cultural anthropology and I'm still very interested in, read too much about it all the time. But, in anthropology, we have a concept called **auto ethnography**. So at the beginning of any.. an ethnography is a piece of writing that describes a culture that someone's been working within and studying.
+[27:59] **Maggie:** Anthropology has a long.. So for context, for people who didn't hear the first one. I originally studied cultural anthropology and I'm still very interested in, read too much about it all the time. But, in anthropology, we have a concept called [auto ethnography](https://en.wikipedia.org/wiki/Autoethnography). So at the beginning of any.. an ethnography is a piece of writing that describes a culture that someone's been working within and studying.
 
-[28:20] **Maggie:** And at the beginning of every single one of our essays, or like my thesis, I had to write an auto ethnography, which is a statement that declares your positionality to the culture. So you say, are you a member of it? how did you get involved in it? We use terms like **etic** and **emic**. So etic means you are an outsider, and emic means you are an insider.
+[28:20] **Maggie:** And at the beginning of every single one of our essays, or like my thesis, I had to write an auto ethnography, which is a statement that declares your positionality to the culture. So you say, are you a member of it? how did you get involved in it? We use terms like [etic](https://en.wikipedia.org/wiki/Emic_and_etic) and [emic](https://en.wikipedia.org/wiki/Emic_and_etic). So etic means you are an outsider, and emic means you are an insider.
 
 [28:39] **Maggie:** So if I were to write an ethnography of the JavaScript world, which I would love to do, I'm probably. maybe by the time I'm forty, that's one of those life goals. I'm probably at this point more emic than etic, so I'm probably more inside than outside it, but I definitely came to it etically. So as an outsider, studying it and curious about it, so it's not a either-or, it's a linear scale.
 
@@ -277,7 +255,7 @@ quotes:
 
 [29:41] **Henry:** There's a lot of people that like, it is interesting how there are people that, you could say there's jQuery and Backbone, all these different frameworks that people aren't talking about as much anymore, but they were very important. It's still being used right now, so there's a lot of history there.
 
-[29:57] **Henry:** I know Allen, he was the editor of ES6, for JavaScript. He just did with Brendan Eich a book called **20 Years of JavaScript**. I can link it to you later.
+[29:57] **Henry:** I know Allen, he was the editor of ES6, for JavaScript. He just did with Brendan Eich a book called [20 Years of JavaScript](https://bookbye.com/read/20-years-of-javascript/). I can link it to you later.
 
 [30:08] **Maggie:** Cause I'm always, sort of surprised by the lack of explicit cultural writing about the community. It's funny, it mostly shows up in tweets, right? Tweets that you can tell get tons and tons of likes and retweets. My favorite account is I am a developer. Do you know that one?
 
@@ -333,7 +311,7 @@ quotes:
 
 [37:11] **Henry:** I guess we have linters?
 
-[37:13] **Maggie:** Oh yeah. Is that, Oh yes, that is! That's funny cause that's just like on your clothes, when you get a linting brush. See that? There we go. There's of course, _bugs_. But I love the historical origin of that one, that it was like a physical bug that they found in the, I forget it. Was it the punch cards? They had like a bug in it, like a squat fly. Or something. So that's like a beautiful historical metaphor. So they sometimes call those **dead metaphors** was where the original meaning almost doesn't matter. And we just use the metaphor without understanding where it came from. But you can look up the history on Wikipedia. It's there.
+[37:13] **Maggie:** Oh yeah. Is that, Oh yes, that is! That's funny cause that's just like on your clothes, when you get a linting brush. See that? There we go. There's of course, _bugs_. But I love the historical origin of that one, that it was like a physical bug that they found in the, I forget it. Was it the punch cards? They had like a bug in it, like a squat fly. Or something. So that's like a beautiful historical metaphor. So they sometimes call those [dead metaphors](https://en.wikipedia.org/wiki/Dead_metaphor) was where the original meaning almost doesn't matter. And we just use the metaphor without understanding where it came from. But you can look up the history on Wikipedia. It's there.
 
 [37:49] **Henry:** Or some of the icons that we use. I know save, maybe it used to be a floppy disk, but we don't use that or something.
 
@@ -353,13 +331,13 @@ quotes:
 
 [40:03] **Maggie:** Where you click okay. They just. Well, one of those in the middle of the screen and get people to kind of tap it and you kind of go, is this really the most intuitive way we can confirm things as we put? And it's like a metaphor of a master metaphor.
 
-[40:17] **Henry:** And I know in some games they'll show your hands, but they don't show your arms, so at least you have some anchor to see what you're doing. It kind of reminds me of **McLuhan** in my talk too, from **The Medium is the Message**. You know, he talks about how technologies are extensions of your physical and nervous system. Right. I think that's really interesting metaphor too.
+[40:17] **Henry:** And I know in some games they'll show your hands, but they don't show your arms, so at least you have some anchor to see what you're doing. It kind of reminds me of **McLuhan** in my talk too, from [The Medium is the Message](https://en.wikipedia.org/wiki/The_medium_is_the_message). You know, he talks about how technologies are extensions of your physical and nervous system. Right. I think that's really interesting metaphor too.
 
 [40:41] **Maggie:** I had mentioned that a bit in the other talk I'd done too, one of my favorite sort of philosopher anthropologists, is a guy called [Andy Clark](https://en.wikipedia.org/wiki/Andy_Clark), and he wrote this book, [Natural Born Cyborgs](https://maggieappleton.com/cyborg-history), which argues to take cyborg, just to mean a blend of technology and human, that he says from the beginning, we have always been tool-based creatures and that the tools are extensions of ourselves.
 
 [41:00] **Maggie:** And a digital tool is no different to a hammer or a cup. And it can get a bit tricky with it if you want, and to go into the whole world theory where you say, we are all one, I am not different than the cup and the cup is part of me and I am part of the cup and that sort of thing.
 
-[41:17] **Maggie:** But it is true that if you took humans and you took away all our tools that we've designed, you can take everything to be a tool: the house, the electricity, the internet. This kind of gets back to the second brain theory of what I mentioned at the beginning, where you sort of accept that the internet is an extension of your brain, and it doesn't make you less human, and it's not some sort of weird negative thing where you're trying to downplay your emotion and your body. You're just saying, I embrace that this is all one continuous system. I should have mentioned the correct term for this is: it's a theory called **cybernetics**, where they say were all in a cyber network, it's all one big connected GraphQL sort of node system.
+[41:17] **Maggie:** But it is true that if you took humans and you took away all our tools that we've designed, you can take everything to be a tool: the house, the electricity, the internet. This kind of gets back to the second brain theory of what I mentioned at the beginning, where you sort of accept that the internet is an extension of your brain, and it doesn't make you less human, and it's not some sort of weird negative thing where you're trying to downplay your emotion and your body. You're just saying, I embrace that this is all one continuous system. I should have mentioned the correct term for this is: it's a theory called [cybernetics](https://en.wikipedia.org/wiki/Cybernetics), where they say were all in a cyber network, it's all one big connected GraphQL sort of node system.
 
 [41:56] **Henry:** The cup thing is funny cause I was reading about **Bruce Lee**. I don't know if you remember his quote about water? And he's like, be like water. If you put water into the cup, it becomes the cup.
 
@@ -387,7 +365,7 @@ quotes:
 
 [44:33] **Maggie:** I like that idea of that the sense of self can shift and expand to include other objects and other bits of the world that don't have to be defined by my biological body, because that is a bit of an odd place to draw the line.
 
-[44:46] **Henry:** Yeah one thing that I've been reading is that I think it's really easy to think that tacit knowledge is just implicit knowledge, right? It seems very similar, like explicit versus implicit. Explicit is just the things that I can say and implicit, I don't have the words for those things. He uses very technical terms, but there's this phrase that he uses called **focal subsidiary integration**.
+[44:46] **Henry:** Yeah one thing that I've been reading is that I think it's really easy to think that tacit knowledge is just implicit knowledge, right? It seems very similar, like explicit versus implicit. Explicit is just the things that I can say and implicit, I don't have the words for those things. He uses very technical terms, but there's this phrase that he uses called [focal subsidiary integration](https://en.wikipedia.org/wiki/Michael_Polanyi#Tacit_knowledge).
 
 [45:08] **Maggie:** Gosh.
 
@@ -421,17 +399,17 @@ quotes:
 
 [49:55] **Maggie:** I've never quite figured out the tension between it. Cause I definitely believe in the. Well, everything we were talking about, right? Tools as part of embodiment and as part of extensions of ourselves. So I care deeply about my tools, I'm for sure the person that customizes everything to the absurd degree, I love macros on my desktop and I love making, I think of it as both fitting myself to the machine and fitting the machine to me in this interplay.
 
-[50:22] **Maggie:** Where you just, merge and become one. Not that I think my machine is like an embodied being that cares whether it involves itself with me, but I think about it in a very, **anthropomorphization** that's the word. It is animate to me, it is a being.
+[50:22] **Maggie:** Where you just, merge and become one. Not that I think my machine is like an embodied being that cares whether it involves itself with me, but I think about it in a very, [anthropomorphization](https://en.wikipedia.org/wiki/Anthropomorphism) that's the word. It is animate to me, it is a being.
 
 [50:39] **Henry:** Yeah.
 
 [50:39] **Maggie:** And not in a way right, where it has human rights, but as an I think of it as a more, cognitive living being in itself than perhaps other people might. But I'm more prone to take magic and mysticism and animism seriously, just from reading about it in anthropology and understanding it's a beautiful way to see the world, even if you don't, on a rational level, think it's all true.
 
-[51:00] **Henry:** No, I resonated with that too with a book I was reading called **The Cat and The Toaster**. It's a book about ministry, but I think you can apply it to a lot of things. The key question is essentially, what are we dealing with, for whatever problem we're trying to solve? Is it a cat, or is it a toaster? Or if it's a toaster? You can take it apart. You can put it back together, you can repair it. But you definitely don't want to do that with the cat. So basically understand, are you dealing with a living thing, or a non-living thing. And it doesn't have to mean that it's literally that, right? So if you apply that to the metaphor of open source or a city or the environment, none of those things are living in a way, but we can treat them as living.
+[51:00] **Henry:** No, I resonated with that too with a book I was reading called [The Cat and The Toaster](https://www.goodreads.com/book/show/42601482-the-cat-and-the-toaster). It's a book about ministry, but I think you can apply it to a lot of things. The key question is essentially, what are we dealing with, for whatever problem we're trying to solve? Is it a cat, or is it a toaster? Or if it's a toaster? You can take it apart. You can put it back together, you can repair it. But you definitely don't want to do that with the cat. So basically understand, are you dealing with a living thing, or a non-living thing. And it doesn't have to mean that it's literally that, right? So if you apply that to the metaphor of open source or a city or the environment, none of those things are living in a way, but we can treat them as living.
 
 [51:45] **Maggie:** I like that. Yeah. I always love that as systems, as organisms. We use that metaphor all the time. And especially programming as organism is probably my favorite programming metaphor to lean into, as living system. I liked your birth and death stuff about it, that makes perfect sense.
 
-[52:02] **Henry:** And a lot of that is, to me, it relates to, Jane Jacobs wrote a book called **The Death and Life of Great American Cities**. So she uses the same kind of language in a way.
+[52:02] **Henry:** And a lot of that is, to me, it relates to, Jane Jacobs wrote a book called [The Death and Life of Great American Cities](https://en.wikipedia.org/wiki/The_Death_and_Life_of_Great_American_Cities). So she uses the same kind of language in a way.
 
 [52:12] **Maggie:** I have definitely seen that one around, but haven't read it yet.
 

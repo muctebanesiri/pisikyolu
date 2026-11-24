@@ -1,17 +1,12 @@
 import { isCompactReply } from "./compact-reply.js";
-import { toString as toStringUtil } from "mdast-util-to-string";
-import { visit } from "unist-util-visit";
-import type { Heading, Link, Paragraph, Parent, PhrasingContent, Root, RootContent, Strong, Text } from "mdast";
-import type { Plugin } from "unified";
+import type { Heading, Link, Paragraph, PhrasingContent, Root, RootContent, Strong, Text } from "mdast";
+import { toString as toStringUtil, visit } from "./tree";
 
 const timestampRegex = /^\[(\d{1,2}:\d{2}(?::\d{2})?)\]/;
 const maxConversationGapSeconds = 45;
-
-interface PluginOptions {
-  timestampClass?: string;
-  wrapClass?: string;
-  textClass?: string;
-}
+const timestampClass = "message-time";
+const wrapClass = "message";
+const textClass = "message-bubble";
 
 function isTimestamp(node: Paragraph): boolean {
   if (node.children.length < 2) return false;
@@ -143,21 +138,11 @@ function formatTimestamp(seconds: number): string {
     : `${minutes}:${remainder}`;
 }
 
-export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
-  options: PluginOptions = {}
-) => {
-  const {
-    timestampClass = "message-time",
-    wrapClass = "message",
-    textClass = "message-bubble",
-  } = options;
-
-  return (tree: Root, vfile) => {
+export function transcript(tree: Root, frontmatter: Record<string, unknown>, path = "transcript") {
     // Episode titles are the page's h1; transcript sections follow at h2.
-    visit(tree, 'heading', (node: Heading) => {
+    visit(tree, 'heading', (node) => {
       if (node.depth === 3 || node.depth === 4) node.depth = 2;
     });
-    const frontmatter = vfile.data?.astro?.frontmatter;
     const shareExcerpt = frontmatter?.shareExcerpt;
     const speakerConfig: Record<string, string> = (frontmatter?.speakers as Record<string, string>) || {};
     const speakerOrder: string[] = [];
@@ -170,9 +155,7 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
     let previousTime: number | null = null;
     let previousTimed = false;
 
-    visit(tree, "paragraph", (node: Paragraph, index?: number, parent?: Parent) => {
-      if (index === undefined || !parent) return;
-
+    visit(tree, "paragraph", (node, index, parent) => {
       // Check if previous node was a heading
       const prevNode = index > 0 ? parent.children[index - 1] : null;
       if (prevNode && isHeading(prevNode)) {
@@ -244,7 +227,7 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
         const line = toStringUtil(content, { includeHtml: false });
         const start = plainQuotes(line).indexOf(plainQuotes(shareExcerpt));
         if (start >= 0) {
-          if (frontmatter.sharePassage) throw new Error(`Ambiguous share excerpt in ${vfile.path}: ${shareExcerpt}`);
+          if (frontmatter.sharePassage) throw new Error(`Ambiguous share excerpt in ${path}: ${shareExcerpt}`);
           frontmatter.sharePassage = {
             text: line.slice(start, start + shareExcerpt.length),
             speaker: speaker.replace(/:$/, ""), seconds: hasExplicitTimestamp ? seconds : null,
@@ -438,6 +421,5 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
       group.children = children;
     }
     tree.children = grouped;
-    if (shareExcerpt && !frontmatter?.sharePassage) throw new Error(`Share excerpt missing from transcript in ${vfile.path}: ${shareExcerpt}`);
-  };
-};
+    if (shareExcerpt && !frontmatter?.sharePassage) throw new Error(`Share excerpt missing from transcript in ${path}: ${shareExcerpt}`);
+}

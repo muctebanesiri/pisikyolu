@@ -26,9 +26,7 @@ quotes:
 
 #### That's a Dynamicland sort of thought
 
-[00:00] **Henry:** So I have Omar with me. I think your tweets are interesting and it'd be interesting to almost analyze them. Cause I think you said you were planning on doing that for yourself to see what comes up, right?
-
-> [Omar's Twitter, @rsnous](https://twitter.com/rsnous)
+[00:00] **Henry:** So I have Omar with me. I think [your tweets](https://twitter.com/rsnous "Omar's Twitter, @rsnous") are interesting and it'd be interesting to almost analyze them. Cause I think you said you were planning on doing that for yourself to see what comes up, right?
 
 [00:12] **Omar:** I just left my job at Dynamicland. So I've kind of been collecting my thoughts and it could be fun to go through some of what I've been thinking about.
 

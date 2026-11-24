@@ -141,9 +141,7 @@ quotes:
 
 #### The Burden of Note-Taking Systems
 
-[09:11] **Henry:** One example I immediately think of is.. I mean, everyone has to take notes on stuff eventually. And there's even a meme lately.. I don't know if you've seen that meme with the whole IQ curve thing. The people on the left and the right just use simple notepad, Apple notes.
-
-- [tweet](https://twitter.com/andreyzagoruiko/status/1552086187489107969?s=20)
+[09:11] **Henry:** One example I immediately think of is.. I mean, everyone has to take notes on stuff eventually. And there's even a meme lately.. I don't know if you've seen [that meme](https://twitter.com/andreyzagoruiko/status/1552086187489107969?s=20) with the whole IQ curve thing. The people on the left and the right just use simple notepad, Apple notes.
 
 [09:27] **Henry:** And then one in the middle, it's like all the different types, Notion and OneNote and whatever. All don't even remember all the names, Roam. And I've used all those things in the middle a lot.
 

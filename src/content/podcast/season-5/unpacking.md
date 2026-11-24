@@ -19,21 +19,6 @@ quotes:
     topic: "Faith & Practice"
 ---
 
-### Links
-
-- Concepts
-  - [The Trouble with Optionality](https://www.thecrimson.com/article/2017/5/25/desai-commencement-ed/) - essay on commitment
-  - [Big Five/OCEAN](https://en.wikipedia.org/wiki/OCEAN_model) - personality theory
-  - [Tit for Tat](https://www.reddit.com/r/slatestarcodex/comments/1gs4c4u/comment/lxbks9b/) - tit for tat strategy
-  - [Transubstantiation](https://en.wikipedia.org/wiki/Transubstantiation) - Catholic doctrine
-  - [Aristotle's Golden Mean](https://en.wikipedia.org/wiki/Golden_mean) - virtue ethics
-  - [Sacred-Secular Divide](https://en.wikipedia.org/wiki/Sacred_and_secular)
-- Biblical References:
-  - [John 1:14](https://www.biblegateway.com/passage/?search=John+1&version=NIV) - "The Word became flesh"
-  - [Feeding the 5000](https://en.wikipedia.org/wiki/Feeding_the_5000) - miracle story
-  - [Golden Calf](https://en.wikipedia.org/wiki/Golden_Calf) - idolatry example
-  - ["I never knew you"](https://www.biblegateway.com/passage/?search=Matthew%207:21-23&version=ESV) - Matthew 7:23
-
 [00:00] **Joseph:** I wanted to talk to you to explore what I believe because I still don't really know. Over the past eight-ish years, I've been thinking more about things, but still haven't... I have this giant 40-page doc that I sent you.
 
 [00:24] **Joseph:** Originally it started as, I want to write a personal essay about what I believe. I had gone through deconstruction in college, tried to do reconstruction. It was to solve the personal problem of what to say when people ask me, "What religion are you?" Or "Are you Christian?"
@@ -68,7 +53,7 @@ quotes:
 
 #### The Trap of Infinite Options
 
-[04:21] **Henry:** There's an essay I like citing, called _The Trouble with Optionality_. It's talking about this. We love options, both financially, but that has infected our way of thinking.
+[04:21] **Henry:** There's an essay I like citing, called [_The Trouble with Optionality_](https://www.thecrimson.com/article/2017/5/25/desai-commencement-ed/ "Essay on commitment"). It's talking about this. We love options, both financially, but that has infected our way of thinking.
 
 [04:34] **Henry:** If I can just be a consultant, I do whatever I want. He says the point of an option is to choose it eventually. The point of options is to commit at some point. So if your goal is marriage, then the point of dating is to eventually pick one person, if you believe in that.
 
@@ -92,7 +77,7 @@ quotes:
 
 [07:06] **Henry:** A big part of the faith is idolatry, which is worshiping things that you think are God that are not.
 
-[07:14] **Henry:** In the Old Testament, idolatry was like the golden calf example. Anything could become an idol. Even serving in the church, thinking I'm a Christian could be an idol. There are mental, emotional, and spiritual idols. And maybe that relates to what you said about labeling. God, he'll say, "I am, I am." There's no name for God. I liked using the Taoist notion of it. The name that can be named is not the real name.
+[07:14] **Henry:** In the Old Testament, idolatry was like the [golden calf](https://en.wikipedia.org/wiki/Golden_Calf "Idolatry example") example. Anything could become an idol. Even serving in the church, thinking I'm a Christian could be an idol. There are mental, emotional, and spiritual idols. And maybe that relates to what you said about labeling. God, he'll say, "I am, I am." There's no name for God. I liked using the Taoist notion of it. The name that can be named is not the real name.
 
 [07:41] **Joseph:** This is interesting. I think a common sentiment in people in-between, choosing one faith versus being pluralist is, why choose one? Is it possible to... by choosing one, you're putting yourself in the position to potentially go too far, go too deep into becoming close-minded, almost like getting into a cult mindset or behavior.
 
@@ -150,7 +135,7 @@ quotes:
 
 [15:03] **Henry:** I don't know if I'm actively trying to, and you could say that I think as a Christian you want, the point of being a Christian is simple. It can be simplified to just be, you want to be like Jesus, to think like Jesus. So, yeah, you can bring in The Bible or various theology or whatever. and maybe it's related to the idol ideology thing is, I don't want to be convinced because, some other reason, but that doesn't mean that that other reason isn't spiritual.
 
-[15:35] **Henry:** We tend to create a secular sacred divide. Is spiritual and this is not. So one example would be like the right thing to do is to become a missionary, quit your job and the other one is like make a lot of money at some place and you donate. It sounds like a very ea way of thinking about it. And for me, I don't really want to believe in that binary. There's a lot of options in between, you know, on what your calling is. If God is to God of creativity, I just don't know why we're trying to fit into these boxes on that. It's not the same as believing that God is our savior and stuff like that.
+[15:35] **Henry:** We tend to create a [secular sacred divide](https://en.wikipedia.org/wiki/Sacred_and_secular). Is spiritual and this is not. So one example would be like the right thing to do is to become a missionary, quit your job and the other one is like make a lot of money at some place and you donate. It sounds like a very ea way of thinking about it. And for me, I don't really want to believe in that binary. There's a lot of options in between, you know, on what your calling is. If God is to God of creativity, I just don't know why we're trying to fit into these boxes on that. It's not the same as believing that God is our savior and stuff like that.
 
 #### Abundance as a Heavenly Mindset
 
@@ -164,7 +149,7 @@ quotes:
 
 [16:58] **Henry:** I default to thinking scarcity based, because that's just like our whole world, right? When we think the same way, we're not really gonna get anywhere. So I want to think differently, change it up to see where that would lead to. I don't necessarily know what that looks like.
 
-[17:11] **Henry:** As an example, like Jesus miracles with feeding the 5,000 or whatever, right? It's like, what does that even mean? He could just multiply a bunch of stuff? Was there a mindset thing? The kid had a lot of faith or something? There's a lot of ways to think through that too.
+[17:11] **Henry:** As an example, like Jesus miracles with [feeding the 5,000](https://en.wikipedia.org/wiki/Feeding_the_5000 "Miracle story") or whatever, right? It's like, what does that even mean? He could just multiply a bunch of stuff? Was there a mindset thing? The kid had a lot of faith or something? There's a lot of ways to think through that too.
 
 [17:24] **Henry:** I don't think open source was a Christian thing. it wasn't started by Christians per se, but maybe they were influenced by Christian principles, whether they believe that or not. I mean, that's just how I'm seeing it. Most of the time you're like, well, if you do something and you give it away for free, why would you do that?
 
@@ -196,7 +181,7 @@ quotes:
 
 [19:45] **Henry:** Oh, okay. I think I want to relate that feeling of separation of the dichotomy with the lack of embodiment. That's a different word I would use.
 
-[19:55] **Henry:** I would say that's a core part of the faith too. And you might be like, why is that related? Part of it is that, John 1, like the word became flesh, meaning God became embodied. So how is that not a core part of the faith, right?
+[19:55] **Henry:** I would say that's a core part of the faith too. And you might be like, why is that related? Part of it is that, [John 1, like the word became flesh](https://www.biblegateway.com/passage/?search=John+1&version=NIV "John 1:14"), meaning God became embodied. So how is that not a core part of the faith, right?
 
 [20:09] **Henry:** This is literally talking about how God, who we generally think of as spiritual, he doesn't show himself to us. Or at least that's not what people thought. When Christ came, it's telling us the body is important. And I always wanna come back to that. Cause he could have came in in a different form, right? Or he could have not came as a person.
 
@@ -206,7 +191,7 @@ quotes:
 
 [20:51] **Henry:** And my tension in terms of, you said the spectrum, is like, okay, should I think of this as purely symbolic or should I think of this as like literally doing something physically?
 
-[21:02] **Henry:** In Catholicism they have this concept called transubstantiation, which is like when you eat the bread and the wine, it turns into Christ's body and blood. They mean that literally. But then also in this old way, I don't even know how to explain it. So most people like Protestants would be like, that's weird. Like what does that even mean?
+[21:02] **Henry:** In Catholicism they have this concept called [transubstantiation](https://en.wikipedia.org/wiki/Transubstantiation "Catholic doctrine"), which is like when you eat the bread and the wine, it turns into Christ's body and blood. They mean that literally. But then also in this old way, I don't even know how to explain it. So most people like Protestants would be like, that's weird. Like what does that even mean?
 
 [21:19] **Henry:** I don't think any Protestant thinks this, but it's like, is what we're doing purely symbolic? It's just like making me think something in my head, right.
 
@@ -230,7 +215,7 @@ quotes:
 
 [23:45] **Henry:** That is a great question. I don't know where to start with that. You could argue for both. Jesus was challenging the people of that time. The Pharisees, they were the ones that followed the rules. They knew the Bible, the Old Testament. And they did not know God.
 
-[24:01] **Henry:** So that's actually something that any Christian should be asking themselves, like, am I gonna be the Pharisee. Right now, and at the end of my life when like, you know, if you believe that, and then God is like, you know, there's a verse where they're like, we perform miracles in your name. So literally they were doing miracles. You know, we cast out demons, all these crazy things, and God's like, I never knew you. I mean, that would be I horrible to think, right? God's like, no, I didn't know who you were at all.
+[24:01] **Henry:** So that's actually something that any Christian should be asking themselves, like, am I gonna be the Pharisee. Right now, and at the end of my life when like, you know, if you believe that, and then God is like, you know, there's a verse where they're like, we perform miracles in your name. So literally they were doing miracles. You know, we cast out demons, all these crazy things, and God's like, [I never knew you](https://www.biblegateway.com/passage/?search=Matthew%207:21-23&version=ESV "Matthew 7:23"). I mean, that would be I horrible to think, right? God's like, no, I didn't know who you were at all.
 
 [24:30] **Henry:** I really like this sermon I listened to and it was like, we're always trying to do things for God, but we should think about doing things with God. So this might go back to idolatry and commitment. I think I know what God wants, right? So I did this thing for, I gave you this gift, and at the end of your life he's like, I didn't know who you were. So you think you know God, but does God know you? And that's like the real question.
 
@@ -242,7 +227,7 @@ quotes:
 
 [26:08] **Joseph:** I like that. I keep pointing out spectrums. I really like spectrums, but like the, it's like the pharisee to heretic spectrum. Don't... it's good to be probably somewhere in the middle.
 
-[26:18] **Henry:** Middle is like golden mean middle. I think that's Aristotle. It's not like 50%. You can't really measure that. What does it mean to be courageous versus reckless? Virtue involves people, right? And that involves character. And it probably involves looking at their whole life.
+[26:18] **Henry:** Middle is like [golden mean](https://en.wikipedia.org/wiki/Golden_mean "Aristotle's virtue ethics") middle. I think that's Aristotle. It's not like 50%. You can't really measure that. What does it mean to be courageous versus reckless? Virtue involves people, right? And that involves character. And it probably involves looking at their whole life.
 
 [26:36] **Joseph:** My brain is like evolving as we speak. I'm writing down all these notes, by the way. This is really good stuff.
 
@@ -258,7 +243,7 @@ quotes:
 
 [28:22] **Joseph:** Well, the way that Jesus did it was parables. And like, if you want people to believe in abundance, then I don't know, maybe perform a Miracle. Feed the 5,000.
 
-[28:33] **Joseph:** You could also believe in abundance through other means. Game theory, maybe, I don't know. I saw this YouTube video on game theory of long term game theory where tit for tat or whatever, being more generous to a certain extent, actually benefits you and the entire world in the long term. So maybe you could make that argument.
+[28:33] **Joseph:** You could also believe in abundance through other means. Game theory, maybe, I don't know. I saw this YouTube video on game theory of long term game theory where [tit for tat](https://www.reddit.com/r/slatestarcodex/comments/1gs4c4u/comment/lxbks9b/ "Scott Alexander on tit for tat") or whatever, being more generous to a certain extent, actually benefits you and the entire world in the long term. So maybe you could make that argument.
 
 [29:00] **Henry:** Iterative prisoner dilemma. [Scott Alexander](https://en.wikipedia.org/wiki/Scott_Alexander) had the thing about this. He was actually asking the question, why did Christianity rise? Like why is it so popular? Why did it grow so fast? And think about how to use that so that EA could become like Christianity.
 

@@ -32,9 +32,9 @@ quotes:
 
 [00:00:34] **Henry:** And this is a good intro, segue. You are sort of a maintainer now, because of this project that you just released a few weeks ago, right? Or really recently.
 
-[00:00:43] **Jordan:** Yeah, two weeks ago. So I released a thing called 98.css. It is a quote, unquote design system. It's a single css file, so it is somewhat unfair of me to call it a design system, but that's what I call it. For making applications that look Windows 98, is essentially the tagline. It is a celebration, if you will, of retro computing. I was born in the early '90s. So I grew up playing games on Windows 98. Really, my first time on the computer was Windows 98. When I was a we, little one, and then doing typing class in elementary school and all that thing, all happened on Windows 98. So I know the buttons, the colors, the shadows, the text very well.
+[00:00:43] **Jordan:** Yeah, two weeks ago. So I released a thing called [98.css](https://jdan.github.io/98.css/ "Jordan's design system for building Windows 98-style UIs"). It is a quote, unquote design system. It's a single css file, so it is somewhat unfair of me to call it a design system, but that's what I call it. For making applications that look Windows 98, is essentially the tagline. It is a celebration, if you will, of retro computing. I was born in the early '90s. So I grew up playing games on Windows 98. Really, my first time on the computer was Windows 98. When I was a we, little one, and then doing typing class in elementary school and all that thing, all happened on Windows 98. So I know the buttons, the colors, the shadows, the text very well.
 
-> [98.css](https://jdan.github.io/98.css/) - Jordan's design system for building Windows 98-style UIs. Also see [his blog post](https://thatjdanisso.cool/98-dot-css).
+> Also see Jordan's [blog post on 98.css](https://thatjdanisso.cool/98-dot-css).
 
 [00:01:36] **Jordan:** And there's a bit of nostalgia that just hits me when I see it. And this is an idea that's been floating around for a really long time. I'm not the first one to do this, I guess first off I should qualify that. There is a 95.css, and there's also a ... Goodness, I'm forgetting the name. I think it might literally be called Windows98.css by Contra. It's the guy that made Gulp all those years ago. And I'm starting to rant a little, but one thing that always tripped me up was it was close, but never exact. And in my career, I am a software developer at Stripe. I write mostly front end code.
 
@@ -256,9 +256,7 @@ quotes:
 
 **Jordan:** Yes. Absolutely.
 
-**Henry:** And so you mentioned that you basically bought the Window reference manual to check this stuff.
-
-> [Microsoft Windows User Experience Reference Manual](https://en.wikipedia.org/wiki/Human_interface_guidelines#Microsoft_Windows)
+**Henry:** And so you mentioned that you basically bought the [Window reference manual](https://en.wikipedia.org/wiki/Human_interface_guidelines#Microsoft_Windows "Microsoft Windows User Experience Reference Manual") to check this stuff.
 
 **Jordan:** Yes. I bought it. Oh man. I don't want to say it's a year ago. Probably almost a year ago though. It was very cheap on Amazon, I got it used. Probably like 10 bucks. Huge, like 500 pages, big book. And I completely left this app before, but when I was first looking into the sort of staircase shadow, it turns out this is documented behavior. This is snaked out behavior from the Windows user experience guidelines.
 

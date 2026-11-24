@@ -23,9 +23,7 @@ quotes:
 
 #### What makes an organization healthy?
 
-[00:00] **Henry:** Alright, so in this episode, I wanted to talk about organizational health. Nadia just wrote a post about the health of an open source project and how we measure it, whether it's by contributors, activity, or output. It just got me thinking about how we measure that in a church. What's the relationship between church growth and health, the popularity of open source projects versus health or sustainability.
-
-> [Methodologies for measuring project health](https://nadia.xyz/project-health)
+[00:00] **Henry:** Alright, so in this episode, I wanted to talk about organizational health. Nadia just wrote [a post about the health of an open source project](https://nadia.xyz/project-health "Methodologies for measuring project health") and how we measure it, whether it's by contributors, activity, or output. It just got me thinking about how we measure that in a church. What's the relationship between church growth and health, the popularity of open source projects versus health or sustainability.
 
 [00:31] **Nadia:** It's interesting, even though I believe that we should be measuring a project's activity and output over number of contributors, it's an easier thing to visualize when you talk about people coming to your project or leaving your project as a sign of health. We've talked about this with church stuff, of bringing people into your congregation and who's attending. How many people are there? It's such an easy visual to fall back on. The stuff I was writing about was trying to make the case that number of contributors or attendees doesn't really matter. What matters more is what are you actually producing and putting out.
 

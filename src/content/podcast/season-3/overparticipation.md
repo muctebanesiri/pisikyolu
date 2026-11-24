@@ -251,9 +251,7 @@ quotes:
 
 #### Cozyroom
 
-[34:19] **Henry:** That's exciting. I tried one recently called cozyroom.
-
-> https://cozyroom.xyz
+[34:19] **Henry:** That's exciting. I tried one recently called [cozyroom](https://cozyroom.xyz).
 
 [34:22] **Nadia:** Oh, yeah, I tried that too. Yeah.
 

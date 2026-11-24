@@ -13,7 +13,7 @@ bun run dev
 
 Search only works on a build: `bun run build && bun run preview`.
 
-`bun run check` checks types, `bun run test` runs the tests, and `bun run test:transcripts` runs the Python transcript-tool tests.
+`bun check` checks types, `bun run test` runs the tests, and `bun run test:transcripts` runs the Python transcript-tool tests.
 
 ## Where things live
 

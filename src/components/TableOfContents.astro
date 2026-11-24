@@ -1,5 +1,5 @@
 ---
-import type { ExtractedLink } from "@/plugins/remark-links-extractor";
+import type { ExtractedLink } from "@/markdown/links";
 
 interface TOCHeading {
   slug: string;
@@ -75,10 +75,10 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
     {extractedLinks.length > 0 && (
       <div
         id="ref-popover"
-        class="hidden md:block fixed right-12 top-1/2 w-72 max-h-[60vh] overflow-hidden bg-his-bg border border-his-hr rounded-lg shadow-xl opacity-0 invisible transition-[opacity,transform,visibility] duration-200 z-50"
+        class="hidden md:block fixed right-12 top-1/2 w-72 overflow-hidden bg-his-bg border border-his-hr rounded-lg shadow-xl opacity-0 invisible transition-[opacity,transform,visibility] duration-200 z-50"
         style="transform: translateY(-50%) translateX(10px);"
       >
-        <div class="p-1.5 overflow-y-auto max-h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div class="p-1.5 max-h-[60vh] overflow-y-auto overscroll-contain [scrollbar-width:thin]">
           {extractedLinks.map((link) => (
             <div
               class="ref-popover-item py-2 px-2 rounded-md hover:bg-his-hover/50 transition-colors"

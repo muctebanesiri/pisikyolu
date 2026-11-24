@@ -130,11 +130,9 @@ quotes:
 
 [22:48] **Henry:** Mmm.
 
-[22:49] **Nadia:** ... an open source maintainer. I think it was Mikeal that wrote a response to that being like, "You just gotta step down (laughs) if you're feeling it."
+[22:49] **Nadia:** ... an open source maintainer. I think it was Mikeal that wrote [a response](https://medium.com/@mikeal/time-to-leave-a68294ccb2af "Time to Leave, Mikeal Rogers on stepping down as a maintainer") to that being like, "You just gotta step down (laughs) if you're feeling it."
 
 [22:57] **Henry:** Yeah, I think I read that. He said that, yeah.
-
-> [Time to Leave](https://medium.com/@mikeal/time-to-leave-a68294ccb2af) - Mikeal Rogers on stepping down as a maintainer
 
 [23:00] **Nadia:** Yeah and he was like, "You just need to trust that someone is gonna take up the mantle." But yeah. That's a very scary thing where it's like, it seems like a really nice sweet spot is that time where you were sort of talking about, where you're sort of defective, haven't even been involved for a while, so it's easy to kind of be like, "I'm not even doing anything. I've kind of been silently fading into the background. You're gonna be fine without me."
 

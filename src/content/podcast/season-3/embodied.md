@@ -74,13 +74,11 @@ quotes:
 
 #### Paperclip Thought Experiment
 
-[04:43] **Maggie:** That's funny. I had done a talk recently. Do you know the paperclip machine thought experiment, from AI?
+[04:43] **Maggie:** That's funny. I had done a talk recently. Do you know the [paperclip machine thought experiment](https://en.wikipedia.org/wiki/Instrumental_convergence#Paperclip_maximizer "Paperclip maximizer"), from AI?
 
 [04:50] **Henry:** I dunno if it's the same.
 
 [04:52] **Maggie:** It's from Nicholas Bostrom and [Superintelligence](https://en.wikipedia.org/wiki/Superintelligence:_Paths,_Dangers,_Strategies), which I haven't fully read of course. He first proposed this thought experiment that we build an AI and we don't correctly have it understand the value of human life. And we tell it to make paperclips. So it starts making paperclips and then it realizes that if it kills all the humans, it would get much more efficient at making paperclips because we get in the way and we take resources. So then it kills all the humans and it just makes paperclips forever, and that's the parable of why AI is dangerous.
-
-> [Paperclip maximizer](https://en.wikipedia.org/wiki/Instrumental_convergence#Paperclip_maximizer)
 
 [05:22] **Maggie:** And I was being a bit maybe coy with it, but I'm relating it to.. Sometimes in the React world, it feels like we have this runaway todo app machine, where every single app that gets made as a todo app. People see that everyone else is building todo apps, every tutorial teaches you to build a todo app.
 

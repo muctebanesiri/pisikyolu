@@ -311,9 +311,7 @@ combined interests in complexity theory, liturgy, urbanism, and the economic and
 
 [51:15] **Timothy:** What are the lay people doing and what role are they playing in their own religious life? And Printing Press and scripture and all those things. I mean, there was some kind of a sense now this, we can recapture the meaning of liturgy here.
 
-[51:34] **Timothy:** Of course, I'm sure when we Catholics look at it from a different perspective. But I'm just saying that there's some commonality there. My book, The Ethics (laughs) of Beauty is coming out this summer from St. Nicholas Press in Missouri and the final chapter is the Jane Jacobs chapter. So you can skip the rest and go straight to that.
-
-> [The Ethics of Beauty](https://www.stnicholaspress.net/store/the-ethics-of-beauty)
+[51:34] **Timothy:** Of course, I'm sure when we Catholics look at it from a different perspective. But I'm just saying that there's some commonality there. My book, [The Ethics (laughs) of Beauty](https://www.stnicholaspress.net/store/the-ethics-of-beauty) is coming out this summer from St. Nicholas Press in Missouri and the final chapter is the Jane Jacobs chapter. So you can skip the rest and go straight to that.
 
 [51:59] **Timothy:** But-
 

@@ -160,9 +160,7 @@ quotes:
 
 #### The Grafting of our Identity
 
-> [Youtube video on tree grafting technique](https://www.youtube.com/watch?v=Ryf0248Od60&t=302s)
-
-[17:49] **Henry:** But I did watch a video about grafting. I don't know if you are familiar with tree grafting. A few verses in the Bible talk about this. Specifically about how Gentiles, not the Jewish people, they are grafted into the tree. But watching the video is really interesting because it gets a little bit deeper. Okay, you have this branch, you cut it off the trunk of the tree. And then you get rid of the outside light bark, I guess. And he literally just stick it in so the insides of both the trunk and the branch are touching each other literally, and eventually they fuse together. And it looks like it's a part of the tree. And from the theological point of view, the Gentiles are grafted in. And then eventually it looks like they are of the same, even though they were from a different tree, right.
+[17:49] **Henry:** But I did watch [a video about grafting](https://www.youtube.com/watch?v=Ryf0248Od60&t=302s "Tree grafting technique"). I don't know if you are familiar with tree grafting. A few verses in the Bible talk about this. Specifically about how Gentiles, not the Jewish people, they are grafted into the tree. But watching the video is really interesting because it gets a little bit deeper. Okay, you have this branch, you cut it off the trunk of the tree. And then you get rid of the outside light bark, I guess. And he literally just stick it in so the insides of both the trunk and the branch are touching each other literally, and eventually they fuse together. And it looks like it's a part of the tree. And from the theological point of view, the Gentiles are grafted in. And then eventually it looks like they are of the same, even though they were from a different tree, right.
 
 [18:31] **Sonya:** It's especially interesting because then like if you graft on.. Doesn't the way it work is it'll still bear the kind of fruit that it bore before.
 

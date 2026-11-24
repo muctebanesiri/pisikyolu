@@ -22,7 +22,6 @@ quotes:
     topic: "Faith & Practice"
 ---
 
-
 #### Hope as a Person
 
 [00:00] **Esther:** In our conversation just now, you were making the point that there's this irreducible.. I hate even to use the word, contribution of the person. Everything's interpersonally rooted.
@@ -65,9 +64,7 @@ quotes:
 
 [04:21] **Esther:** Have you read.. I dunno how much you think about artistry or the arts.. So I'm writing a book on that right now with regard to my philosophy. And so I've been reading books by artists on art and incorporating that into my proposals.
 
-[04:40] **Esther:** But there's this one classic book, it's classic now, called _The Gift_. And it's by Louis Hyde. Have you heard of this book?
-
-> [The Gift: Imagination and the Erotic Life of Property](https://en.wikipedia.org/wiki/The_Gift:_Imagination_and_the_Erotic_Life_of_Property)
+[04:40] **Esther:** But there's this one classic book, it's classic now, called [_The Gift_](https://en.wikipedia.org/wiki/The_Gift:_Imagination_and_the_Erotic_Life_of_Property "The Gift: Imagination and the Erotic Life of Property"). And it's by Louis Hyde. Have you heard of this book?
 
 [04:50] **Henry:** I haven't gotten a chance to read it. Happy to hear more about it.
 

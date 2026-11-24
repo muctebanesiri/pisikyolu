@@ -1,6 +1,5 @@
-import { visit } from 'unist-util-visit';
-import type { Image, Root } from 'mdast';
-import type { Plugin } from 'unified';
+import type { Root } from 'mdast';
+import { visit } from './tree';
 
 // Intrinsic sizes for the remote images embedded in the Emotional Programming transcript.
 // Keeping these at build time reserves space before each lazy image loads.
@@ -17,18 +16,16 @@ const remoteImageSizes: Record<string, [number, number]> = {
   'https://user-images.githubusercontent.com/588473/95124614-ad6f4d80-0721-11eb-8667-989bc4f69506.png': [591, 545],
 };
 
-export const remarkResponsiveImages: Plugin<[], Root> = () => {
-  return (tree: Root) => {
-    visit(tree, 'image', (node: Image) => {
-      const dimensions = remoteImageSizes[node.url];
-      node.data = node.data || {};
-      node.data.hProperties = {
-        ...node.data.hProperties,
-        'style': 'width: 100%; height: auto',
-        'loading': 'lazy',
-        'decoding': 'async',
-        ...(dimensions ? { width: dimensions[0], height: dimensions[1] } : {}),
-      };
-    });
-  };
-};
+export function responsiveImages(tree: Root) {
+  visit(tree, 'image', (node) => {
+    const dimensions = remoteImageSizes[node.url];
+    node.data ??= {};
+    node.data.hProperties = {
+      ...node.data.hProperties,
+      'style': 'width: 100%; height: auto',
+      'loading': 'lazy',
+      'decoding': 'async',
+      ...(dimensions ? { width: dimensions[0], height: dimensions[1] } : {}),
+    };
+  });
+}

@@ -77,9 +77,7 @@ quotes:
 
 [06:40] **Sonya:** And that's something that I had to grapple with as an atheist then that I think I have a better understanding of now. Of course I would feel that way. I'm sure that people who are still atheist would think that I understand it less now. But so it goes.
 
-> ["The purpose of a system is what it does (POSIWID)"](https://en.wikipedia.org/wiki/The_purpose_of_a_system_is_what_it_does)
-
-[06:53] **Sonya:** I think the purpose point is interesting. I'm a big fan of this phrase from the cybernetics movement, which is, "the purpose of a system is what it does". I mean, you mentioned a little earlier that we often learn things from suffering. It's not the only thing, but it's one of the things that suffering does.
+[06:53] **Sonya:** I think the purpose point is interesting. I'm a big fan of this phrase from the cybernetics movement, which is, "[the purpose of a system is what it does](https://en.wikipedia.org/wiki/The_purpose_of_a_system_is_what_it_does "POSIWID")". I mean, you mentioned a little earlier that we often learn things from suffering. It's not the only thing, but it's one of the things that suffering does.
 
 [07:11] **Sonya:** At least in the sort of standard Christian view, this world is temporary, and our inhabitance of this world is temporary. And I think of when I was a little kid.. Like, how do I feel about my memories of pain, of the stuff that I went through years and years ago? And how will I feel about my memories of pain now when I'm in the afterlife, whatever it may look like. I don't know? And sort of that zooming out perspective helps me.
 
@@ -143,7 +141,7 @@ quotes:
 
 [14:20] **Sonya:** I see reality overall as being kind of fractal, where you have patterns that repeat on every scale. And that's kind of how I think of the core symbolism of Christianity. I see it repeating on every scale, like the idea of generous sacrifice being what enables good things, kind of. Good things is too simplistic. I don't even know the words. I guess grace, maybe.
 
-[14:45] **Sonya:** Without someone being willing to sort of cooperate first, I think of the [prisoner's dilemma]https://en.wikipedia.org/wiki/Prisoner%27s_dilemma), right? Like Jesus, in his prisoner's dilemma with the Pharisees, et cetera, et cetera, decides to cooperate, even though he knows that he's going to be killed.
+[14:45] **Sonya:** Without someone being willing to sort of cooperate first, I think of the [prisoner's dilemma](https://en.wikipedia.org/wiki/Prisoner%27s_dilemma), right? Like Jesus, in his prisoner's dilemma with the Pharisees, et cetera, et cetera, decides to cooperate, even though he knows that he's going to be killed.
 
 [15:00] **Sonya:** And then also the supreme generosity by God of allowing his son. His son and his self.. This is what you said about the Trinity. It's difficult to talk about. How can you be your own son, right? But that's the mystery.
 

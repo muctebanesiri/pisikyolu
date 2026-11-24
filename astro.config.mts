@@ -1,30 +1,17 @@
 import { defineConfig, passthroughImageService } from "astro/config";
-import { unified } from "@astrojs/markdown-remark";
+import { satteri } from "@astrojs/markdown-satteri";
 import tailwindcss from "@tailwindcss/vite";
 
-import { remarkTranscriptPlugin } from "./src/remark-transcript-plugin/plugin";
-import { remarkResponsiveImages } from './src/plugins/remark-responsive-images';
-import { remarkLinksExtractor } from './src/plugins/remark-links-extractor';
+import { transcriptMarkdown } from "./src/markdown";
 
 // https://astro.build/config
 export default defineConfig({
-  publicDir: "public",
   compressHTML: true,
   vite: {
     plugins: [tailwindcss()],
-    build: {
-      rollupOptions: {
-        external: ['/pagefind/pagefind.js'],
-      },
-    },
-    optimizeDeps: {
-      exclude: ['/pagefind/pagefind.js'],
-    },
   },
   markdown: {
-    processor: unified({
-      remarkPlugins: [remarkLinksExtractor, remarkTranscriptPlugin, remarkResponsiveImages],
-    }),
+    processor: satteri({ features: { smartPunctuation: false }, mdastPlugins: [transcriptMarkdown] }),
   },
   experimental: {
     chromeDevtoolsWorkspace: true,

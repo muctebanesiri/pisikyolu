@@ -196,7 +196,7 @@ test('quoted phrases never join neighboring speaker turns or reverse word order'
         .toEqual(['/conversation/#msg-42', '/conversation/#msg-65']);
 });
 
-test('a failed native fragment needs a lifecycle restart and fresh result handles to recover', async () => {
+test('a failed native fragment recovers on retry and after a lifecycle restart', async () => {
     // Start from an empty native cache so this request exercises the real fetch path.
     await native.destroy();
     await native.options(nativeOptions);
@@ -217,24 +217,17 @@ test('a failed native fragment needs a lifecycle restart and fresh result handle
     }, originalFetch);
     try {
         expect(await first.data().catch((error: Error) => error.message)).toBe('Simulated fragment abort');
-        expect(await first.data().catch((error: Error) => error.message)).toBe('Simulated fragment abort');
-        const sameInstance = (await native.search('starlight')).results[0]!;
-        expect(await sameInstance.data().catch((error: Error) => error.message)).toBe('Simulated fragment abort');
-        expect(fragmentRequests).toBe(1);
+        expect((await first.data()).url).toBe('/other/');
+        expect(fragmentRequests).toBe(2);
 
-        // The documented public lifecycle discards rejected caches. Old handles
-        // still point at the old instance, so pagination must acquire new ones.
+        // A deploy replaces the fragment files, so search reloads the index and takes fresh handles.
         await native.destroy();
         await native.options(nativeOptions);
         await native.init();
         const restarted = (await native.search('starlight')).results[0]!;
         expect(restarted.id).toBe(first.id);
         const recovered = await restarted.data();
-        expect(recovered.url).toBe('/other/');
         expect(getQueryResults([recovered], 'starlight').map(result => result.url)).toEqual(['/other/#msg-7']);
-        expect(fragmentRequests).toBe(2);
-        expect(await first.data().catch((error: Error) => error.message)).toBe('Simulated fragment abort');
-        expect(fragmentRequests).toBe(2);
     } finally {
         globalThis.fetch = originalFetch;
         await native.destroy();

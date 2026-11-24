@@ -51,9 +51,7 @@ quotes:
 
 [02:41] **Nadia:** I'm mixing all these terms of faith, spirituality, religion, and those are each different things, but the aspects of faith that are really present in open source are around community organizing, and a sense of service, giving something to other people without expecting anything in return, for the benefit of some greater good.
 
-[03:08] **Henry:** Well I gave a talk on this in SF, at [Zeit Day](https://zeit.co/day) (now [Vercel](https://vercel.com)), but the way I got started in open source wasn't because I thought it was about community or serving people.
-
-> [In Pursuit of Open Source](https://www.youtube.com/watch?v=9sPDcVYX3g8) - Henry's ZEIT Day talk
+[03:08] **Henry:** Well I gave [a talk on this](https://www.youtube.com/watch?v=9sPDcVYX3g8 "In Pursuit of Open Source, Henry's ZEIT Day talk") in SF, at [Zeit Day](https://zeit.co/day) (now [Vercel](https://vercel.com)), but the way I got started in open source wasn't because I thought it was about community or serving people.
 
 [03:19] **Henry:** I thought it was just cool that people are working together and I use stuff and it would be nice to be able say that you worked on some project. So it came from a pretty selfish point of view of wanting to be involved in something bigger.
 
@@ -91,9 +89,7 @@ quotes:
 
 [10:49] **Nadia:** Within the concept of spiritual practice, there's a lot of overlap here. There are religions that are based around mega-churches and are all about fundraising, selling some sort of a product, or a promise to people. And there's also faith that's extremely personal and private and sometimes it's not even connected to community at all but is about yourself and your own self-discovery. The money question is a separate thing from your personal level or connection to whatever you practice. Within open source there's a million different reasons how you might end up sustaining it or not, but that doesn't invalidate the underlying motivation.
 
-[11:51] **Henry:** I was talking more from a personal point of view of what you were saying about a discipline in giving. We have habits that affect how we actually live and what we believe, and sometimes what we think we believe isn't what we end up doing because we don't practice it. Even what you're doing with the [grant](https://www.heliumgrant.org), it's a really cool way of doing it. You could talk all day about giving, but if we're not actually doing it in the day-to-day, that might lead us away, and then you find out maybe years later, "Oh, I've lost that sense," if you even realize that.
-
-> [Helium Grants](https://www.heliumgrant.org) - Nadia's experimental grants for early-stage ideas
+[11:51] **Henry:** I was talking more from a personal point of view of what you were saying about a discipline in giving. We have habits that affect how we actually live and what we believe, and sometimes what we think we believe isn't what we end up doing because we don't practice it. Even what you're doing with the [grant](https://www.heliumgrant.org "Helium Grants, Nadia's experimental grants for early-stage ideas"), it's a really cool way of doing it. You could talk all day about giving, but if we're not actually doing it in the day-to-day, that might lead us away, and then you find out maybe years later, "Oh, I've lost that sense," if you even realize that.
 
 [12:35] **Nadia:** Giving in really small ways every day is a really important practice.
 

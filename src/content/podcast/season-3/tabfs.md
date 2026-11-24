@@ -127,9 +127,7 @@ quotes:
 
 [10:49] **Henry:** Was it a Devon that tweeted, this seems like a project that only you would make?
 
-> [Console 35 Newsletter](https://console.substack.com/p/console-35)
-
-[10:54] **Omar:** Yeah, that was a really nice comment. Yeah. I answered some questions for someone's newsletter about TabFS, and one of the questions was how do you distinguish good project ideas from bad project ideas? And this was part of my answer, is that I think a good project idea comes out of some kind of personal history or personal relationship that you have with the concepts or with the system. It's something that not anybody could just come up with and try.
+[10:54] **Omar:** Yeah, that was a really nice comment. Yeah. I answered some questions for [someone's newsletter](https://console.substack.com/p/console-35 "Console 35") about TabFS, and one of the questions was how do you distinguish good project ideas from bad project ideas? And this was part of my answer, is that I think a good project idea comes out of some kind of personal history or personal relationship that you have with the concepts or with the system. It's something that not anybody could just come up with and try.
 
 [11:21] **Henry:** Right. There's a conviction that you had and that uniqueness.
 
@@ -173,9 +171,7 @@ quotes:
 
 [16:13] **Omar:** And this is getting at another topic in this meta area. I've gotten some really phenomenal pull requests from people where they're kind of going through things in the implementation where I'd left that thing to finish up later or to fix up later. And then they basically just go fix it all and then submit the pull request.
 
-> [multi-threaded tabfs.c PR](https://github.com/osnr/TabFS/pull/29)
-
-[16:31] **Omar:** One of the first pull requests that I ever got for this project was someone who basically went and took the C half of the project and made it multithreaded.
+[16:31] **Omar:** One of the first pull requests that I ever got for this project was someone who basically went and took the C half of the project and [made it multithreaded](https://github.com/osnr/TabFS/pull/29 "Multi-threaded tabfs.c PR").
 
 [16:43] **Henry:** That's huge.
 

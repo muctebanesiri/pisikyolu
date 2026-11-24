@@ -42,9 +42,7 @@ quotes:
 
 [00:42] **Shawn:** And every time you try to put together something for the community, they might participate, but then they don't seem to really carry on that momentum. It's up to you again and again, and again, to get things going.
 
-[00:54] **Shawn:** So Alex Hillman, who wrote this blog post, was trying to popularize this idea of an alternative, which is tummling.
-
-> [Tummling as an Alternative to Community Manager](https://dangerouslyawesome.com/2014/04/community-management-tummling-a-tale-of-two-mindsets/)
+[00:54] **Shawn:** So Alex Hillman, who wrote [this blog post](https://dangerouslyawesome.com/2014/04/community-management-tummling-a-tale-of-two-mindsets/ "Tummling as an Alternative to Community Manager"), was trying to popularize this idea of an alternative, which is tummling.
 
 [00:59] **Shawn:** He also made the analogy, if you're community manager, you're like a cruise director and a single point of failure.
 
@@ -136,9 +134,7 @@ quotes:
 
 #### Becoming a Moderator for /r/reactjs
 
-[06:12] **Shawn:** We can talk about the subreddit thing. So for those who don't know, I am one of the moderators of the /r/reactjs subreddit.
-
-> [/r/reactjs](https://www.reddit.com/r/reactjs/)
+[06:12] **Shawn:** We can talk about the subreddit thing. So for those who don't know, I am one of the moderators of the [/r/reactjs](https://www.reddit.com/r/reactjs/) subreddit.
 
 [06:21] **Shawn:** I joined when we were maybe 30, 40,000 people, and now it's coming up to 200,000.
 

@@ -562,7 +562,7 @@ def assemble(args):
                 lines += [f'[{stamp(t["start"])}] **{t["speaker"]}:** {t["text"]}','']
         (root/f'{label}.md').write_text('\n'.join(lines))
     template=Path(__file__).with_name('review.html').read_text()
-    compact=(Path(__file__).resolve().parents[2]/'src/remark-transcript-plugin/compact-reply.js').read_text().replace('export function', 'function')
+    compact=(Path(__file__).resolve().parents[2]/'src/markdown/compact-reply.js').read_text().replace('export function', 'function')
     template=template.replace('/*__COMPACT_REPLY__*/',compact)
     payload=json.dumps(data,ensure_ascii=False).replace('<','\\u003c')
     (root/'index.html').write_text(template.replace('/*__EPISODE__*/',payload))
