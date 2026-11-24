@@ -105,9 +105,151 @@ const ROOTS = (() => {
   return { segs, depth: Math.max(...segs.map(q => Math.max(q[3], q[5]))) };
 })();
 
+const WOOD = [
+  { leaf: "#DDE4C9", lit: "#EBEFD9", olive: "#E0E3D6", bark: "#D9D5C1", lift: 30, slot: 30, odds: .7, size: [.42, .7] },
+  { leaf: "#C3D0A6", lit: "#D8E1BF", olive: "#C9CFBB", bark: "#BDB59B", lift: 14, slot: 54, odds: .6, size: [.62, .92] },
+  { leaf: "#A9BC8C", lit: "#C2D1A5", olive: "#B1BAA2", bark: "#A39878", lift: 0, slot: 96, odds: .5, size: [.8, 1.08] },
+];
+const ridge = (x: number) => Math.max(0, Math.min(1, .5 + .32 * Math.sin(x / 210 + .7) + .22 * Math.sin(x / 97 + 2.1)));
+const VEIN = "140,122,82";
+type Stand = { x: number; y: number; h: number; kind: number; layer: number; seed: number; delay: number };
+let woods: ReturnType<typeof grove> | null = null;
+let woodsKey = "";
+
+function tree(ctx: Ctx, x: number, y: number, h: number, kind: number, layer: number, r: () => number) {
+  const c = WOOD[layer];
+  const blob = (bx: number, by: number, rad: number) => { ctx.beginPath(); ctx.arc(bx, by, rad, 0, TAU); ctx.fill(); };
+  if (kind === 4) {
+    for (const [n, tone, k] of [[10, c.leaf, 1], [6, c.lit, .6]] as const) {
+      ctx.fillStyle = tone;
+      for (let i = 0; i < n; i++) { const a = r() * Math.PI, d = Math.sqrt(r()) * k; blob(x - Math.cos(a) * d * h * .9, y - h * .2 - Math.sin(a) * d * h * .45 - (k < 1 ? h * .15 : 0), h * (.22 + r() * .14) * k); }
+    }
+    return;
+  }
+  const tw = h * (kind === 5 ? .06 : .036), reach = kind === 5 ? .32 : kind === 2 ? .2 : .8;
+  ctx.fillStyle = c.bark;
+  ctx.beginPath(); ctx.moveTo(x - tw, y); ctx.lineTo(x - tw * .45, y - h * reach); ctx.lineTo(x + tw * .45, y - h * reach); ctx.lineTo(x + tw, y); ctx.fill();
+  if (kind === 3) {
+    ctx.strokeStyle = c.bark; ctx.lineCap = "round"; ctx.lineWidth = tw * 1.1;
+    const ly = y - h * .6, arm = h * .19;
+    ctx.beginPath(); ctx.moveTo(x - arm, ly - h * .015); ctx.quadraticCurveTo(x, ly + h * .01, x + arm, ly - h * .02); ctx.stroke();
+    ctx.fillStyle = c.leaf;
+    for (const [bx, by, n] of [[x - arm, ly - h * .03, 3], [x + arm, ly - h * .04, 3], [x, y - h * .9, 4]]) {
+      for (let i = 0; i < n; i++) blob(bx + (r() - .5) * h * .09, by + (r() - .5) * h * .07, h * (.035 + r() * .025));
+    }
+    return;
+  }
+  if (kind === 1) {
+    for (let k = 0; k < 4; k++) {
+      const ty = y - h * (.36 + k * .17), half = h * (.26 - k * .05), off = (k % 2 ? 1 : -1) * h * .04 * r();
+      for (let i = 0; i < 3; i++) {
+        const px = x + off + (i - 1) * half * (.5 + r() * .25), py = ty + (r() - .5) * h * .03 + Math.abs(i - 1) * h * .012, rx = half * (.38 + r() * .2);
+        ctx.fillStyle = c.leaf; ctx.beginPath(); ctx.ellipse(px, py, rx, h * (.035 + r() * .015), 0, 0, TAU); ctx.fill();
+        ctx.fillStyle = c.lit; ctx.beginPath(); ctx.ellipse(px - rx * .1, py - h * .018, rx * .7, h * .014, 0, 0, TAU); ctx.fill();
+      }
+    }
+    return;
+  }
+  if (kind === 2) {
+    const wd = h * .065;
+    for (const [tone, k, dx] of [[c.leaf, 1, 0], [c.lit, .45, -wd * .35]] as const) {
+      ctx.fillStyle = tone; ctx.beginPath(); ctx.moveTo(x + dx, y - h);
+      ctx.quadraticCurveTo(x + dx + wd * 1.6 * k, y - h * .45, x + dx, y - h * .12);
+      ctx.quadraticCurveTo(x + dx - wd * 1.6 * k, y - h * .45, x + dx, y - h); ctx.fill();
+    }
+    return;
+  }
+  const olive = kind === 5, top = y - h * (olive ? .58 : .62);
+  if (olive) {
+    ctx.strokeStyle = c.bark; ctx.lineCap = "round"; ctx.lineWidth = tw * .8;
+    for (const side of [-1, 1]) { ctx.beginPath(); ctx.moveTo(x, y - h * .3); ctx.quadraticCurveTo(x + side * h * .02, y - h * .42, x + side * h * .14, y - h * .52); ctx.stroke(); }
+  }
+  const sx = h * (olive ? .34 : .22), sy = h * (olive ? .1 : .17);
+  for (const [n, rad, tone, reach, dx, dy] of [[olive ? 16 : 12, olive ? .07 : .09, olive ? c.olive : c.leaf, 1, 0, 0], [9, .05, c.lit, .55, -.25, -.35]] as const) {
+    ctx.fillStyle = tone;
+    for (let i = 0; i < n; i++) {
+      const a = r() * TAU, d = Math.sqrt(r()) * reach;
+      blob(x + (Math.cos(a) * d + dx) * sx, top + (Math.sin(a) * d * .85 + dy) * sy, h * rad * (.75 + r() * .5));
+    }
+  }
+}
+
+function grove(geo: Geo, hem: (u: number) => number, U0: number, U1: number, V0: number) {
+  const { w, h, ox, oy, s, dpr, room } = geo, cx = 500, hy = 400;
+  const make = () => { const c = document.createElement("canvas"); c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); const g = c.getContext("2d")!; g.setTransform(dpr * s, 0, 0, dpr * s, dpr * (ox - 500 * s), dpr * (oy - 400 * s)); return [c, g] as const; };
+  const [trees, tg] = make(), [roots, rg] = make();
+  const tall = (hy - V0) * .95, all: Stand[] = [];
+  WOOD.forEach((c, layer) => {
+    for (let q = Math.floor(U0 / c.slot) - 1; q <= Math.ceil(U1 / c.slot); q++) {
+      const r = rng(7001 + q * 4099 + layer * 131); r();
+      const x = (q + .2 + r() * .6) * c.slot, gap = Math.abs(x - cx);
+      const hi = ridge(x + layer * 140);
+      if (r() > c.odds * (.45 + .9 * hi) || gap < [40, 120, 175][layer]) continue;
+      const k = r(), kind = hi > .62 ? (k < .5 ? 1 : k < .8 ? 2 : 0)
+        : hi < .35 ? (layer && k < .35 ? 4 : k < .75 ? 5 : 0)
+        : k < .4 ? 0 : k < .6 ? 5 : k < .75 ? 2 : layer && k < .9 ? 4 : 1;
+      const size = kind === 4 ? .1 + r() * .1 : kind === 5 ? .3 + r() * .12
+        : (c.size[0] + r() * (c.size[1] - c.size[0])) * (.55 + .6 * hi) * (.75 + .25 * Math.min(1, gap / 500)) * (hi > .6 && r() < .1 ? 1.35 : .9 + r() * .2);
+      all.push({ x, y: hem(x / 1000) - c.lift, h: tall * size, kind, layer, seed: 9001 + q * 37 + layer * 7, delay: gap / 1000 * .7 + layer * .1 + r() * .2 });
+    }
+  });
+  const mids = all.filter(t => t.layer === 1), mark = mids.reduce((a, b) => Math.abs(b.x - (cx - 330)) < Math.abs(a.x - (cx - 330)) ? b : a, mids[0]);
+  if (mark) { mark.kind = 3; mark.h = Math.max(mark.h, tall * .7); }
+  const mist = tg.createLinearGradient(0, hy - tall, 0, hy + 40), fade = tg.createLinearGradient(cx + 120, 0, cx + 480, 0);
+  mist.addColorStop(0, "rgba(255,252,240,.55)"); mist.addColorStop(1, "rgba(255,252,240,.2)");
+  fade.addColorStop(0, "rgba(0,0,0,0)"); fade.addColorStop(1, "rgba(0,0,0,.7)");
+  const crown = tg.createLinearGradient(0, V0, 0, V0 + (hy - V0) * .5);
+  crown.addColorStop(0, "rgba(0,0,0,.75)"); crown.addColorStop(1, "rgba(0,0,0,0)");
+  const stand = (grow: (t: Stand) => number) => {
+    tg.save(); tg.setTransform(1, 0, 0, 1, 0, 0); tg.clearRect(0, 0, trees.width, trees.height); tg.restore();
+    for (let layer = 0; layer < WOOD.length; layer++) {
+      for (const t of all) {
+        const g = t.layer === layer ? grow(t) : 0;
+        if (g <= 0) continue;
+        tg.save(); tg.translate(t.x, t.y); tg.scale(.5 + .5 * g, g); tg.translate(-t.x, -t.y); tg.globalAlpha = Math.min(1, g * 3);
+        tree(tg, t.x, t.y, t.h, t.kind, t.layer, rng(t.seed));
+        tg.restore();
+      }
+      if (layer < WOOD.length - 1) { tg.fillStyle = mist; tg.fillRect(U0, V0, U1 - U0, hy + 80 - V0); }
+    }
+    tg.globalCompositeOperation = "destination-out"; tg.fillStyle = fade; tg.fillRect(cx + 120, V0, U1 - cx, hy + 80 - V0);
+    tg.fillStyle = crown; tg.fillRect(U0, V0, U1 - U0, (hy - V0) * .5);
+    tg.globalCompositeOperation = "source-over";
+  };
+
+  const fit = room, anchors = all.filter(t => t.layer).map(t => [t.x, hem(t.x / 1000) + 4, t === mark ? 1 : 0]);
+  anchors.push([cx - fit * .45, hy + fit * .72, 2], [cx + fit * .45, hy + fit * .72, 2]);
+  anchors.sort((a, b) => a[0] - b[0]);
+  const veins: number[][] = [], r = rng(313);
+  const link = (a: number[], b: number[], deep: number) => {
+    const dip = deep + Math.abs(b[0] - a[0]) * .15 + r() * 30;
+    veins.push([a[0], a[1], (a[0] + b[0]) / 2 + (r() - .5) * 30, Math.max(a[1], b[1]) + dip, b[0], b[1]]);
+  };
+  anchors.forEach((a, i) => {
+    const b = anchors[i + 1];
+    if (b && !(a[2] === 2 && b[2] === 2)) link(a, b, 24);
+    if (a[2] === 1) for (const j of [-2, 2, 3]) { const c = anchors[i + j]; if (c) link(a, c, 60); }
+  });
+  rg.lineCap = "round";
+  for (const v of veins) {
+    rg.strokeStyle = `rgba(${VEIN},.34)`; rg.lineWidth = 3.4;
+    rg.beginPath(); rg.moveTo(v[0], v[1]); rg.quadraticCurveTo(v[2], v[3], v[4], v[5]); rg.stroke();
+  }
+  for (const a of anchors) {
+    if (a[2] === 2) continue;
+    for (let k = 0; k < 4; k++) {
+      const ang = (r() - .5) * 2.2, len = 30 + r() * 70;
+      rg.strokeStyle = `rgba(${VEIN},${.16 + r() * .14})`; rg.lineWidth = 1.6 + r() * 1.8;
+      rg.beginPath(); rg.moveTo(a[0], a[1]); rg.quadraticCurveTo(a[0] + Math.sin(ang) * len * .3, a[1] + len * .6, a[0] + Math.sin(ang) * len, a[1] + Math.cos(ang) * len); rg.stroke();
+    }
+  }
+  return { trees, roots, veins, stand, grown: false };
+}
+
 // Painted in the cover's own units: the sprout stands at (500, 400) and one unit is `s` pixels.
 // Sky and soil run out to the canvas edges, so any shape of canvas gets the same plant.
-function paint(ctx: Ctx, { w, h, ox, oy, s, dpr, at, lean, spread, room, day }: Geo) {
+function paint(ctx: Ctx, geo: Geo) {
+  const { w, h, ox, oy, s, dpr, at, lean, spread, room, day } = geo;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, w * dpr, h * dpr);
   ctx.setTransform(dpr * s, 0, 0, dpr * s, dpr * (ox - 500 * s), dpr * (oy - 400 * s));
   const U0 = 500 - ox / s, U1 = 500 + (w - ox) / s, V0 = 400 - oy / s, V1 = 400 + (h - oy) / s, wide = (U1 - U0) / 1000;
@@ -131,21 +273,28 @@ function paint(ctx: Ctx, { w, h, ox, oy, s, dpr, at, lean, spread, room, day }: 
     g.addColorStop(0, "rgba(74,88,38,.42)"); g.addColorStop(.5, "rgba(74,88,38,.1)"); g.addColorStop(1, "rgba(74,88,38,0)");
     ctx.globalAlpha = up; ctx.fillStyle = g; ctx.fillRect(cx - 160, hy - 260, 320, 320);
   }
+  if (day) {
+    const key = `${w}|${h}|${ox}|${oy}|${s}|${dpr}|${room}`;
+    if (key !== woodsKey || !woods) { woods = grove(geo, hem, U0, U1, V0); woodsKey = key; }
+    if (clock !== Infinity) { woods.stand(t => span([0, .8], t.delay)); woods.grown = false; }
+    else if (!woods.grown) { woods.stand(() => 1); woods.grown = true; }
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.drawImage(woods.trees, 0, 0); ctx.restore();
+  }
   const N = 200, step = 1000 / N, q0 = Math.floor(U0 / step) - 1, q1 = Math.ceil(U1 / step) + 1;
   const still = clock === Infinity && !wave, key = `${U0}|${U1}|${V0}|${at}|${spread}|${day}`;
   if (!still || key !== bladesKey) {
   blades = [];
   bladesKey = still ? key : "";
-  [[1, .25], [.72, .1], [.34, 0]].forEach(([tall, floor], pi) => {
+  (day ? [] : [[1, .25], [.72, .1], [.34, 0]]).forEach(([tall, floor], pi) => {
     for (let q = q0; q < q1; q++) {
       const r = rng(41 + q * 7919 + pi * 104729); r();
       const u = (q + r()) / N, frac = ((q * .618) % 1 + 1) % 1;
       const gq = span([0, .9], Math.abs(u - at) * .5 + frac * .25 + pi * .12);
       const x = u * 1000, hm = hem(u), light = lit(u), sw = swell(x);
-      const top = (day ? .5 : 1) * Hh(u) * (.5 + r() * .6) * tall * 1.5 * (.3 + .7 * light) * (1 + .6 * (r() - .6) * .9) * (.2 + .8 * gq) * (1 + .22 * sw);
+      const top = Hh(u) * (.5 + r() * .6) * tall * 1.5 * (.3 + .7 * light) * (1 + .6 * (r() - .6) * .9) * (.2 + .8 * gq) * (1 + .22 * sw);
       const vw = (1 + .6 * r() ** 3 * 4) * (r() < .6 * .22 ? 0 : 1), va = .62 + .38 * Math.sin(u * 41 + pi * 2) * Math.sin(u * 13 + 1);
       const gap = pi ? near(x) : 1;
-      if (!gap || (day && !pi) || (light < floor * 2 && pi === 2) || !vw || top < 2) continue;
+      if (!gap || (light < floor * 2 && pi === 2) || !vw || top < 2) continue;
       const rc = rng(977 + q * 31 + pi * 613);
       const tb = clamp01((.5 + .5 * Math.sin(u * 9.3 + pi) * Math.sin(u * 3.1 + 2)) * .7 + rc() * .7 - .2);
       const tt = clamp01((.5 + .5 * Math.sin(u * 6.1 + 4 + pi * 2)) * .6 + rc() * .8 - .2);
@@ -153,8 +302,8 @@ function paint(ctx: Ctx, { w, h, ox, oy, s, dpr, at, lean, spread, room, day }: 
       const lo = tone(tri(LOW, tb)), hi = tone(tri(HIGH, tt));
       const g = ctx.createLinearGradient(0, hm, 0, hm - top);
       g.addColorStop(0, css(lo)); g.addColorStop(.07 + rc() * .2, css(mixc(MID[pi], lo, .25))); g.addColorStop(.5 + rc() * .15, css(hi)); g.addColorStop(1, css(hi, 0));
-      const a = Math.min(1, (floor + light) * (.45 + r() * .55)) * (pi === 2 ? light : 1) * va * gq * gap * (1 + (day ? 0 : 2.6) * sw);
-      blades.push({ u, pi, a, g, lw: step * (1 + r() * .6) * vw, x, y: hm, x2: x + (u - .5) * 60 * top / 300 + (day && wave ? wave.dir * sw * top * .35 : 0), y2: hm - top });
+      const a = Math.min(1, (floor + light) * (.45 + r() * .55)) * (pi === 2 ? light : 1) * va * gq * gap * (1 + 2.6 * sw);
+      blades.push({ u, pi, a, g, lw: step * (1 + r() * .6) * vw, x, y: hm, x2: x + (u - .5) * 60 * top / 300, y2: hm - top });
     }
   });
   }
@@ -162,7 +311,7 @@ function paint(ctx: Ctx, { w, h, ox, oy, s, dpr, at, lean, spread, room, day }: 
   const settle = clock === Infinity ? 0 : 1 - span([1.2, 2.2]);
   for (const b of blades) {
     const wv = idle !== null ? 1 + .42 * turn(4, -b.u * 16) + .22 * turn(1, -b.u * 5 + b.pi) : settle ? 1 + .45 * Math.sin(b.u * 16 - clock * 6) * settle : 1;
-    ctx.globalAlpha = (day ? .8 : 1) * Math.max(0, Math.min(1, b.a * wv));
+    ctx.globalAlpha = Math.max(0, Math.min(1, b.a * wv));
     ctx.strokeStyle = b.g; ctx.lineWidth = b.lw;
     ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x2, b.y2); ctx.stroke();
   }
@@ -218,21 +367,34 @@ function paint(ctx: Ctx, { w, h, ox, oy, s, dpr, at, lean, spread, room, day }: 
   ctx.restore();
 
   const soil = ctx.createLinearGradient(0, hy, 0, hy + 480);
-  if (day) { soil.addColorStop(0, "rgba(140,110,60,.22)"); soil.addColorStop(.5, "rgba(140,110,60,.06)"); soil.addColorStop(1, "rgba(140,110,60,0)"); }
+  if (day) { soil.addColorStop(0, "rgba(150,128,80,.14)"); soil.addColorStop(.5, "rgba(150,128,80,.04)"); soil.addColorStop(1, "rgba(140,110,60,0)"); }
   else { soil.addColorStop(0, "#3D2F1A"); soil.addColorStop(.35, "#261E12"); soil.addColorStop(1, C.soil); }
   ctx.globalAlpha = 1; ctx.fillStyle = soil; ctx.beginPath(); ctx.moveTo(U0, V1);
   for (let x = U0; x < U1 + 8; x += 8) ctx.lineTo(x, hem(x / 1000));
   ctx.lineTo(U1, V1); ctx.fill();
+  if (day && woods) {
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = span([.5, 1.6]); ctx.drawImage(woods.roots, 0, 0); ctx.restore();
+    if (idle !== null) {
+      const m = rng(17); ctx.fillStyle = "#D9A63A";
+      for (const v of woods.veins) {
+        const on = m() < .5, sd = m(), ph = (idle * (2 + (sd > .5 ? 1 : 0)) + sd) % 1, mt = 1 - ph;
+        if (!on) continue;
+        const x = mt * mt * v[0] + 2 * mt * ph * v[2] + ph * ph * v[4], y = mt * mt * v[1] + 2 * mt * ph * v[3] + ph * ph * v[5];
+        ctx.globalAlpha = Math.min(1, idleK * Math.sin(Math.PI * ph) ** 2 * .6 * (1 + swell(x)));
+        ctx.beginPath(); ctx.arc(x, y, 5, 0, TAU); ctx.fill();
+      }
+    }
+  }
   const sm = rng(59), SOILS = ["#6A5230", "#54401F", "#120E08"]; ctx.lineCap = "round";
   for (let i = 0, n = day ? 0 : Math.round(90 * wide); i < n; i++) {
     const x = U0 + sm() * wide * 1000, d = sm() ** 1.6 * 440, l = 36 + sm() * 130, y0 = hem((x - l) / 1000) + 16 + d, y1 = hem((x + l) / 1000) + 16 + d;
     ctx.strokeStyle = SOILS[Math.floor(sm() * 3)]; ctx.globalAlpha = (.1 + sm() * .16) * (1 - d / 440); ctx.lineWidth = 4 + sm() * 11;
     ctx.beginPath(); ctx.moveTo(x - l, y0); ctx.quadraticCurveTo(x, hem(x / 1000) + 16 + d + (sm() - .5) * 8, x + l, y1); ctx.stroke();
   }
-  const hr = rng(53); ctx.lineCap = "round"; ctx.strokeStyle = "#3D2F1A";
+  const hr = rng(53); ctx.lineCap = "round"; ctx.strokeStyle = day ? "#A39878" : "#3D2F1A";
   for (let i = 0, n = Math.round(140 * wide); i < n; i++) {
     const x = U0 + hr() * wide * 1000, l = 8 + hr() * 26, y = hem(x / 1000) - hr() * 9 * PT;
-    ctx.globalAlpha = (day ? .35 : 1) * (.5 + hr() * .5); ctx.lineWidth = 3 + hr() * 5;
+    ctx.globalAlpha = (day ? .45 : 1) * (.5 + hr() * .5); ctx.lineWidth = 3 + hr() * 5;
     ctx.beginPath(); ctx.moveTo(x - l, y); ctx.lineTo(x + l, y + (hr() - .5) * 3); ctx.stroke();
   }
 
@@ -281,8 +443,8 @@ if (scene && plot && brand && ctx) {
   };
 
   const measure = () => {
-    const p = plot.getBoundingClientRect(), s = p.width / 560;
-    const big = desk.matches, full = big && root.dataset.theme === "dark";
+    const big = desk.matches, full = big, day = root.dataset.theme !== "dark";
+    const p = plot.getBoundingClientRect(), s = p.width / 560 * (day && !big ? .7 : 1);
     const w = !big || full ? root.clientWidth : Math.round(p.right + 40);
     const h = big ? innerHeight : Math.round(brand.getBoundingClientRect().bottom + scrollY);
     const room = p.height * .5 / s - 6;
@@ -290,7 +452,7 @@ if (scene && plot && brand && ctx) {
     const dpr = Math.min(devicePixelRatio || 1, 1.5), W = Math.round(w * dpr), H = Math.round(h * dpr);
     if (scene.width !== W || scene.height !== H) { scene.width = W; scene.height = H; }
     scene.style.width = `${w}px`; scene.style.height = `${h}px`;
-    geo = { w, h, ox: p.left + scrollX + p.width / 2, oy: p.top + scrollY + p.height * .5, s, dpr, at: sky, lean: .58, spread: full ? 1.5 : .8, room, day: root.dataset.theme !== "dark" };
+    geo = { w, h, ox: p.left + scrollX + p.width / 2, oy: p.top + scrollY + p.height * .5, s, dpr, at: sky, lean: .58, spread: full ? 1.5 : .8, room, day };
   };
 
   const frame = (now: number) => {

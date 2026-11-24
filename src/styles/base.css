@@ -1262,10 +1262,6 @@ html {
     align-items: start;
   }
 
-  :root[data-theme="light"] #home-scene {
-    mask-image: linear-gradient(to right, #000 calc(100% - 8rem), transparent);
-  }
-
   #home-brand {
     grid-column: 1;
     grid-row: 1 / span 3;
