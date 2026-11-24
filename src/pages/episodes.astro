@@ -8,10 +8,8 @@ const { archiveGroups } = await getEpisodeData();
 
 <HomeContentLayout page="episodes" title="All Episodes" description="Browse every Hope in Source episode by season.">
   <section id="home-archive" aria-label="Episodes by season">
-    {archiveGroups.map((group, index) => {
-      const previewCount = index === 0 ? 2 : 1;
-      const preview = group.episodes.slice(0, previewCount);
-      const rest = group.episodes.slice(previewCount);
+    {archiveGroups.map((group, groupIndex) => {
+      const descriptionCount = groupIndex === 0 ? 2 : 1;
 
       return (
         <section class="archive-season" id={`home-season-${group.id}`} aria-labelledby={`season-title-${group.id}`}>
@@ -21,21 +19,10 @@ const { archiveGroups } = await getEpisodeData();
           </div>
 
           <div class="archive-episode-list">
-            {preview.map((episode) => <ArchiveEpisodeRow episode={episode} showDescription />)}
+            {group.episodes.map((episode, episodeIndex) => (
+              <ArchiveEpisodeRow episode={episode} showDescription={episodeIndex < descriptionCount} />
+            ))}
           </div>
-
-          {rest.length > 0 && (
-            <details class="archive-more">
-              <summary>
-                <span class="when-closed">Show {rest.length} more</span>
-                <span class="when-open">Show fewer</span>
-                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
-              </summary>
-              <div class="archive-episode-list">
-                {rest.map((episode) => <ArchiveEpisodeRow episode={episode} />)}
-              </div>
-            </details>
-          )}
         </section>
       );
     })}
@@ -65,27 +52,4 @@ const { archiveGroups } = await getEpisodeData();
     font-variant-numeric: tabular-nums;
   }
   .archive-episode-list { display: grid; }
-  .archive-more { margin-top: 0.2rem; }
-  .archive-more summary {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.2rem;
-    min-height: 40px;
-    padding: 0 0.45rem;
-    color: var(--color-his-text-secondary);
-    font-size: 0.8125rem;
-    cursor: pointer;
-    list-style: none;
-  }
-  .archive-more summary::-webkit-details-marker { display: none; }
-  .archive-more summary:hover { color: var(--color-his-green); }
-  .archive-more summary:focus-visible { outline: 2px solid var(--color-his-green); outline-offset: 2px; }
-  .archive-more .when-open,
-  .archive-more[open] .when-closed { display: none; }
-  .archive-more[open] .when-open { display: inline; }
-  .archive-more svg { width: 14px; height: 14px; transition: transform 160ms ease; }
-  .archive-more[open] svg { transform: rotate(180deg); }
-  @media (prefers-reduced-motion: reduce) {
-    .archive-more svg { transition: none; }
-  }
 </style>
