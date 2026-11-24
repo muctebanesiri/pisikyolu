@@ -357,7 +357,9 @@ const hasLongDescription = hasBody && frontmatter.description.length > 135;
   .now-playing:hover { background: var(--color-his-hover); }
   .now-playing:focus-visible { outline: 2px solid var(--color-his-green); outline-offset: 2px; }
 
-  :global(#episode-shell .message) { transition: opacity 0.4s ease; }
+  @media (hover: hover) {
+    :global(#episode-shell .message) { transition: opacity 0.4s ease; }
+  }
   :global(#episode-shell[data-playback="playing"][data-follow="here"] .message:not(.message-current, :hover, :focus-within)) { opacity: 0.62; }
 
   .episode-listen {

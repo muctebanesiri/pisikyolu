@@ -32,6 +32,8 @@ let clock = Infinity;
 let idle: number | null = null;
 let idleK = 0;
 let wave: { t: number; dir: number } | null = null;
+let blades: { u: number; pi: number; a: number; g: CanvasGradient; lw: number; x: number; y: number; x2: number; y2: number }[] = [];
+let bladesKey = "";
 const span = ([a, b]: number[], d = 0) => clock === Infinity ? 1 : ease(clamp01((clock - a - d) / (b - a)));
 const turn = (n = 1, ph = 0) => idle === null ? 0 : idleK * Math.sin(TAU * n * idle + ph);
 
@@ -130,13 +132,15 @@ function paint(ctx: Ctx, { w, h, ox, oy, s, dpr, at, lean, spread, room, day }: 
     ctx.globalAlpha = up; ctx.fillStyle = g; ctx.fillRect(cx - 160, hy - 260, 320, 320);
   }
   const N = 200, step = 1000 / N, q0 = Math.floor(U0 / step) - 1, q1 = Math.ceil(U1 / step) + 1;
-  ctx.lineCap = "butt";
+  const still = clock === Infinity && !wave, key = `${U0}|${U1}|${V0}|${at}|${spread}|${day}`;
+  if (!still || key !== bladesKey) {
+  blades = [];
+  bladesKey = still ? key : "";
   [[1, .25], [.72, .1], [.34, 0]].forEach(([tall, floor], pi) => {
     for (let q = q0; q < q1; q++) {
       const r = rng(41 + q * 7919 + pi * 104729); r();
       const u = (q + r()) / N, frac = ((q * .618) % 1 + 1) % 1;
       const gq = span([0, .9], Math.abs(u - at) * .5 + frac * .25 + pi * .12);
-      const wv = idle !== null ? 1 + .42 * turn(4, -u * 16) + .22 * turn(1, -u * 5 + pi) : clock === Infinity ? 1 : 1 + .45 * Math.sin(u * 16 - clock * 6) * (1 - span([1.2, 2.2]));
       const x = u * 1000, hm = hem(u), light = lit(u), sw = swell(x);
       const top = (day ? .5 : 1) * Hh(u) * (.5 + r() * .6) * tall * 1.5 * (.3 + .7 * light) * (1 + .6 * (r() - .6) * .9) * (.2 + .8 * gq) * (1 + .22 * sw);
       const vw = (1 + .6 * r() ** 3 * 4) * (r() < .6 * .22 ? 0 : 1), va = .62 + .38 * Math.sin(u * 41 + pi * 2) * Math.sin(u * 13 + 1);
@@ -149,11 +153,19 @@ function paint(ctx: Ctx, { w, h, ox, oy, s, dpr, at, lean, spread, room, day }: 
       const lo = tone(tri(LOW, tb)), hi = tone(tri(HIGH, tt));
       const g = ctx.createLinearGradient(0, hm, 0, hm - top);
       g.addColorStop(0, css(lo)); g.addColorStop(.07 + rc() * .2, css(mixc(MID[pi], lo, .25))); g.addColorStop(.5 + rc() * .15, css(hi)); g.addColorStop(1, css(hi, 0));
-      ctx.globalAlpha = (day ? .8 : 1) * Math.max(0, Math.min(1, Math.min(1, (floor + light) * (.45 + r() * .55)) * (pi === 2 ? light : 1) * va * gq * wv * gap * (1 + (day ? 0 : 2.6) * sw)));
-      ctx.strokeStyle = g; ctx.lineWidth = step * (1 + r() * .6) * vw;
-      ctx.beginPath(); ctx.moveTo(x, hm); ctx.lineTo(x + (u - .5) * 60 * top / 300 + (day && wave ? wave.dir * sw * top * .35 : 0), hm - top); ctx.stroke();
+      const a = Math.min(1, (floor + light) * (.45 + r() * .55)) * (pi === 2 ? light : 1) * va * gq * gap * (1 + (day ? 0 : 2.6) * sw);
+      blades.push({ u, pi, a, g, lw: step * (1 + r() * .6) * vw, x, y: hm, x2: x + (u - .5) * 60 * top / 300 + (day && wave ? wave.dir * sw * top * .35 : 0), y2: hm - top });
     }
   });
+  }
+  ctx.lineCap = "butt";
+  const settle = clock === Infinity ? 0 : 1 - span([1.2, 2.2]);
+  for (const b of blades) {
+    const wv = idle !== null ? 1 + .42 * turn(4, -b.u * 16) + .22 * turn(1, -b.u * 5 + b.pi) : settle ? 1 + .45 * Math.sin(b.u * 16 - clock * 6) * settle : 1;
+    ctx.globalAlpha = (day ? .8 : 1) * Math.max(0, Math.min(1, b.a * wv));
+    ctx.strokeStyle = b.g; ctx.lineWidth = b.lw;
+    ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(b.x2, b.y2); ctx.stroke();
+  }
   if (!day) {
   const vh = (hy - V0) * .4, vg = ctx.createLinearGradient(0, V0, 0, V0 + vh);
   vg.addColorStop(0, C.sky); vg.addColorStop(1, C.sky + "00");
@@ -257,7 +269,9 @@ if (scene && plot && brand && ctx) {
   const desk = matchMedia("(min-width: 960px)");
   const SKIES = [.58, .44, .68, .5];
   let geo: Geo | null = null;
-  let raf = 0;
+  let seen = true;
+  let raf = 0, painted = 0;
+  const coarse = matchMedia("(pointer: coarse)");
   let start: number | null = null;
   let sky = SKIES[0], skyFrom = sky, passAt: number | null = null, passDir = 1;
 
@@ -292,8 +306,8 @@ if (scene && plot && brand && ctx) {
       if (t < END) { clock = t; idle = null; }
       else { clock = Infinity; idle = (t - END) / LOOP % 1; idleK = ease(clamp01((t - END) / 1.5)); }
     }
-    paint(ctx, geo);
-    if (!calm.matches && !document.hidden) raf = requestAnimationFrame(frame);
+    if (!(coarse.matches && idle !== null && !wave && now - painted < 28)) { paint(ctx, geo); painted = now; }
+    if (!calm.matches && !document.hidden && seen) raf = requestAnimationFrame(frame);
   };
   const kick = () => { measure(); raf ||= requestAnimationFrame(frame); };
   let line = 0, sayTimer = 0;
@@ -312,6 +326,7 @@ if (scene && plot && brand && ctx) {
     say(index);
     kick();
   });
+  new IntersectionObserver(([entry]) => { seen = entry.isIntersecting; if (seen) kick(); }).observe(scene);
   new MutationObserver(kick).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
   new ResizeObserver(kick).observe(brand);
   calm.addEventListener("change", kick);

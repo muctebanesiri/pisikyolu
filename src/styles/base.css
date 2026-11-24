@@ -809,6 +809,23 @@ html {
   gap: 0.75rem;
   color: var(--color-his-text-tertiary);
   font-size: 0.8125rem;
+  animation: search-in 0.2s ease 0.4s backwards;
+}
+
+.search-results-in,
+.search-no-results {
+  animation: search-in 0.18s ease backwards;
+}
+
+.search-results-area[aria-busy="true"] .search-results-list {
+  opacity: 0.55;
+  transition: opacity 0.2s ease 0.4s;
+}
+
+@keyframes search-in {
+  from {
+    opacity: 0;
+  }
 }
 
 .search-loading-spinner {

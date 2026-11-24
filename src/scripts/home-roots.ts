@@ -1,6 +1,6 @@
 import { rng } from "./home-scene";
 
-type Seg = { x0: number; y0: number; x1: number; y1: number; w: number; born: number };
+type Seg = { x0: number; y0: number; x1: number; y1: number; w: number; born: number; line?: string; tip?: string };
 
 const STEP = 10, NIB = .7;
 
@@ -44,6 +44,17 @@ if (canvas && section && ctx) {
     lanes.forEach((lane, i) => grow(cx + (i ? 8 : -8), 0, i ? 1 : -1, 4, H, lane, 0, 2));
     grow(cx, 0, 0, 2, 320, null, 0, 1);
     segs = out;
+    tint();
+  };
+
+  const tint = () => {
+    const dark = root.dataset.theme === "dark", ink = dark ? [207, 201, 168] : [140, 122, 82];
+    const bg = (getComputedStyle(document.body).backgroundColor.match(/\d+/g) ?? [0, 0, 0]).map(Number);
+    const mix = (a: number) => `rgb(${ink.map((v, i) => Math.round(bg[i] + (v - bg[i]) * a)).join()})`;
+    for (const s of segs) {
+      const depth = Math.min(s.x1 - left, right - s.x1), a = (dark ? .5 : .65) - (dark ? .4 : .52) * Math.max(0, Math.min(1, (depth + 20) / 80));
+      s.line = mix(a); s.tip = mix(Math.min(1, a * 1.8));
+    }
   };
 
   const target = () => {
@@ -60,9 +71,6 @@ if (canvas && section && ctx) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     const goal = target();
     reach = goal === Infinity ? 1e9 : Math.max(reach, reach + (goal - reach) * .08);
-    const dark = root.dataset.theme === "dark", ink = dark ? [207, 201, 168] : [140, 122, 82];
-    const bg = (getComputedStyle(document.body).backgroundColor.match(/\d+/g) ?? [0, 0, 0]).map(Number);
-    const tint = (a: number) => `rgb(${ink.map((v, i) => Math.round(bg[i] + (v - bg[i]) * a)).join()})`;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
     ctx.translate(0, top - scrollY);
@@ -70,12 +78,11 @@ if (canvas && section && ctx) {
     const y0 = scrollY - top - 20, y1 = y0 + innerHeight + 40;
     for (const s of segs) {
       if (s.born > reach || s.y1 < y0 || s.y0 > y1) continue;
-      const k = Math.min(1, (reach - s.born) / STEP), depth = Math.min(s.x1 - left, right - s.x1), a = (dark ? .5 : .65) - (dark ? .4 : .52) * Math.max(0, Math.min(1, (depth + 20) / 80));
-      const x = s.x0 + (s.x1 - s.x0) * k, y = s.y0 + (s.y1 - s.y0) * k;
-      ctx.strokeStyle = tint(a);
+      const k = Math.min(1, (reach - s.born) / STEP), x = s.x0 + (s.x1 - s.x0) * k, y = s.y0 + (s.y1 - s.y0) * k;
+      ctx.strokeStyle = s.line!;
       ctx.lineWidth = s.w;
       ctx.beginPath(); ctx.moveTo(s.x0, s.y0); ctx.lineTo(x, y); ctx.stroke();
-      if (k < 1 && s.w > 1.5) { ctx.fillStyle = tint(Math.min(1, a * 1.8)); ctx.beginPath(); ctx.arc(x, y, s.w * .8, 0, Math.PI * 2); ctx.fill(); }
+      if (k < 1 && s.w > 1.5) { ctx.fillStyle = s.tip!; ctx.beginPath(); ctx.arc(x, y, s.w * .8, 0, Math.PI * 2); ctx.fill(); }
     }
     ctx.restore();
     if (goal !== Infinity && goal - reach > .5) raf = requestAnimationFrame(draw);
@@ -86,7 +93,7 @@ if (canvas && section && ctx) {
   addEventListener("scroll", kick, { passive: true });
   addEventListener("resize", rebuild);
   new ResizeObserver(rebuild).observe(section);
-  new MutationObserver(() => { cancelAnimationFrame(raf); draw(); }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  new MutationObserver(() => { cancelAnimationFrame(raf); tint(); draw(); }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
   calm.addEventListener("change", kick);
   rebuild();
 }
