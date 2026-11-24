@@ -1,5 +1,6 @@
 ---
-title: "Embodiment Through Metaphors (Maggie Appleton)"
+title: "Embodiment Through Metaphors"
+guests: [Maggie Appleton]
 shareExcerpt: "Socks on my feet, not dirty, socks on my plate, gross."
 season: 2
 date: 2020-05-13
@@ -12,15 +13,6 @@ description: Is programming all digital or do we still have embodied roots? How
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461588/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345541-44100-1-fd19bf89100978a9.mp3
 sidebar:
   order: 12
-quotes:
-  - text: "When the program dies, it's not when the program doesn't work, it's when the people don't understand how it works."
-    speaker: "Henry"
-    timestamp: "20:50"
-    topic: "Knowledge & Embodiment"
-  - text: "All dirt is contextual. It all just depends on where we draw the boundaries."
-    speaker: "Maggie"
-    timestamp: "32:59"
-    topic: "Language & Meaning"
 ---
 
 [00:00] **Henry:** Hey everyone, this is Henry for the Maintainers Anonymous podcast. I have with me **Maggie Appleton**, again! And here we want to talk about this idea of metaphor, I think we mentioned that at the end of the last episode. And I know that Maggie, you just did a talk about metaphors and embodiment.

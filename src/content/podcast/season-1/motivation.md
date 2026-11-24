@@ -1,5 +1,6 @@
 ---
 title: "Intrinsic Motivation"
+guests: []
 shareExcerpt: "how do I take fear and turn it into hope and excitement for the future?"
 season: 1
 date: 2018-10-16
@@ -10,15 +11,6 @@ description: Why do we do what we do? We talk about intrinsic motivation, the
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461711/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345671-44100-1-f6e5db06bdd412f5.mp3
 sidebar:
   order: 3
-quotes:
-  - text: "The definition of faith is that you don't know what you're having faith in, that what you're doing makes sense or this is the right thing to be doing. It's a lot about trusting yourself and being very inwardly focused instead of looking for external indicators of how well you're doing."
-    speaker: "Nadia"
-    timestamp: "01:20"
-    topic: "Faith & Practice"
-  - text: "Fear and hope are both really strong motivators, and they're sort of like two sides of the same coin but it seems a lot healthier and happier to think about, how do I take fear and turn it into hope and excitement for the future?"
-    speaker: "Nadia"
-    timestamp: "42:42"
-    topic: "Faith & Practice"
 ---
 
 #### Finding Your Inner Quiet

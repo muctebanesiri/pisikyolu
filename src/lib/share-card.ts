@@ -1,6 +1,6 @@
-import type { EnrichedEpisode } from "./episodes";
+import type { Episode } from "./episodes";
 import { formatEpisodeDate } from "./dates";
-import { formatMomentTime } from "./home-moments";
+import { formatMomentTime } from "./moments";
 
 export const cardWidth = 1200;
 export const cardHeight = 630;
@@ -20,21 +20,21 @@ export interface EpisodeCard {
   passage?: SharePassage;
 }
 
-function speakerName(speaker: string, episode: EnrichedEpisode) {
+function speakerName(speaker: string, episode: Episode) {
   if (speaker === "Henry") return "Henry Zhu";
   if (speaker === "Nadia") return "Nadia Asparouhova";
-  if (speaker === "Michael" && episode.guests.includes("L.M. Sacasas")) return "L.M. Sacasas";
+  if (speaker === "Michael" && episode.data.guests.includes("L.M. Sacasas")) return "L.M. Sacasas";
   if (speaker === "Tara" && episode.slug === "online") return "Tara Isabella Burton";
-  return episode.guests.find(guest => guest.split(" ")[0] === speaker) ?? speaker;
+  return episode.data.guests.find(guest => guest.split(" ")[0] === speaker) ?? speaker;
 }
 
-export function episodeCard(episode: EnrichedEpisode): EpisodeCard {
+export function episodeCard(episode: Episode): EpisodeCard {
   const metadata = episode.rendered?.metadata?.frontmatter as { sharePassage?: SharePassage } | undefined;
   const passage = metadata?.sharePassage;
   if (episode.data.shareExcerpt && !passage) throw new Error(`Missing share passage for ${episode.slug}`);
   return {
-    slug: episode.slug, title: episode.episodeTitle, guests: episode.guests,
-    number: episode.epNumber, date: formatEpisodeDate(episode.data.date),
+    slug: episode.slug, title: episode.data.title, guests: episode.data.guests,
+    number: episode.number, date: formatEpisodeDate(episode.data.date),
     passage: passage && { ...passage, speaker: speakerName(passage.speaker, episode) },
   };
 }

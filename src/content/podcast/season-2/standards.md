@@ -1,5 +1,6 @@
 ---
-title: "The Significance of Standards (Jory Burson)"
+title: "The Significance of Standards"
+guests: [Jory Burson]
 shareExcerpt: "People are the hardest part of software."
 season: 2
 date: 2019-05-24
@@ -11,15 +12,6 @@ description: "Why should we standardize? Jory Burson (Bocoup) joins Henry to
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461850/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345814-44100-2-2ae073284749dc6b.mp3
 sidebar:
   order: 6
-quotes:
-  - text: "The state that we're in today is a function of decisions that were made 20 years ago."
-    speaker: "Jory"
-    timestamp: "19:45"
-    topic: "Time & Memory"
-  - text: "People are the hardest part of software. The way I have been thinking about this for a while now is like, how can we solve the human interoperability problem, which will help improve a lot of our technical interoperability problems."
-    speaker: "Jory"
-    timestamp: "55:34"
-    topic: "Community & Belonging"
 ---
 
 [00:07] **Henry:** Today I have with me Jory Burson. She's been involved in standards for a really long time. I met her through TC39. Thanks for joining today.

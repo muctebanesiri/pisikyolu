@@ -1,5 +1,6 @@
 ---
-title: "Snow is a Commons (Melody Kim)"
+title: "Snow is a Commons"
+guests: [Melody Kim]
 shareExcerpt: "what do you think the snowman has to think about open source?"
 season: 6
 date: 2026-03-05
@@ -12,15 +13,10 @@ video:
   offsetSeconds: 0
 sidebar:
   order: 2
-quotes:
-  - text: "This is like open source. If everything was for how beautiful things could be."
-    speaker: "Henry"
-    timestamp: "18:15"
-    topic: "Commons & Creation"
-  - text: "All we have in this age of AI is what we are uniquely experiencing."
-    speaker: "Melody"
-    timestamp: "55:43"
-    topic: "Art & Identity"
+moments:
+  - at: msg-3542
+    words: [10, 19]
+    before: { at: msg-3530, words: [22, 41] }
 ---
 
 *(Montage of clips from the episode)*

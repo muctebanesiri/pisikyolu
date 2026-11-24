@@ -1,5 +1,6 @@
 ---
-title: "Growing Old with the Web (Philip Gee)"
+title: "Growing Old with the Web"
+guests: [Philip Gee]
 shareExcerpt: "you don't sound like what I thought you sound like on paper."
 season: 2
 date: 2019-05-31
@@ -16,15 +17,6 @@ description: Do we learn in a vacuum, or does it involve our whole selves?
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461646/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345603-44100-2-0f358c314d81ded6.mp3
 sidebar:
   order: 7
-quotes:
-  - text: "If you read, you have no idea what someone is like. You might get some sense by how they write and what they choose to write about, but you're often surprised when you see them in person."
-    speaker: "Philip"
-    timestamp: "13:46"
-    topic: "Language & Meaning"
-  - text: "I think developing these core skills opens up new things. It pushes the frontier outward of what the possibilities of what you can possibly do."
-    speaker: "Philip"
-    timestamp: "27:26"
-    topic: "Knowledge & Embodiment"
 ---
 
 [00:00] **Henry:** All right, today I have with me Philip Gee. I don't remember how we first got in contact, but I actually heard of you a long time ago because my roommate in college, I think he read your post about doing a PhD or something like that.

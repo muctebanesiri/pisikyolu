@@ -1,5 +1,6 @@
 ---
-title: Software Tetris (Stephen Kell)
+title: Software Tetris
+guests: [Stephen Kell]
 shareExcerpt: "Losing at Tetris is basically the state of software right now"
 season: 3
 date: 2021-03-09
@@ -8,15 +9,6 @@ description: What is the state of modern software now, and how is it like losing
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461667/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345626-48000-1-abff2867c3c045e8.mp3
 sidebar:
   order: 15
-quotes:
-  - text: "Losing at Tetris is basically the state of software right now where blocks are just falling into place. We don't have time, we don't have the resources to put them in the right place, so they just kind of pile up."
-    speaker: "Stephen"
-    timestamp: "3:04"
-    topic: "Technology & Limits"
-  - text: "We sort of deliberately create a sort of shifting sands that we then build on. It's kind of hilarious when you look at it from that distance."
-    speaker: "Stephen"
-    timestamp: "21:12"
-    topic: "Technology & Limits"
 ---
 
 #### The Software/Hardware Arms Race

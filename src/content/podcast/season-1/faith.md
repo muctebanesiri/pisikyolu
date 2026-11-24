@@ -1,5 +1,6 @@
 ---
 title: "Faith and Open Source"
+guests: []
 shareExcerpt: "We have habits that affect how we actually live and what we believe"
 season: 1
 date: 2018-10-16
@@ -8,15 +9,6 @@ description: "Why does faith seem so prevalent among open source developers? We 
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461566/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345525-44100-1-5abf9413eccd4620.mp3
 sidebar:
   order: 1
-quotes:
-  - text: "It feels like all this stuff in technology's about making things better for yourself or making money, and just very materialistic and robotic, in a sense. And yet this is more about helping others, and not necessarily thinking about yourself."
-    speaker: "Henry"
-    timestamp: "04:51"
-    topic: "Gift & Economy"
-  - text: "We have habits that affect how we actually live and what we believe, and sometimes what we think we believe isn't what we end up doing because we don't practice it."
-    speaker: "Henry"
-    timestamp: "11:51"
-    topic: "Knowledge & Embodiment"
 ---
 
 #### What is your faith background?

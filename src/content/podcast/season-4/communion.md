@@ -1,5 +1,6 @@
 ---
-title: Digital Communion (Nick Ripatrazone)
+title: Digital Communion
+guests: [Nick Ripatrazone]
 shareExcerpt: "authentic religion is full of ambiguity, right?"
 season: 4
 date: 2022-08-29
@@ -15,15 +16,6 @@ description: Can our digitally mediated environment be spiritual? Nick
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461773/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345726-44100-1-94d784ec0db0a456.mp3
 sidebar:
   order: 4
-quotes:
-  - text: "What we think is clarity and accuracy is sometimes neutering the messiness of everything."
-    speaker: "Nick"
-    timestamp: "09:35"
-    topic: "Language & Meaning"
-  - text: "Authentic religion is full of ambiguity. It's full of the unknown."
-    speaker: "Nick"
-    timestamp: "38:48"
-    topic: "Faith & Practice"
 ---
 
 #### Layers of Language Meaning

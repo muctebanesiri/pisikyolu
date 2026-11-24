@@ -1,5 +1,6 @@
 ---
-title: Salience (Sonya Mann)
+title: Salience
+guests: [Sonya Mann]
 shareExcerpt: "The very substance of life itself is shape."
 season: 5
 date: 2026-02-07
@@ -8,15 +9,11 @@ description: "What makes something call out to us? Sonya and I explore how praye
 episodeLink: "https://anchor.fm/s/ff707650/podcast/play/115186075/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2026-1-8%2F4828cfd0-5c62-ca19-5410-e6b853491749.mp3"
 sidebar:
   order: 4
-quotes:
-  - text: "I see patterns often in that light as being a way to speak to the universe or a way for the universe to speak to us, in the patterns."
-    speaker: "Sonya"
-    timestamp: "00:15:20"
-    topic: "Knowledge & Embodiment"
-  - text: "I see Christianity as being, Jesus comes in, conquers death, and allows us to be okay with death being a part of life, because it isn't the final ending that we mortally conceive of it as."
-    speaker: "Sonya"
-    timestamp: "00:48:53"
-    topic: "Faith & Practice"
+moments:
+  - at: msg-2288
+    words: [12, 20]
+    before: { at: msg-2264, words: [38, 46] }
+    after: { at: msg-2327, words: [11, 33] }
 ---
 
 #### Ceaseless Prayer

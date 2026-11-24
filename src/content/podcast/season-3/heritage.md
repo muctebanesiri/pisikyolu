@@ -1,5 +1,6 @@
 ---
-title: "Inhabiting Heritage (Bernardo Hidalgo, Marianita Palumbo)"
+title: "Inhabiting Heritage"
+guests: [Bernardo Hidalgo, Marianita Palumbo]
 shareExcerpt: "inhabiting is the best way to maintain a building alive."
 season: 3
 date: 2020-08-28
@@ -8,15 +9,6 @@ description: "Do we think about how the places in which we live are passed down?
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461767/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345736-48000-1-d33593fa75175fa7.mp3
 sidebar:
     order: 5
-quotes:
-  - text: "Inhabiting is the best way to maintain a building alive."
-    speaker: "Marianita"
-    timestamp: "05:24"
-    topic: "Community & Belonging"
-  - text: "We deny completely the dimension of taking care the space we live. In a daily scale, we don't make it visible. We don't look for it. It's this blurry part of life on which we all depend."
-    speaker: "Marianita"
-    timestamp: "21:45"
-    topic: "Technology & Limits"
 ---
 
 #### An Architect and Anthropologist

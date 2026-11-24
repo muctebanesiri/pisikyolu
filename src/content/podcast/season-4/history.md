@@ -1,5 +1,6 @@
 ---
-title: History is Necromancy (David Cayley)
+title: History is Necromancy
+guests: [David Cayley]
 shareExcerpt: "And if you can't be surprised, that's really the end."
 season: 4
 date: 2022-08-29
@@ -14,15 +15,6 @@ description: "What is the place of history in our society? Who was Ivan Illich
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461697/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345644-44100-1-f7137d7ed739e2ba.mp3
 sidebar:
   order: 3
-quotes:
-  - text: "Progress is not a thought of our civilization, it's the form of our civilization. So it's not a content that we think about. It's the way that we think."
-    speaker: "David"
-    timestamp: "29:53"
-    topic: "Technology & Limits"
-  - text: "Surprises is what you can't see coming. It comes from beyond the horizon that you inevitably will establish. And if you can't be surprised, that's really the end."
-    speaker: "David"
-    timestamp: "37:24"
-    topic: "Faith & Practice"
 ---
 
 #### Recursive Publics or Enclosure of a New Commons?

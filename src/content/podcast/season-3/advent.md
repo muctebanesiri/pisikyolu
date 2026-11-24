@@ -1,5 +1,6 @@
 ---
-title: Approaching Advent (Alex Kim)
+title: Approaching Advent
+guests: [Alex Kim]
 shareExcerpt: "So at least Christian history and Christian conceptions of time is both cyclical and linear. It's a spiral."
 season: 3
 date: 2020-12-09
@@ -11,15 +12,6 @@ description: What is Advent anyway? Alex Kim joins Henry to chat about the
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461564/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345528-48000-1-e515ef3139540164.mp3
 sidebar:
   order: 11
-quotes:
-  - text: "These rituals again, they're not things that we just do alongside our active remembrance. They themselves are the remembrance. It's a memorial that causes us to remember."
-    speaker: "Alex"
-    timestamp: "06:24"
-    topic: "Time & Memory"
-  - text: "Christian history and Christian conceptions of time is both cyclical and linear. It's a spiral."
-    speaker: "Alex"
-    timestamp: "18:26"
-    topic: "Faith & Practice"
 ---
 
 > Opening Music: Gabriels Message (via [Open Hymnal](http://openhymnal.org/Lyrics/Gabriels_Message-Gabriel.html))

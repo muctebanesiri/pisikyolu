@@ -1,5 +1,6 @@
 ---
-title: Towards Shalom (Nicole Williams)
+title: Towards Shalom
+guests: [Nicole Williams]
 shareExcerpt: "a lot of the way we can frame our purpose as human beings is to be sub-creators and sub-restorers of Shalom."
 season: 3
 date: 2020-07-08
@@ -13,15 +14,6 @@ description: What does flourishing look like? Nicole Williams joins Henry to
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461769/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345737-48000-1-ce5d87a151978fb6.mp3
 sidebar:
   order: 2
-quotes:
-  - text: "There's equal glory in you being a garbage woman that there is in you being like a pastor, a theologian, or like a great nonprofit worker."
-    speaker: "Nicole"
-    timestamp: "17:24"
-    topic: "Faith & Practice"
-  - text: "A lot of the way we can frame our purpose as human beings is to be sub-creators and sub-restorers of Shalom."
-    speaker: "Nicole"
-    timestamp: "53:38"
-    topic: "Community & Belonging"
 ---
 
 #### Faith in Public

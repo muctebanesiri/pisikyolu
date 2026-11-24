@@ -1,5 +1,6 @@
 ---
-title: Technology as Process (Maggie Appleton)
+title: Technology as Process
+guests: [Maggie Appleton]
 shareExcerpt: "the door knob asks to be turned by the way it's designed."
 season: 3
 date: 2020-11-02
@@ -14,15 +15,6 @@ description: Is technology just of chips and gadgets? Maggie Appleton joins
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461690/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345661-48000-1-d4ae79c987b62c09.mp3
 sidebar:
   order: 10
-quotes:
-  - text: "A pot and a pan suggests how you should use it if it's designed well. So it has both embodied knowledge and external knowledge in it. The artifact teaches you how to use itself in a certain way."
-    speaker: "Maggie"
-    timestamp: "02:33"
-    topic: "Knowledge & Embodiment"
-  - text: "In the capitalist cosmology of this system, the reward is money instead of salvation. If we're going to call American capitalism a religious belief system in itself, which wouldn't be too difficult to argue, it is that your eternal salvation is you become a millionaire and buy a Ferrari."
-    speaker: "Maggie"
-    timestamp: "20:29"
-    topic: "Gift & Economy"
 ---
 
 #### Technology is Dynamic

@@ -1,5 +1,6 @@
 ---
-title: Emotional Programming (Omar Rizwan)
+title: Emotional Programming
+guests: [Omar Rizwan]
 shareExcerpt: "I think most of the work in programming is managing your own feelings about it."
 season: 3
 date: 2020-10-05
@@ -13,15 +14,11 @@ description: "What can we learn from someone's last tweets? Omar Rizwan joins
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461695/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345662-48000-1-b815fb46b24f5b61.mp3
 sidebar:
   order: 6
-quotes:
-  - text: "I think emotions are a big deal in programming. Like I think most of the work in programming is managing your own feelings about it."
-    speaker: "Omar"
-    timestamp: "06:02"
-    topic: "Knowledge & Embodiment"
-  - text: "Content and presentation are always inseparable. And often when you do this naive translation of stuff that's in a physical medium into your computer screen, you lose a lot of important parts of the presentation."
-    speaker: "Omar"
-    timestamp: "15:23"
-    topic: "Technology & Limits"
+moments:
+  - at: msg-362
+    preview: [22, 31]
+    before: { at: msg-352 }
+    after: { at: msg-375, words: [0, 29] }
 ---
 
 #### That's a Dynamicland sort of thought

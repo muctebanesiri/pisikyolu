@@ -1,5 +1,6 @@
 ---
-title: TabFS (Omar Rizwan)
+title: TabFS
+guests: [Omar Rizwan]
 shareExcerpt: "a good project idea comes out of some kind of personal history or personal relationship that you have with the concepts or with the system."
 season: 3
 date: 2021-02-19
@@ -12,11 +13,6 @@ description: What happens when we open up browser APIs like a filesystem? Omar
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461749/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345721-48000-1-5943dd07847ccba7.mp3
 sidebar:
   order: 14
-quotes:
-  - text: "A good project idea comes out of some kind of personal history or personal relationship that you have with the concepts or with the system. It's something that not anybody could just come up with and try."
-    speaker: "Omar"
-    timestamp: "10:54"
-    topic: "Knowledge & Embodiment"
 ---
 
 #### TabFS or BrowserFS?

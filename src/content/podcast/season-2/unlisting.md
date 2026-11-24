@@ -1,5 +1,6 @@
 ---
-title: "Unlisting Yourself (Philip Gee)"
+title: "Unlisting Yourself"
+guests: [Philip Gee]
 shareExcerpt: "But by just kind of quitting you just free up your mind."
 season: 2
 date: 2020-09-16
@@ -15,11 +16,6 @@ description: Why would you choose to leave the public internet on your own
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461920/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345904-48000-1-a29616055886675f.mp3
 sidebar:
   order: 15
-quotes:
-  - text: "By just kind of quitting you just free up your mind. They were known for Seinfeld obviously, but they also had a bunch of stuff afterwards. So I find that's pretty admirable."
-    speaker: "Philip"
-    timestamp: "29:14"
-    topic: "Time & Memory"
 ---
 
 [00:00] **Henry:** The last time we chatted for the podcast, we were just talking about whatever and to see what happens.

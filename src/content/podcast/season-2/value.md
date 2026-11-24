@@ -1,5 +1,6 @@
 ---
-title: "Perception of Value (Stephanie Hurlburt)"
+title: "Perception of Value"
+guests: [Stephanie Hurlburt]
 shareExcerpt: "People don't just use things because they're out there."
 season: 2
 date: 2019-04-19
@@ -13,15 +14,6 @@ description: What do we treasure? Stephanie Hurlburt (Binomial) joins again to
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461845/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345813-44100-2-2b8ef43c1fd33729.mp3
 sidebar:
   order: 3
-quotes:
-  - text: "If what you care about is having a big impact on the world, the business skills arguably did that just as much as the code. People don't just use things because they're out there."
-    speaker: "Stephanie"
-    timestamp: "14:41"
-    topic: "Gift & Economy"
-  - text: "People want to help you. It's not like you're trying to force people to do something they don't want to do. They want to help."
-    speaker: "Stephanie"
-    timestamp: "48:51"
-    topic: "Gift & Economy"
 ---
 
 [00:06] **Stephanie:** We were talking about perceived value. We were talking about the idea that whenever you're talking to someone that's being interpreted. People value things in different ways. You can communicate value in different ways, and perceived value, the value that someone perceives something to be, can be much different than the inherent value you think it has. It's a very complicated topic in negotiation, and networking, and sales. And it's one that even applies to salary. So we were talking about that.

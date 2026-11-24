@@ -1,5 +1,6 @@
 ---
-title: "Preserving the (Digital) Past (Wendy Hagenmaier)"
+title: "Preserving the (Digital) Past"
+guests: [Wendy Hagenmaier]
 shareExcerpt: "it's also the unique stuff that somebody has decided is worth saving for the long term."
 season: 2
 date: 2019-07-08
@@ -14,15 +15,6 @@ description: "In our excitement to develop products for the future do we neglect
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461519/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345479-44100-2-cc7635c1b19f23b7.mp3
 sidebar:
   order: 9
-quotes:
-  - text: "That emotional reaction to technology, whether it's a digital file or a piece of software or a piece of hardware or whatever is really fascinating. It makes me hopeful, I think, for the future of how people will value their archives."
-    speaker: "Wendy"
-    timestamp: "32:23"
-    topic: "Time & Memory"
-  - text: "In archives, it's often materials that only exist in this single place, in this single instance. So it's that uniqueness and the rare quality of things that makes them particularly special."
-    speaker: "Wendy"
-    timestamp: "03:29"
-    topic: "Knowledge & Embodiment"
 ---
 
 [00:06] **Henry:** Today, I have with me, [Wendy](https://www.library.gatech.edu/wendy-hagenmaier "Wendy Hagenmaier"). She's the digital collections archivist at Georgia Tech Library. I thought that it would be cool to talk with her because archival in a way it seems to relate a lot to maintenance, especially with digital archiving, it's related to software. So yeah, thanks for joining with me today.

@@ -85,3 +85,11 @@ export function findReadingMessageIndex(
   // A chapter or spacing gap belongs to the following passage, not the one above it.
   return currentBottom < readingLine ? Math.min(current + 1, count - 1) : current;
 }
+
+export function localReadingStorage(): Storage | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}

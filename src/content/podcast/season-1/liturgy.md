@@ -1,5 +1,6 @@
 ---
 title: "Liturgy"
+guests: []
 shareExcerpt: "through the practice of doing open source I learned to love it more."
 season: 1
 date: 2018-10-16
@@ -9,15 +10,6 @@ description: How do our rituals shape us? We talk about where habits come from,
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461808/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345769-44100-1-f3634ed400746825.mp3
 sidebar:
   order: 9
-quotes:
-  - text: "The act of doing that thing will make you want to do it more. In open source, we have this initial motivation to contribute, but the only way that's sustained is if you're continuing to do it. Through the practice of doing open source I learned to love it more."
-    speaker: "Henry"
-    timestamp: "16:49"
-    topic: "Knowledge & Embodiment"
-  - text: "A liturgy or habit is a practice that helps you embody the value you believe in."
-    speaker: "Henry"
-    timestamp: "24:48"
-    topic: "Faith & Practice"
 ---
 
 [00:00] **Henry:** All right. In this episode, we're going to be discussing ritual and liturgy and maybe the role that that has in faith and open source.

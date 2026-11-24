@@ -1,5 +1,6 @@
 ---
-title: "Haircut (Jonathan Tsao)"
+title: "Haircut"
+guests: [Jonathan Tsao]
 shareExcerpt: "But reality is so complicated that it actually makes more sense to treat it as living"
 season: 1
 date: 2020-02-14
@@ -12,11 +13,6 @@ description: Why not record an conversation while getting a haircut? Fellow
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461725/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345703-44100-1-f7dbddbb72a179fb.mp3
 sidebar:
   order: 12
-quotes:
-  - text: "We want to treat everything like a robot or a program because it's easy to reason about those things. But reality is so complicated that it actually makes more sense to treat it as living."
-    speaker: "Henry"
-    timestamp: "22:04"
-    topic: "Technology & Limits"
 ---
 
 [00:00] **Henry:** So this podcast, I have a special bonus episode with my friend Jonathan. We recorded this podcast earlier this year in April, on Holy Saturday, which is the day before Easter. I thought it'd be fun to record a podcast while he was cutting my hair. So the kind of topics that we talked about are pretty varied. Just to give you a summary of what we talked about: the relationship between faith and the world and culture, how we should engage living in New York, worklife balance, serendipity, thinking about communities, creativity and how it relates to God, the importance of testimony and of stories, seeing God as a person, and the importance of bodies. Let us know what you think and enjoy the conversation.

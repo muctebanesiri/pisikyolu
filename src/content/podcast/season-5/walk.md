@@ -1,5 +1,6 @@
 ---
-title: An Ordinary Walk (Laurel Schwulst)
+title: An Ordinary Walk
+guests: [Laurel Schwulst]
 shareExcerpt: "I've been thinking about an inherent part of romance, in the broadest sense, is distance, maybe for a kind of field of longing."
 season: 5
 date: 2025-05-30

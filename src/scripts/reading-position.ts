@@ -1,49 +1,18 @@
 import {
-  READING_POSITION_KEY,
   findReadingMessageIndex,
   isCanonicalReadingAnchor,
+  localReadingStorage,
   readReadingPosition,
   readingAnchorForDestination,
   writeReadingPosition,
   type ReadingPosition,
 } from '../lib/reading-position';
 
-function localReadingStorage(): Storage | null {
-  try {
-    return window.localStorage;
-  } catch {
-    return null;
-  }
-}
+type Phase =
+  | { kind: 'tracking'; frame: number | null }
+  | { kind: 'settling'; frame: number };
 
-function initResumeMark() {
-  const rows = new Map(Array.from(document.querySelectorAll<HTMLAnchorElement>('a.archive-episode'))
-    .map((row) => [row.pathname.replace(/\/$/, ''), row]));
-  if (!rows.size) return;
-  const paths = new Set(rows.keys());
-  let marked: HTMLAnchorElement | null = null;
-  const update = () => {
-    const position = readReadingPosition(localReadingStorage(), paths);
-    if (marked) {
-      marked.href = marked.pathname;
-      delete marked.dataset.resume;
-      marked.style.removeProperty('--progress');
-    }
-    marked = position ? rows.get(position.path) ?? null : null;
-    if (!marked || !position) return;
-    marked.href = `${position.path}${position.anchor}`;
-    marked.dataset.resume = '';
-    const at = Number(position.anchor.match(/^#msg-([\d.]+)$/)?.[1]), total = Number(marked.dataset.seconds);
-    if (at && total) marked.style.setProperty('--progress', String(Math.min(1, at / total)));
-  };
-  update();
-  window.addEventListener('pageshow', update);
-  window.addEventListener('storage', (event) => {
-    if (event.key === READING_POSITION_KEY || event.key === null) update();
-  });
-}
-
-function initReadingPosition() {
+function init() {
   const container = document.getElementById('episode-scroll-container');
   const content = document.getElementById('episode-content-shell');
   if (!container || !content) return;
@@ -57,9 +26,7 @@ function initReadingPosition() {
   let lastSavedAnchor = previous?.path === path ? previous.anchor : null;
   let pending: ReadingPosition | null = null;
   let saveTimer: ReturnType<typeof setTimeout> | null = null;
-  let scrollFrame: number | null = null;
-  let settlingDestination = false;
-  let destinationVersion = 0;
+  let phase: Phase = { kind: 'tracking', frame: null };
 
   const flush = () => {
     if (saveTimer !== null) clearTimeout(saveTimer);
@@ -93,33 +60,35 @@ function initReadingPosition() {
     const target = document.getElementById(id)?.closest<HTMLElement>('.message[id]');
     return target && content.contains(target) ? target.id : null;
   };
+  const leave = () => {
+    if (phase.frame !== null) cancelAnimationFrame(phase.frame);
+  };
   const recordScroll = () => {
-    scrollFrame = null;
-    if (!settlingDestination) remember(visibleAnchor());
+    phase = { kind: 'tracking', frame: null };
+    remember(visibleAnchor());
   };
   const settleDestination = () => {
-    settlingDestination = true;
-    const version = ++destinationVersion;
-    if (scrollFrame !== null) cancelAnimationFrame(scrollFrame);
-    scrollFrame = null;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      if (version !== destinationVersion) return;
-      settlingDestination = false;
-      remember(readingAnchorForDestination(window.location.hash, visibleAnchor(), resolveMessageId));
-    }));
+    leave();
+    phase = { kind: 'settling', frame: requestAnimationFrame(() => {
+      phase = { kind: 'settling', frame: requestAnimationFrame(() => {
+        phase = { kind: 'tracking', frame: null };
+        remember(readingAnchorForDestination(window.location.hash, visibleAnchor(), resolveMessageId));
+      }) };
+    }) };
   };
 
   container.addEventListener('scroll', () => {
-    if (!settlingDestination && scrollFrame === null) scrollFrame = requestAnimationFrame(recordScroll);
+    if (phase.kind === 'tracking' && phase.frame === null) phase = { kind: 'tracking', frame: requestAnimationFrame(recordScroll) };
   }, { passive: true });
   window.addEventListener('hashchange', settleDestination);
   window.addEventListener('pagehide', () => {
-    if (scrollFrame !== null) {
-      cancelAnimationFrame(scrollFrame);
-      recordScroll();
-    }
-    if (settlingDestination && window.location.hash.startsWith('#msg-')) {
-      remember(readingAnchorForDestination(window.location.hash, null, resolveMessageId));
+    leave();
+    if (phase.kind === 'tracking' && phase.frame !== null) recordScroll();
+    if (phase.kind === 'settling') {
+      phase = { kind: 'tracking', frame: null };
+      if (window.location.hash.startsWith('#msg-')) {
+        remember(readingAnchorForDestination(window.location.hash, null, resolveMessageId));
+      }
     }
     flush();
   });
@@ -129,11 +98,6 @@ function initReadingPosition() {
 
   // Saved progress is a link on the homepage, never an automatic scroll target.
   if (window.location.hash) settleDestination();
-}
-
-function init() {
-  initResumeMark();
-  initReadingPosition();
 }
 
 if (document.readyState === 'loading') {

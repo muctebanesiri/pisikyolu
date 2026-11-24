@@ -1,5 +1,6 @@
 ---
-title: Unpacking Belief (Joseph Choi)
+title: Unpacking Belief
+guests: [Joseph Choi]
 shareExcerpt: "We feel safe when we have a lot of options, but the safest thing is committing, which is scary."
 season: 5
 date: 2025-02-17
@@ -8,15 +9,6 @@ description: "What does it really mean to call yourself anything? Joseph Choi be
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/98595589/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-1-17%2F46db500c-1797-156c-62c0-3bd6efbfc03d.mp3
 sidebar:
   order: 1
-quotes:
-  - text: "We feel safe when we have a lot of options, but the safest thing is committing, which is scary."
-    speaker: "Henry"
-    timestamp: "04:49"
-    topic: "Faith & Practice"
-  - text: "Faith in anything is about commitment to what you believe in, whether it's yourself, a company, science, or God."
-    speaker: "Henry"
-    timestamp: "06:40"
-    topic: "Faith & Practice"
 ---
 
 [00:00] **Joseph:** I wanted to talk to you to explore what I believe because I still don't really know. Over the past eight-ish years, I've been thinking more about things, but still haven't... I have this giant 40-page doc that I sent you.

@@ -1,5 +1,6 @@
 ---
-title: Digital Disembodiment (Maggie Appleton)
+title: Digital Disembodiment
+guests: [Maggie Appleton]
 shareExcerpt: "we have no affordances that suggest presence without noise."
 season: 3
 date: 2021-04-05
@@ -12,15 +13,6 @@ description: How does the digital life shape our perceptions of ourselves?
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461722/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345704-48000-1-5c7cc18ec401648a.mp3
 sidebar:
   order: 16
-quotes:
-  - text: "Ideally, we would know ourselves, when we feel anything. When I feel emotions, when I feel like my body needs food or whatever. And then you could see a moment where the app will tell me everything and then I won't need to rely on my own sense of feeling."
-    speaker: "Henry"
-    timestamp: "10:46"
-    topic: "Knowledge & Embodiment"
-  - text: "We have no affordances that suggest presence without noise."
-    speaker: "Maggie"
-    timestamp: "22:48"
-    topic: "Technology & Limits"
 ---
 
 [00:00] **Henry:** You were telling me earlier about going back to..

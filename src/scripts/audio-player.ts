@@ -11,6 +11,11 @@ interface MessagePoint {
     el: HTMLElement;
 }
 
+// Until metadata arrives the element can't hold a position, so the source keeps it.
+type Source =
+    | { kind: "unloaded" | "loading"; at: number }
+    | { kind: "ready" };
+
 let audio: HTMLAudioElement | null = null;
 let playPauseButton: HTMLButtonElement | null = null;
 let seekSlider: HTMLInputElement | null = null;
@@ -29,9 +34,12 @@ let messagePoints: MessagePoint[] = [];
 let messagePointsReady = false;
 let feedbackTimeout: ReturnType<typeof setTimeout> | null = null;
 let lastHighlightedMessage: HTMLElement | null = null;
-let isLoaded = false;
-let pendingTime = 0;
+let source: Source = { kind: "unloaded", at: 0 };
 let src = "";
+
+function position(): number {
+    return source.kind === "ready" ? audio?.currentTime ?? 0 : source.at;
+}
 
 function isWatchView(): boolean {
     return document.getElementById("episode-shell")?.dataset.videoMode === "watch";
@@ -141,38 +149,38 @@ function updateTimeDisplay() {
 function setPlaybackUi(isPaused: boolean) {
     playIcon?.classList.toggle("hidden", !isPaused);
     pauseIcon?.classList.toggle("hidden", isPaused);
-    const position = isLoaded && audio ? audio.currentTime : pendingTime;
+    const at = position();
     const playLabel = document.getElementById("play-label");
-    if (playLabel) playLabel.textContent = position > 0 ? formatTime(position) : "";
+    if (playLabel) playLabel.textContent = at > 0 ? formatTime(at) : "";
     playPauseButton?.setAttribute("aria-label", isPaused
-        ? (position > 0 ? `Play from ${formatTime(position)}` : "Play episode")
+        ? (at > 0 ? `Play from ${formatTime(at)}` : "Play episode")
         : "Pause episode");
 }
 
 function ensureAudioLoaded() {
-    if (!audio || isLoaded || !src) return;
+    if (!audio || source.kind !== "unloaded" || !src) return;
     document.getElementById("audio-player-container")?.setAttribute("data-audio-state", "active");
+    source = { kind: "loading", at: source.at };
     audio.src = src;
     audio.load();
-    isLoaded = true;
 }
 
 function setAudioPosition(seconds: number) {
     if (!Number.isFinite(seconds) || seconds < 0) return;
-    pendingTime = seconds;
-    if (isLoaded && audio) audio.currentTime = seconds;
+    if (source.kind !== "ready") source = { ...source, at: seconds };
+    if (source.kind !== "unloaded" && audio) audio.currentTime = seconds;
     if (currentTimeDisplay) currentTimeDisplay.textContent = formatTime(seconds);
     seekSlider?.setAttribute("aria-valuetext", `${formatTime(seconds)} of ${durationDisplay?.textContent || "00:00"}`);
     highlightTime(seconds);
     if (audio?.paused) setPlaybackUi(true);
 }
 
-function playFrom(seconds = pendingTime) {
+function playFrom(seconds: number) {
     if (!audio) return;
     enterReadView();
     ensureAudioLoaded();
     audio.currentTime = seconds;
-    pendingTime = seconds;
+    if (source.kind !== "ready") source = { ...source, at: seconds };
     void audio.play().catch((error) => {
         if (error instanceof DOMException && (error.name === "AbortError" || error.name === "NotAllowedError")) {
             return;
@@ -184,8 +192,8 @@ function playFrom(seconds = pendingTime) {
 function togglePlayPause() {
     if (!audio) return;
     enterReadView();
-    if (!isLoaded || audio.paused) {
-        playFrom(isLoaded ? audio.currentTime : pendingTime);
+    if (source.kind === "unloaded" || audio.paused) {
+        playFrom(position());
     } else {
         audio.pause();
     }
@@ -264,7 +272,7 @@ function stepMessage(direction: 1 | -1) {
     const onScreen = box && box.bottom > view.top && box.top < view.bottom;
     const base = onScreen ? current : messagePoints.findIndex(({ el }) => el.getBoundingClientRect().bottom > view.top + 56) - (direction > 0 ? 1 : 0);
     const target = messagePoints[Math.max(0, Math.min(messagePoints.length - 1, base + direction))];
-    if (audio && isLoaded && !audio.paused) audio.currentTime = target.time;
+    if (audio && source.kind === "ready" && !audio.paused) audio.currentTime = target.time;
     else setAudioPosition(target.time);
     highlightTime(target.time);
     target.el.scrollIntoView({
@@ -341,8 +349,9 @@ function initAudioPlayer() {
 
     audio.addEventListener("timeupdate", updateTimeDisplay);
     audio.addEventListener("loadedmetadata", () => {
-        if (!audio) return;
-        if (pendingTime > 0) audio.currentTime = pendingTime;
+        if (!audio || source.kind !== "loading") return;
+        if (source.at > 0) audio.currentTime = source.at;
+        source = { kind: "ready" };
         if (seekSlider) seekSlider.disabled = false;
         updateTimeDisplay();
     });
@@ -354,7 +363,7 @@ function initAudioPlayer() {
     audio.addEventListener("pause", () => {
         setPlaybackUi(true);
         setPlaying(false);
-        if (isLoaded) showFeedback("pause");
+        if (source.kind !== "unloaded") showFeedback("pause");
     });
     audio.addEventListener("error", () => {
         setPlaybackUi(true);

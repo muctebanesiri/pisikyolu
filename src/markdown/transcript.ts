@@ -159,6 +159,33 @@ function formatTimestamp(seconds: number): string {
     : `${minutes}:${remainder}`;
 }
 
+type Words = [number, number];
+interface MomentRef { at: string; words?: Words }
+
+function resolveMoments(moments: (MomentRef & { preview?: Words; before: MomentRef; after?: MomentRef })[], all: Iterable<Message>, path: string) {
+  const byId = new Map([...all].map(message => [message.id, message]));
+  const words = (full: string, range: Words | undefined, at: string) => {
+    if (!range) return full;
+    const list = full.split(/\s+/), [from, to] = range;
+    if (!(Number.isInteger(from) && Number.isInteger(to) && from >= 0 && from < to && to <= list.length)) {
+      throw new Error(`Moment word range [${from}, ${to}] is outside ${at} (${list.length} words) in ${path}`);
+    }
+    return list.slice(from, to).join(" ");
+  };
+  const line = ({ at, words: range }: MomentRef) => {
+    const message = byId.get(at);
+    if (!message) throw new Error(`Moment anchor missing from transcript in ${path}: ${at}`);
+    if (message.side === "system") throw new Error(`Moment anchor is not a conversation turn in ${path}: ${at}`);
+    const full = toStringUtil(message.content, { includeHtml: false }).trim();
+    return { id: at, seconds: message.seconds, speaker: message.speaker, side: message.side, full, text: words(full, range, at) };
+  };
+  const strip = ({ full, ...rest }: ReturnType<typeof line>) => rest;
+  return moments.map(({ preview, before, after, ...main }) => {
+    const moment = line(main);
+    return { ...strip(moment), preview: preview && words(moment.full, preview, main.at), before: strip(line(before)), after: after && strip(line(after)) };
+  });
+}
+
 export function transcript(tree: Root, frontmatter: Record<string, unknown>, path = "transcript") {
     // Episode titles are the page's h1; transcript sections follow at h2.
     visit(tree, 'heading', (node) => {
@@ -388,6 +415,7 @@ export function transcript(tree: Root, frontmatter: Record<string, unknown>, pat
       }
       group.children = children;
     }
+    if (Array.isArray(frontmatter?.moments)) frontmatter.momentPassages = resolveMoments(frontmatter.moments, messages.values(), path);
     for (const [node, message] of messages) emit(node as Paragraph, message);
     tree.children = grouped;
     if (shareExcerpt && !frontmatter?.sharePassage) throw new Error(`Share excerpt missing from transcript in ${path}: ${shareExcerpt}`);

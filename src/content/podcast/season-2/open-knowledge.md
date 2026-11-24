@@ -1,5 +1,6 @@
 ---
-title: "Open Knowledge (Shawn Wang)"
+title: "Open Knowledge"
+guests: [Shawn Wang]
 shareExcerpt: "But the way that we treat our knowledge is very close source."
 season: 2
 date: 2020-09-02
@@ -13,15 +14,6 @@ description: What does it mean to be code adjacent? Shawn Wang joins Henry to
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461898/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345870-48000-1-abccd8a63b7b2f2e.mp3
 sidebar:
   order: 14
-quotes:
-  - text: "Open source code is better than closed source code because there's more people looking at it. It's easy to contribute. But the way that we treat our knowledge is very close source."
-    speaker: "Shawn"
-    timestamp: "22:55"
-    topic: "Knowledge & Embodiment"
-  - text: "People don't know that git is only 15 years old. There was a time before git. But it also means that five and 15 years from now, we would be doing completely different things."
-    speaker: "Shawn"
-    timestamp: "09:46"
-    topic: "Time & Memory"
 ---
 
 #### Tummling as an Alternative to Community Manager

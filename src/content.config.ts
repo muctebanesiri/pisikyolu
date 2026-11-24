@@ -2,8 +2,17 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
+const words = z.tuple([z.number().int().nonnegative(), z.number().int().positive()])
+  .refine(([from, to]) => from < to, 'Word range must be [from, to) with from < to');
+
+const moment = z.object({
+  at: z.string().regex(/^msg-\d+(?:-\d+)?$/),
+  words: words.optional(),
+});
+
 const podcastSchema = z.object({
   title: z.string(),
+  guests: z.array(z.string().trim().min(1)),
   shareExcerpt: z.string().trim().min(1).optional(),
   season: z.number(),
   date: z.date(),
@@ -19,14 +28,11 @@ const podcastSchema = z.object({
     order: z.number(),
   }),
   speakers: z.record(z.string(), z.enum(['left', 'right', 'other'])).optional(),
-  quotes: z.array(
-    z.object({
-      text: z.string(),
-      speaker: z.string(),
-      timestamp: z.string(),
-      topic: z.string().optional(),
-    })
-  ).max(2).optional(),
+  moments: z.array(moment.extend({
+    preview: words.optional(),
+    before: moment,
+    after: moment.optional(),
+  })).optional(),
 });
 
 // Define the podcast collection

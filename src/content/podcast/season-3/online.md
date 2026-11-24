@@ -1,5 +1,6 @@
 ---
-title: Very Online (Strange Rites)
+title: Very Online
+guests: [Tara Isabella Burton]
 shareExcerpt: "What is a religion? What needs might this fulfill?"
 season: 3
 date: 2020-07-23
@@ -13,11 +14,6 @@ description: "What happens to our religions when they meet the Internet? Tara
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461664/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345615-48000-1-402d5f8709904360.mp3
 sidebar:
   order: 3
-quotes:
-  - text: "The sort of turn, which I think is phenomenologically true, towards a kind of intuitional model of understanding. Sort of trusting your gut, rejecting external, believing that your desires are kind of ontologically good."
-    speaker: "Tara"
-    timestamp: "00:03:43"
-    topic: "Faith & Practice"
 ---
 
 #### Charles Taylor meets Marshall McLuhan

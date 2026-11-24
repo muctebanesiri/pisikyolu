@@ -1,5 +1,6 @@
 ---
-title: Finding Hope Amid Burnout (Alex Kim)
+title: Finding Hope Amid Burnout
+guests: [Alex Kim]
 shareExcerpt: "You're just doing it for the sake of doing it because time demands it."
 season: 4
 date: 2022-09-27
@@ -13,15 +14,6 @@ description: Where can hope be found? Alex Kim joins again to open up questions
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461771/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345732-44100-1-0d46c8f889476f09.mp3
 sidebar:
   order: 5
-quotes:
-  - text: "Part of the reason why you may feel burnout is, everything becomes kind of a task. You're really no longer in the moment. And it's almost like you are outside of your body."
-    speaker: "Alex"
-    timestamp: "09:23"
-    topic: "Time & Memory"
-  - text: "How can the Church sort of be the kind of wire cutters for this chain linked fence that we call hopelessness?"
-    speaker: "Alex"
-    timestamp: "33:09"
-    topic: "Community & Belonging"
 ---
 
 #### La Fatigue d'être soi (Weariness of the Self)

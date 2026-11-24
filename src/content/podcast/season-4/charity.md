@@ -1,5 +1,6 @@
 ---
-title: Sacred Charity (Austin Chen)
+title: Sacred Charity
+guests: [Austin Chen]
 shareExcerpt: "people are just individually irreplaceable."
 season: 4
 date: 2024-08-28
@@ -13,15 +14,6 @@ description: How does rationality/ea and faith intersect? Austin Chen joins me
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461815/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345789-44100-1-72366bae49ef9518.mp3
 sidebar:
   order: 9
-quotes:
-  - text: "People are just individually irreplaceable. Engineering is about kinda getting rid of those differences in some sense. When you engineer a system, you try to make it replicable. You try to use pieces that are interchangeable."
-    speaker: "Austin"
-    timestamp: "30:45"
-    topic: "Technology & Limits"
-  - text: "God himself decided to take the Sabbath, the seventh day off. And so who are we to think that we can power through every feature request at 2:00 AM on Sunday."
-    speaker: "Austin"
-    timestamp: "27:21"
-    topic: "Faith & Practice"
 ---
 
 #### Jewish Culture and Rationalism

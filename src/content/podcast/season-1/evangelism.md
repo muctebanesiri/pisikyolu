@@ -1,5 +1,6 @@
 ---
 title: "Evangelism"
+guests: []
 shareExcerpt: "it's really important for a community to act as though everyone is watching"
 season: 1
 date: 2018-10-16
@@ -10,15 +11,6 @@ description: How do we evangelize our ideas? We talk about evangelism in
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461897/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345878-44100-1-d76d75774223896a.mp3
 sidebar:
   order: 5
-quotes:
-  - text: "If you don't actually truly believe it yourself and live it out, then how are you gonna be able to show or convince that in anyone else?"
-    speaker: "Henry"
-    timestamp: "13:06"
-    topic: "Faith & Practice"
-  - text: "It's really important for a community to act as though everyone is watching because you don't know who might have stumbled upon your project and was thinking about contributing and then they saw something and then it just put them off and then they left."
-    speaker: "Nadia"
-    timestamp: "16:58"
-    topic: "Community & Belonging"
 ---
 
 [00:00] **Henry:** I think we mentioned evangelism in the last episode, so we thought it would be a good idea to go into that topic in more detail. About how evangelism in the faith context might not be that different in open source ‘cause we're also trying to get people to either do open source as a whole or get involved in your project.

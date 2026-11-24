@@ -1,5 +1,6 @@
 ---
-title: "Getting Old in Open Source (Mikeal Rogers)"
+title: "Getting Old in Open Source"
+guests: [Mikeal Rogers]
 shareExcerpt: "leadership is not a lifetime task that you've taken on."
 season: 2
 date: 2019-04-29
@@ -12,11 +13,6 @@ description: How old is open source anyway? Mikeal Rogers (Protocol Labs) joins
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461825/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345777-44100-2-af1bf9b27fb3c3dc.mp3
 sidebar:
   order: 4
-quotes:
-  - text: "Open source is a really organic process that seems to mostly be working. People seem to get things done. They seem to communicate. It's definitely better than it's ever been."
-    speaker: "Mikeal"
-    timestamp: "24:03"
-    topic: "Community & Belonging"
 ---
 
 [00:07] **Henry:** Yeah, today, I have with me Mikeal Rogers. I feel like Mikeal's been around for a pretty long time, especially in open source. I don't remember where I first met you or heard about you. But I mean I definitely knew that you worked on Node. And then probably feel like I talked to you a lot more after you made RFC with Nadia.

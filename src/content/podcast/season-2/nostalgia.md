@@ -1,5 +1,6 @@
 ---
-title: "Nostalgia and Not Taking Yourself Too Seriously (Jordan Scales)"
+title: "Nostalgia and Not Taking Yourself Too Seriously"
+guests: [Jordan Scales]
 shareExcerpt: "So I grew up playing games on Windows 98. Really, my first time on the computer was Windows 98."
 season: 2
 date: 2020-05-26
@@ -13,11 +14,6 @@ description: Why attempt to faithfully recreate the past? Jordan Scales joins
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461585/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345529-44100-1-176923435cef5a06.mp3
 sidebar:
   order: 13
-quotes:
-  - text: "It is a celebration, if you will, of retro computing. I was born in the early '90s. So I grew up playing games on Windows 98. Really, my first time on the computer was Windows 98."
-    speaker: "Jordan"
-    timestamp: "00:00:43"
-    topic: "Time & Memory"
 ---
 
 [00:00:00] **Jordan:** Hello, and welcome to Maintainers Anonymous. This is your guest Jordan Scales. Henry graciously allowed me to do the introduction. This is a podcast about software maintenance and anonymization. Henry, I don't know if that's correct.

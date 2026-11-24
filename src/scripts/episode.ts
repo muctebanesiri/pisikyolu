@@ -23,16 +23,33 @@ function initChatHeader() {
 
 // --- Transcript Deep-linking Logic ---
 
+let noteFlash: { note: HTMLElement; timer: number } | null = null;
+
+function endNoteFlash() {
+    if (!noteFlash) return;
+    clearTimeout(noteFlash.timer);
+    noteFlash.note.dispatchEvent(new MouseEvent('mouseleave'));
+    noteFlash = null;
+}
+
 function handleDeepLink() {
+    endNoteFlash();
     const hash = window.location.hash;
     if (!hash) return;
 
     const target = document.getElementById(hash.slice(1));
     if (target?.matches('.note-anchor')) {
         requestAnimationFrame(() => {
+            endNoteFlash();
             target.scrollIntoView({ block: 'center', behavior: 'instant' });
             target.dispatchEvent(new MouseEvent('mouseenter'));
-            setTimeout(() => target.dispatchEvent(new MouseEvent('mouseleave')), 2400);
+            const flash = { note: target, timer: window.setTimeout(endNoteFlash, 2400) };
+            noteFlash = flash;
+            target.addEventListener('mouseenter', () => {
+                if (noteFlash !== flash) return;
+                clearTimeout(flash.timer);
+                noteFlash = null;
+            }, { once: true });
         });
         return;
     }

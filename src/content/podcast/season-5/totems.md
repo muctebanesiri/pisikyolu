@@ -1,5 +1,6 @@
 ---
-title: "Words are Totems (of Etymology) (Xiq)"
+title: "Words are Totems (of Etymology)"
+guests: [Xiq]
 shareExcerpt: "Words are totems. Definitely. If you know the etymology. If you don't, you're just looking at the top of the totem."
 season: 5
 date: 2026-03-27
@@ -9,15 +10,11 @@ episodeLink: "https://anchor.fm/s/ff707650/podcast/play/117587498/https%3A%2F%2F
 sauntercast: true
 sidebar:
   order: 6
-quotes:
-  - text: "Words are totems. If you know the etymology. If you don't, you're just looking at the top of the totem."
-    speaker: "Xiq"
-    timestamp: "25:39"
-    topic: "Language & Meaning"
-  - text: "So thinking heaven is boring is a failure of the imagination?"
-    speaker: "Xiq"
-    timestamp: "30:22"
-    topic: "Faith & Imagination"
+moments:
+  - at: msg-1539
+    preview: [0, 4]
+    before: { at: msg-1515, words: [29, 34] }
+    after: { at: msg-1548 }
 ---
 
 #### Cherry Blossoms

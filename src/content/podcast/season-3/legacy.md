@@ -1,5 +1,6 @@
 ---
-title: Legacy (Timothy Patitsas)
+title: Legacy
+guests: [Timothy Patitsas]
 shareExcerpt: "having a stable base allows people to kind of experiment."
 season: 3
 date: 2020-06-01

@@ -7,59 +7,29 @@ import AudioPlayer from "@/components/AudioPlayer.astro";
 import { hisMetadata } from "@/metadata.ts";
 import type { ExtractedLink } from "@/markdown/links";
 import { formatEpisodeDate, formatEpisodeDateValue } from "@/lib/dates";
-import { getEpisodeData } from "@/lib/episodes";
+import { getEpisodeData, pageTitle, type Episode } from "@/lib/episodes";
 import { episodeCard, shareImage } from "@/lib/share-card";
 import { getEpisodeAudioSource } from "@/lib/audio";
 
 export async function getStaticPaths() {
   const { episodes } = await getEpisodeData();
-
-  // Pre-render content at build time
-  const pages = await Promise.all(
-    episodes.map(async (episode, index) => {
-      const { Content, headings, remarkPluginFrontmatter } = await render(episode);
-      const chapterHeadings = headings.filter((h) => h.depth === 2);
-      const extractedLinks = (remarkPluginFrontmatter?.extractedLinks || []) as ExtractedLink[];
-
-      // Find other episodes by the same guest(s)
-      const relatedByGuest = episode.guests
-        .map(guest => ({
-          guest,
-          episodes: episodes
-            .filter(ep => ep.slug !== episode.slug && ep.guests.includes(guest))
-            .map(ep => ({ slug: ep.slug, title: ep.episodeTitle }))
-        }))
-        .filter(g => g.episodes.length > 0);
-
-      return {
-        params: { slug: episode.slug },
-        props: {
-          slug: episode.slug,
-          image: shareImage(episodeCard(episode)),
-          Content,
-          headings: chapterHeadings,
-          frontmatter: episode.data,
-          episodeNumber: episode.epNumber,
-          extractedLinks,
-          episodeTitle: episode.episodeTitle,
-          guests: episode.guests,
-          relatedByGuest,
-          neighbors: [
-            { label: "← Previous", episode: episodes[index + 1] },
-            { label: "Next →", episode: episodes[index - 1] },
-          ].map(({ label, episode: neighbor }) => neighbor
-            ? { label, slug: neighbor.slug, title: neighbor.episodeTitle, guests: neighbor.guests.join(", ") }
-            : null),
-          hasBody: Boolean(episode.body?.trim()),
-        },
-      };
-    }),
-  );
-
-  return pages;
+  return episodes.map((episode) => ({ params: { slug: episode.slug }, props: { episode } }));
 }
 
-const { slug, Content, headings, frontmatter, episodeNumber, extractedLinks, episodeTitle, guests, relatedByGuest, neighbors, hasBody, image } = Astro.props;
+interface Props { episode: Episode }
+
+const { episode } = Astro.props;
+const { slug, data: frontmatter, number: episodeNumber, related } = episode;
+const { title: episodeTitle, guests } = frontmatter;
+const { Content, headings: allHeadings, remarkPluginFrontmatter } = await render(episode);
+const headings = allHeadings.filter((h) => h.depth === 2);
+const extractedLinks = (remarkPluginFrontmatter?.extractedLinks || []) as ExtractedLink[];
+const hasBody = Boolean(episode.body?.trim());
+const image = shareImage(episodeCard(episode));
+const neighbors = [
+  { label: "← Previous", episode: episode.previous },
+  { label: "Next →", episode: episode.next },
+];
 
 const videoUrl = frontmatter.video?.url ?? null;
 const videoOffsetSeconds = frontmatter.video?.offsetSeconds ?? 0;
@@ -88,7 +58,7 @@ const audioSource = getEpisodeAudioSource(frontmatter.episodeLink);
 const hasLongDescription = hasBody && frontmatter.description.length > 135;
 ---
 
-<Layout frontmatter={frontmatter} slug={`/${slug}`} image={image} mainId="episode-content-shell">
+<Layout frontmatter={{ title: pageTitle(episode), description: frontmatter.description }} slug={`/${slug}`} image={image} mainId="episode-content-shell">
   <div
     id="episode-shell"
     class="flex flex-col h-screen"
@@ -226,16 +196,16 @@ const hasLongDescription = hasBody && frontmatter.description.length > 135;
       {frontmatter.description}
     </p>
 
-    {relatedByGuest.length > 0 && (
+    {related.length > 0 && (
       <aside aria-label="Related episodes" class="episode-related">
-        {relatedByGuest.map(({ guest, episodes: related }) => (
+        {related.map(({ guest, episodes }) => (
           <p>
             More with {guest.split(" ")[0]}{" · "}
-            {related.map((ep, i) => (
+            {episodes.map((ep, i) => (
               <>
                 {i > 0 && " · "}
                 <a href={`/${ep.slug}`} class="text-his-text-secondary hover:text-his-green transition-colors">
-                  {ep.title}
+                  {ep.data.title}
                 </a>
               </>
             ))}
@@ -252,12 +222,12 @@ const hasLongDescription = hasBody && frontmatter.description.length > 135;
         : <p class="py-8 text-center text-sm text-his-text-secondary">Transcript coming soon. You can listen to the episode.</p>}
     </div>
     <nav class="episode-neighbors" aria-label="Neighbouring episodes">
-      {neighbors.map((neighbor) => neighbor
+      {neighbors.map(({ label, episode: neighbor }) => neighbor
         ? (
           <a href={`/${neighbor.slug}`} class="episode-neighbor">
-            <span class="episode-neighbor-label">{neighbor.label}</span>
-            <span class="episode-neighbor-title">{neighbor.title}</span>
-            {neighbor.guests && <span class="episode-neighbor-guests">{neighbor.guests}</span>}
+            <span class="episode-neighbor-label">{label}</span>
+            <span class="episode-neighbor-title">{neighbor.data.title}</span>
+            {neighbor.data.guests.length > 0 && <span class="episode-neighbor-guests">{neighbor.data.guests.join(", ")}</span>}
           </a>
         )
         : <span />)}

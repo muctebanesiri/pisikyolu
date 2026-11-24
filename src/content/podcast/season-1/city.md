@@ -1,5 +1,6 @@
 ---
-title: "City as Liturgy (Timothy Patitsas)"
+title: "City as Liturgy"
+guests: [Timothy Patitsas]
 shareExcerpt: "The young can access information but wisdom comes with time"
 season: 1
 date: 2019-03-21
@@ -16,15 +17,6 @@ speakers:
   Henry: other
   Nadia: right
   Timothy: left
-quotes:
-  - text: "They substituted a living, very sophisticated, rich and subtle order, with something that was visually flashy and comprehensible, but that was outside of time and therefore dead."
-    speaker: "Timothy"
-    timestamp: "04:34"
-    topic: "Technology & Limits"
-  - text: "The young can access information but wisdom comes with time because the whole thing about learning and an organic system is that it's gonna get to know you as you get to know it and it's gonna leave its mark on you."
-    speaker: "Timothy"
-    timestamp: "36:15"
-    topic: "Knowledge & Embodiment"
 ---
 
 ### Guest

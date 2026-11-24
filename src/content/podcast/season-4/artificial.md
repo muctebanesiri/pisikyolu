@@ -1,5 +1,6 @@
 ---
-title: Artificial Physicality (Drew Austin)
+title: Artificial Physicality
+guests: [Drew Austin]
 shareExcerpt: "you can be silent and present at the same time."
 season: 4
 date: 2024-08-07
@@ -14,15 +15,11 @@ description: "Why does everyone care about New York? Drew Austin explores the
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461613/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345566-44100-1-be625077806e3ef0.mp3
 sidebar:
   order: 7
-quotes:
-  - text: "A city is a medium, but the internet is a different medium where it just happens to be one of the primary theaters where human nature plays out today."
-    speaker: "Drew"
-    timestamp: "03:18"
-    topic: "Technology & Limits"
-  - text: "In the physical world, you can be silent and present at the same time. We could be sitting in this room together, not talking, and there would be some benefit of shared human contact there, even though there was no quote unquote content."
-    speaker: "Drew"
-    timestamp: "13:37"
-    topic: "Community & Belonging"
+moments:
+  - at: msg-817
+    words: [8, 23]
+    before: { at: msg-807 }
+    after: { at: msg-835, words: [0, 25] }
 ---
 
 [00:00] **Henry:** Talking with Drew Austin. We're doing this in person, which is kind of new for me. And maybe for you too.

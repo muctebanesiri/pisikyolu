@@ -1,5 +1,6 @@
 ---
-title: "Life After Digital Death (Philip Gee)"
+title: "Life After Digital Death"
+guests: [Philip Gee]
 shareExcerpt: "For them the small scale is the only scale, right?"
 season: 2
 date: 2020-09-23
@@ -14,15 +15,6 @@ description: What's life after removing yourself from social media? Philip Gee
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461572/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345534-48000-1-e63d690885260c06.mp3
 sidebar:
   order: 16
-quotes:
-  - text: "I purposely want it so that between episodes, people have that context. So it almost feels like episodes of a TV show where you're assuming that people for the most part have read the previous one."
-    speaker: "Philip"
-    timestamp: "05:27"
-    topic: "Community & Belonging"
-  - text: "I talked to family and friends who aren't online. For them the small scale is the only scale. So I'm like, let me go back to doing that. It's like, wait, nobody says I can't go back to doing that."
-    speaker: "Philip"
-    timestamp: "29:51"
-    topic: "Technology & Limits"
 ---
 
 #### The Trilogy

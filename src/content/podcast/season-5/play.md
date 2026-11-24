@@ -1,5 +1,6 @@
 ---
-title: "Infrastructure as Play (Brendan Schlagel)"
+title: "Infrastructure as Play"
+guests: [Brendan Schlagel]
 shareExcerpt: "we're just walking and talking. That's our agenda okay."
 season: 5
 date: 2026-03-27

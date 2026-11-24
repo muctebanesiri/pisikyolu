@@ -1,5 +1,6 @@
 ---
-title: Embodied Knowledge (Maggie Appleton)
+title: Embodied Knowledge
+guests: [Maggie Appleton]
 shareExcerpt: "wouldn't you rather just actually talk to them?"
 season: 3
 date: 2020-11-02
@@ -13,15 +14,6 @@ description: Can there be knowledge without a knower? Maggie Appleton joins
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461512/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345483-48000-1-84cceed086668fbb.mp3
 sidebar:
   order: 9
-quotes:
-  - text: "If we want to know somebody, you're not going to do all your research on someone before you get to know them. It's good to have some kind of context, but wouldn't you rather just actually talk to them?"
-    speaker: "Henry"
-    timestamp: "13:03"
-    topic: "Knowledge & Embodiment"
-  - text: "Singing a hymn that has been sung for thousands of years and you think, Oh, well, you know, it has no meaning to me, let's just not do it anymore. You're not making space for what maybe it can like teach you that you aren't consciously aware of."
-    speaker: "Maggie"
-    timestamp: "17:57"
-    topic: "Time & Memory"
 ---
 
 #### Indwelling

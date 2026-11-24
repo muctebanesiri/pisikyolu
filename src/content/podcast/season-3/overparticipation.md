@@ -1,5 +1,6 @@
 ---
-title: "Managing Over-Participation (Working in Public)"
+title: "Managing Over-Participation"
+guests: [Nadia Asparouhova]
 shareExcerpt: "imagine trying to have to collaborate with your comment section"
 season: 3
 date: 2020-08-04
@@ -8,15 +9,12 @@ description: "Is more (information, people, code) always better? Nadia Asparouho
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461803/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345772-48000-1-21230558850f3f81.mp3
 sidebar:
     order: 4
-quotes:
-  - text: "Imagine trying to collaborate with your comment section is kind of like at the heart of why this stuff is so challenging."
-    speaker: "Nadia"
-    timestamp: "10:06"
-    topic: "Community & Belonging"
-  - text: "There's always going to be this cycle of some things becoming more institutionalized and then people kind of pushing again to the fringes and making new things. And I think that's just like a really beautiful dance that we all kind of go through."
-    speaker: "Nadia"
-    timestamp: "45:50"
-    topic: "Community & Belonging"
+moments:
+  - at: msg-606
+    words: [25, 76]
+    preview: [52, 57]
+    before: { at: msg-583, words: [0, 19] }
+    after: { at: msg-641, words: [6, 27] }
 ---
 
 #### Five Years Looking At Open Source Communities

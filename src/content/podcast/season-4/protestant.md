@@ -1,5 +1,6 @@
 ---
-title: 'Everyone is "Protestant" Online (L.M. Sacasas)'
+title: 'Everyone is "Protestant" Online'
+guests: [L.M. Sacasas]
 shareExcerpt: "there's often no way of even accounting for what you're losing."
 season: 4
 date: 2022-09-27
@@ -8,15 +9,6 @@ description: "How do we all act as protestants online? L.M. Sacasas joins Henry 
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461809/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345760-44100-1-7f68d551fcfe2298.mp3
 sidebar:
     order: 6
-quotes:
-  - text: "When we go for the most efficient method or tool or device or whatever, there's often no way of even accounting for what you're losing."
-    speaker: "Michael"
-    timestamp: "10:36"
-    topic: "Technology & Limits"
-  - text: "A frictionless life may promise ease in a certain security, but also leaves us adrift chasing one superficial pleasure after another, never satisfied because we never experienced a struggle against resistance that is essential to a sense of accomplishment."
-    speaker: "Michael"
-    timestamp: "16:44"
-    topic: "Technology & Limits"
 ---
 
 [00:00] **Henry:** We were just talking about different ways of thinking about Christianity and how for us, as Protestants, we noticed that it doesn't seem like we care about the body as much, right?

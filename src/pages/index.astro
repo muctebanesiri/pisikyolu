@@ -2,27 +2,20 @@
 import HomeContentLayout from "@/layouts/HomeContentLayout.astro";
 import ArchiveEpisodeRow from "@/components/ArchiveEpisodeRow.astro";
 import { getEpisodeData } from "@/lib/episodes";
-import { HOME_MOMENTS, formatMomentTime } from "@/lib/home-moments";
+import { episodeMoments, formatMomentTime } from "@/lib/moments";
 
 const episodeData = await getEpisodeData();
-const episodesBySlug = new Map(episodeData.episodes.map((episode) => [episode.slug, episode]));
-const conversations = HOME_MOMENTS.filter((moment) => moment.context);
-const moments = conversations.toSorted((a, b) => {
-  const episodeA = episodesBySlug.get(a.slug);
-  const episodeB = episodesBySlug.get(b.slug);
-  return (episodeB?.data.date.getTime() ?? 0) - (episodeA?.data.date.getTime() ?? 0)
-    || (episodeB?.epNumber ?? 0) - (episodeA?.epNumber ?? 0);
-}).map((moment) => {
-  const groupedBefore = moment.context?.before.speaker === moment.speaker;
-  const groupedAfter = moment.context?.after?.speaker === moment.speaker;
-  return {
+const moments = episodeData.episodes
+  .flatMap((episode) => episodeMoments(episode).map((moment) => ({ ...moment, episode })))
+  .toSorted((a, b) => b.episode.data.date.getTime() - a.episode.data.date.getTime() || b.episode.number - a.episode.number)
+  .map((moment) => ({
     ...moment,
-    episodeTitle: episodesBySlug.get(moment.slug)?.episodeTitle ?? moment.slug,
+    slug: moment.episode.slug,
+    episodeTitle: moment.episode.data.title,
     time: formatMomentTime(moment.seconds),
-    groupedBefore,
-    groupedAfter,
-  };
-});
+    groupedBefore: moment.before.speaker === moment.speaker,
+    groupedAfter: moment.after?.speaker === moment.speaker,
+  }));
 const initialSlots = moments.map((_, index) =>
   index === 0 ? "focus" : index === 1 ? "up-next" : index === moments.length - 1 ? "previous" : undefined
 );
@@ -53,39 +46,37 @@ const initialSlots = moments.map((_, index) =>
           </span>
         </button>
         <div class="home-moment-conversation">
-          {moment.context && (
-            <a
-              class="home-moment-context message"
-              data-side={moment.context.before.side}
-              data-run={moment.groupedBefore ? "start" : undefined}
-              href={`/${moment.slug}#msg-${moment.context.before.seconds}`}
-            >
-              <b>{moment.context.before.speaker}</b>
-              <span class="message-bubble">{moment.context.before.text}<time>{formatMomentTime(moment.context.before.seconds)}</time></span>
-            </a>
-          )}
+          <a
+            class="home-moment-context message"
+            data-side={moment.before.side}
+            data-run={moment.groupedBefore ? "start" : undefined}
+            href={`/${moment.slug}#${moment.before.id}`}
+          >
+            <b>{moment.before.speaker}</b>
+            <span class="message-bubble">{moment.before.text}<time>{formatMomentTime(moment.before.seconds)}</time></span>
+          </a>
           <a
             class="home-moment-link message"
             data-side={moment.side}
             data-run={moment.groupedBefore ? (moment.groupedAfter ? "mid" : "end") : moment.groupedAfter ? "start" : undefined}
-            href={`/${moment.slug}#msg-${moment.seconds}`}
+            href={`/${moment.slug}#${moment.id}`}
             aria-label={`${moment.speaker} in ${moment.episodeTitle}: ${moment.text} At ${moment.time}.`}
           >
             {!moment.groupedBefore && <b>{moment.speaker}</b>}
             <span class="message-bubble"><span class="home-moment-text">{moment.text}</span><time>{moment.time}</time></span>
           </a>
-          {moment.context?.after && (
+          {moment.after && (
             <a
               class="home-moment-context message"
-              data-side={moment.context.after.side}
+              data-side={moment.after.side}
               data-run={moment.groupedAfter ? "end" : undefined}
-              href={`/${moment.slug}#msg-${moment.context.after.seconds}`}
+              href={`/${moment.slug}#${moment.after.id}`}
             >
-              {!moment.groupedAfter && <b>{moment.context.after.speaker}</b>}
-              <span class="message-bubble">{moment.context.after.text}<time>{formatMomentTime(moment.context.after.seconds)}</time></span>
+              {!moment.groupedAfter && <b>{moment.after.speaker}</b>}
+              <span class="message-bubble">{moment.after.text}<time>{formatMomentTime(moment.after.seconds)}</time></span>
             </a>
           )}
-          <a class="home-moment-source" href={`/${moment.slug}#msg-${moment.seconds}`}>
+          <a class="home-moment-source" href={`/${moment.slug}#${moment.id}`}>
             <b>{moment.episodeTitle}</b> <span aria-hidden="true">·</span> read from here <span aria-hidden="true">→</span>
           </a>
         </div>
@@ -113,7 +104,7 @@ const initialSlots = moments.map((_, index) =>
   </section>
 
   <script src="../scripts/home-showcase.ts"></script>
-  <script src="../scripts/reading-position.ts"></script>
+  <script src="../scripts/resume-mark.ts"></script>
   <script src="../scripts/home-roots.ts"></script>
 </HomeContentLayout>
 

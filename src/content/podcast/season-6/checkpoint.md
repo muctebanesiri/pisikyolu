@@ -1,5 +1,6 @@
 ---
-title: Internet Checkpoint (Melody Kim)
+title: Internet Checkpoint
+guests: [Melody Kim]
 shareExcerpt: "If it doesn't help me understand, then what's the point?"
 season: 6
 date: 2026-02-07
@@ -11,15 +12,11 @@ video:
   offsetSeconds: 35
 sidebar:
   order: 1
-quotes:
-  - text: "The seed needs to be extremely high quality. The seed of the idea, and then it'll produce the fruit of your project."
-    speaker: "Melody"
-    timestamp: "30:17"
-    topic: "Knowledge & Embodiment"
-  - text: "There is no inevitability as long as there's a willingness to understand what is happening."
-    speaker: "Henry"
-    timestamp: "42:59"
-    topic: "Technology & Limits"
+moments:
+  - at: msg-1805
+    preview: [18, 28]
+    before: { at: msg-1760 }
+    after: { at: msg-1817, words: [15, 23] }
 ---
 
 [00:00] **Melody:** Internet checkpoint.

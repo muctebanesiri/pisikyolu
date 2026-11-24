@@ -1,5 +1,6 @@
 ---
 title: "Community Membership"
+guests: []
 shareExcerpt: "Continuing to do it will make me continue to want to do it."
 season: 1
 date: 2018-10-16
@@ -10,15 +11,6 @@ description: What does it mean to join a community? We talk about casual versus
 episodeLink: https://anchor.fm/s/ff707650/podcast/play/96461829/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2024-11-31%2F392345802-44100-1-b7bc68ab1cce235f.mp3
 sidebar:
   order: 2
-quotes:
-  - text: "It's not because I'm devoted that I'm going. It's 'cause going will make me more devoted as well. Same with open source. Continuing to do it will make me continue to want to do it."
-    speaker: "Henry"
-    timestamp: "23:48"
-    topic: "Faith & Practice"
-  - text: "There's something intangible about a maintainer, where your level of commitment is strong enough that you're going up or down with the ship."
-    speaker: "Nadia"
-    timestamp: "20:10"
-    topic: "Community & Belonging"
 ---
 
 #### A Call to Commitment
