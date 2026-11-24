@@ -92,6 +92,34 @@ function highlightTime(seconds: number) {
     lastHighlightedMessage?.classList.remove("message-current");
     currentMessage?.classList.add("message-current");
     lastHighlightedMessage = currentMessage;
+    scheduleFollow();
+}
+
+let followFrame = 0;
+
+function updateFollow() {
+    followFrame = 0;
+    const shell = document.getElementById("episode-shell");
+    const container = document.getElementById("episode-scroll-container");
+    if (!shell || !container) return;
+    if (!lastHighlightedMessage) {
+        delete shell.dataset.follow;
+        return;
+    }
+    const message = lastHighlightedMessage.getBoundingClientRect(), view = container.getBoundingClientRect();
+    shell.dataset.follow = message.bottom < view.top ? "above" : message.top > view.bottom ? "below" : "here";
+}
+
+function scheduleFollow() {
+    followFrame ||= requestAnimationFrame(updateFollow);
+}
+
+function setPlaying(playing: boolean) {
+    const shell = document.getElementById("episode-shell");
+    if (!shell) return;
+    if (playing) shell.dataset.playback = "playing";
+    else delete shell.dataset.playback;
+    scheduleFollow();
 }
 
 function updateTimeDisplay() {
@@ -206,7 +234,7 @@ function toggleMute() {
     showFeedback(audio.muted ? "mute" : "unmute");
 }
 
-function showFeedback(action: "seek" | "play" | "pause" | "mute" | "unmute" | "volume" | "error", value: string | number = "") {
+function showFeedback(action: "play" | "pause" | "mute" | "unmute" | "volume" | "error", value: string | number = "") {
     if (!feedbackText || !playerFeedback) return;
     if (feedbackTimeout) clearTimeout(feedbackTimeout);
 
@@ -216,7 +244,6 @@ function showFeedback(action: "seek" | "play" | "pause" | "mute" | "unmute" | "v
         mute: "Muted",
         unmute: "Unmuted",
         volume: `Volume ${value}%`,
-        seek: `${Number(value) > 0 ? "Forward" : "Back"} ${Math.abs(Number(value))}s`,
         error: "Audio could not play",
     };
 
@@ -227,11 +254,23 @@ function showFeedback(action: "seek" | "play" | "pause" | "mute" | "unmute" | "v
     }, 500);
 }
 
-function seekRelative(seconds: number) {
-    if (!audio || !isLoaded) return;
-    const duration = Number.isFinite(audio.duration) ? audio.duration : Infinity;
-    audio.currentTime = Math.max(0, Math.min(duration, audio.currentTime + seconds));
-    showFeedback("seek", seconds);
+function stepMessage(direction: 1 | -1) {
+    ensureMessagePoints();
+    const container = document.getElementById("episode-scroll-container");
+    if (!messagePoints.length || !container) return;
+    const view = container.getBoundingClientRect();
+    const current = lastHighlightedMessage ? messagePoints.findIndex(({ el }) => el === lastHighlightedMessage) : -1;
+    const box = current >= 0 ? messagePoints[current].el.getBoundingClientRect() : null;
+    const onScreen = box && box.bottom > view.top && box.top < view.bottom;
+    const base = onScreen ? current : messagePoints.findIndex(({ el }) => el.getBoundingClientRect().bottom > view.top + 56) - (direction > 0 ? 1 : 0);
+    const target = messagePoints[Math.max(0, Math.min(messagePoints.length - 1, base + direction))];
+    if (audio && isLoaded && !audio.paused) audio.currentTime = target.time;
+    else setAudioPosition(target.time);
+    highlightTime(target.time);
+    target.el.scrollIntoView({
+        block: "center",
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+    });
 }
 
 function handleAudioKeydown(event: KeyboardEvent) {
@@ -247,11 +286,11 @@ function handleAudioKeydown(event: KeyboardEvent) {
             break;
         case "KeyJ":
             event.preventDefault();
-            seekRelative(-10);
+            stepMessage(1);
             break;
         case "KeyK":
             event.preventDefault();
-            seekRelative(10);
+            stepMessage(-1);
             break;
         case "KeyM":
             event.preventDefault();
@@ -309,15 +348,25 @@ function initAudioPlayer() {
     });
     audio.addEventListener("play", () => {
         setPlaybackUi(false);
+        setPlaying(true);
         showFeedback("play");
     });
     audio.addEventListener("pause", () => {
         setPlaybackUi(true);
+        setPlaying(false);
         if (isLoaded) showFeedback("pause");
     });
     audio.addEventListener("error", () => {
         setPlaybackUi(true);
+        setPlaying(false);
         showFeedback("error");
+    });
+    document.getElementById("episode-scroll-container")?.addEventListener("scroll", scheduleFollow, { passive: true });
+    document.getElementById("now-playing")?.addEventListener("click", () => {
+        lastHighlightedMessage?.scrollIntoView({
+            block: "center",
+            behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+        });
     });
 
     volumeSlider?.addEventListener("input", () => {

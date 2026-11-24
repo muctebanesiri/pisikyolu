@@ -106,9 +106,9 @@ const hasLongDescription = hasBody && frontmatter.description.length > 135;
             <path d="M16 10H4M9 5l-5 5 5 5" />
           </svg>
         </a>
-        <div class="flex-1 min-w-0">
+        <div class="episode-header-line flex-1 min-w-0 flex items-baseline gap-x-3">
           <h1 class="truncate text-lg font-semibold leading-tight tracking-tight">{episodeTitle}</h1>
-          <div class="episode-header-meta flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-his-text-tertiary leading-tight mt-0.5">
+          <div class="episode-header-meta flex items-baseline gap-x-1.5 whitespace-nowrap text-xs text-his-text-tertiary leading-tight">
             {guests.length > 0 && (
               <span class="truncate text-his-text-secondary">{guests.join(", ")}</span>
             )}
@@ -226,6 +226,24 @@ const hasLongDescription = hasBody && frontmatter.description.length > 135;
       {frontmatter.description}
     </p>
 
+    {relatedByGuest.length > 0 && (
+      <aside aria-label="Related episodes" class="episode-related">
+        {relatedByGuest.map(({ guest, episodes: related }) => (
+          <p>
+            More with {guest.split(" ")[0]}{" · "}
+            {related.map((ep, i) => (
+              <>
+                {i > 0 && " · "}
+                <a href={`/${ep.slug}`} class="text-his-text-secondary hover:text-his-green transition-colors">
+                  {ep.title}
+                </a>
+              </>
+            ))}
+          </p>
+        ))}
+      </aside>
+    )}
+
     <TableOfContents headings={headings} extractedLinks={extractedLinks} />
 
     <div class="min-w-0">
@@ -251,27 +269,14 @@ const hasLongDescription = hasBody && frontmatter.description.length > 135;
       <span aria-hidden="true"> · </span>
       <a href={hisMetadata.rss} target="_blank" rel="noopener noreferrer">RSS</a>
     </p>
-    {relatedByGuest.length > 0 && (
-      <aside aria-label="Related episodes" class="mt-4 text-center text-xs text-his-text-tertiary space-y-1">
-        {relatedByGuest.map(({ guest, episodes: related }) => (
-          <p>
-            More with {guest.split(" ")[0]}{" · "}
-            {related.map((ep, i) => (
-              <>
-                {i > 0 && " · "}
-                <a href={`/${ep.slug}`} class="text-his-text-secondary hover:text-his-green transition-colors">
-                  {ep.title}
-                </a>
-              </>
-            ))}
-          </p>
-        ))}
-      </aside>
-    )}
     </div>
     </main>
     </div>
     <div class="audio-player-dock relative shrink-0 bg-his-bg">
+      <button id="now-playing" type="button" class="now-playing">
+        <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4" /></svg>
+        Now playing
+      </button>
       <AudioPlayer title={episodeTitle} src={audioSource} />
     </div>
   </div>
@@ -292,6 +297,10 @@ const hasLongDescription = hasBody && frontmatter.description.length > 135;
     color: var(--color-his-text-secondary);
   }
   .episode-back:hover { color: var(--color-his-green); }
+  .episode-related { margin: -0.5rem 0 1rem; font-size: 0.8125rem; line-height: 1.5; color: var(--color-his-text-tertiary); }
+  .episode-related p + p { margin-top: 0.25rem; }
+  .episode-header-line h1 { flex: 0 1 auto; min-width: 6rem; margin: 0; }
+  .episode-header-meta { flex: 0 1000 auto; min-width: 0; overflow: hidden; }
   .episode-back:focus-visible { outline: 2px solid var(--color-his-green); outline-offset: 2px; border-radius: 4px; }
 
   .episode-neighbors {
@@ -317,6 +326,39 @@ const hasLongDescription = hasBody && frontmatter.description.length > 135;
   .episode-neighbor-title { display: block; font-size: 0.9375rem; font-weight: 550; line-height: 1.35; text-wrap: balance; }
   .episode-neighbor:hover .episode-neighbor-title { color: var(--color-his-green); }
   .episode-neighbor-guests { display: block; margin-top: 0.1rem; color: var(--color-his-text-tertiary); font-size: 0.8125rem; }
+
+  .now-playing {
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.8rem 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: var(--color-his-chat-bg);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-his-green) 45%, transparent), 0 4px 14px rgb(0 0 0 / 0.18);
+    color: var(--color-his-green);
+    font-size: 0.75rem;
+    font-weight: 550;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 0.4rem);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .now-playing svg { transition: transform 0.2s ease; }
+  :global(#episode-shell[data-playback="playing"]:is([data-follow="above"], [data-follow="below"])) .now-playing {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+  :global(#episode-shell[data-follow="above"]) .now-playing svg { transform: rotate(180deg); }
+  .now-playing:hover { background: var(--color-his-hover); }
+  .now-playing:focus-visible { outline: 2px solid var(--color-his-green); outline-offset: 2px; }
+
+  :global(#episode-shell .message) { transition: opacity 0.4s ease; }
+  :global(#episode-shell[data-playback="playing"][data-follow="here"] .message:not(.message-current, :hover, :focus-within)) { opacity: 0.62; }
 
   .episode-listen {
     margin: 2.5rem 0 0;

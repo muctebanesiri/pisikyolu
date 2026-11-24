@@ -1403,9 +1403,7 @@ html {
   .message.consecutive:not(.consecutive-end) { margin-bottom: 0.2rem; }
 }
 @media (max-width: 639px) {
-  .episode-header-meta { flex-wrap: nowrap; overflow: hidden; }
-  .episode-header-meta > span:first-child { min-width: 0; }
-  .episode-header-meta .ep-badge { flex-shrink: 0; }
+  .episode-header-meta { display: none; }
 }
 
 @media (max-width: 767px) {

@@ -31,8 +31,16 @@ const minutes = Number(episode.data.time) || 0;
       <span class="archive-episode-date">{formatEpisodeDate(episode.data.date)}</span>
       {episode.data.time && <span class="archive-episode-time">{episode.data.time} min</span>}
       <span class="archive-episode-tags">
-        {episode.data.video?.url && <span>Video</span>}
-        {episode.data.sauntercast && <span>Sauntercast</span>}
+        {episode.data.video?.url && (
+          <span class="archive-episode-icon" role="img" aria-label="Video" title="Video">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path d="M6 5h12a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4Zm4 4v6l5.5-3Z" /></svg>
+          </span>
+        )}
+        {episode.data.sauntercast && (
+          <span class="archive-episode-icon" role="img" aria-label="Sauntercast, recorded on a walk" title="Sauntercast, recorded on a walk">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="4" r="1.6" fill="currentColor" stroke="none" /><path d="M12.5 8 11 14l-2.5 7" /><path d="m11 14 2.5 3.5L15 21" /><path d="M12.3 9 8.5 11.5" /><path d="m12.4 9 3.6 3" /></svg>
+          </span>
+        )}
         <span class="archive-episode-resume">Resume</span>
       </span>
     </span>
@@ -76,6 +84,7 @@ const minutes = Number(episode.data.time) || 0;
     line-height: 1.4;
   }
   .archive-episode-tags { display: contents; }
+  .archive-episode-icon { display: inline-flex; align-items: center; }
   .archive-episode-resume { display: none; color: var(--color-his-green); }
   .archive-episode[data-resume] .archive-episode-resume { display: inline; }
   .archive-episode-length { display: none; }
@@ -110,6 +119,7 @@ const minutes = Number(episode.data.time) || 0;
       grid-area: tags;
       justify-self: end;
       display: flex;
+      align-items: center;
       gap: 0.5rem;
       font-size: 0.625rem;
       font-weight: 500;
