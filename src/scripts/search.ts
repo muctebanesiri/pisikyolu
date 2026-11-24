@@ -262,10 +262,14 @@ function queueSearch() {
         resultsArea.setAttribute('aria-busy', 'false');
         return;
     }
-    resultsArea.innerHTML = getLoadingHtml();
+    showLoading();
     resultsArea.setAttribute('aria-busy', 'true');
     if (pagefind) void pagefind.preload(normalizeSearchQuery(query), scopeOptions()).catch(() => {});
     debounceTimer = setTimeout(() => { void performSearch(query); }, SEARCH_DEBOUNCE_MS);
+}
+
+function showLoading() {
+    if (resultsArea && !resultsArea.querySelector('.search-results-list, .search-loading')) resultsArea.innerHTML = getLoadingHtml();
 }
 
 function setSearchStatus(text: string) {
@@ -333,9 +337,6 @@ async function openPopover() {
         && !modal.contains(document.activeElement)
         ? document.activeElement
         : trigger;
-    if (returnFocusTo?.closest('#episode-sidebar') && window.matchMedia('(max-width: 1023px)').matches) {
-        returnFocusTo = document.getElementById('header-sidebar-toggle');
-    }
     modal.removeAttribute('inert');
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('visible');
@@ -413,7 +414,7 @@ async function performSearch(query: string) {
         }
 
         const termMatches = resultSet.termMatches;
-        resultsArea.innerHTML = getLoadingHtml();
+        showLoading();
 
         const hydratedResults = await hydrateResults(
             resultSet.results,
@@ -584,8 +585,9 @@ function renderGroupedResults(results: PagefindData[], hasMore: boolean) {
         return;
     }
 
+    const fresh = resultsArea.getAttribute('aria-busy') === 'true' || !resultsArea.querySelector('.search-results-list');
     resultsArea.innerHTML = `
-      <div id="search-results-list" class="search-results-list">${resultsHtml}</div>
+      <div id="search-results-list" class="search-results-list${fresh ? ' search-results-in' : ''}">${resultsHtml}</div>
       ${loadMoreHtml}
     `;
     resultsArea.setAttribute('aria-busy', 'false');

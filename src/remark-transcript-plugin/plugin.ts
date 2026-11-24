@@ -35,6 +35,10 @@ function createText(value: string): Text {
   return { type: "text", value };
 }
 
+function plainQuotes(text: string): string {
+  return text.replace(/[‘’]/g, "'").replace(/[“”]/g, '"');
+}
+
 function isProvisionalSpeaker(speaker: string): boolean {
   return /^(?:unconfirmed\b|speaker\s+(?:\d+|unknown)\b)/i.test(speaker);
 }
@@ -153,7 +157,9 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
     visit(tree, 'heading', (node: Heading) => {
       if (node.depth === 3 || node.depth === 4) node.depth = 2;
     });
-    const speakerConfig: Record<string, string> = (vfile.data?.astro?.frontmatter?.speakers as Record<string, string>) || {};
+    const frontmatter = vfile.data?.astro?.frontmatter;
+    const shareExcerpt = frontmatter?.shareExcerpt;
+    const speakerConfig: Record<string, string> = (frontmatter?.speakers as Record<string, string>) || {};
     const speakerOrder: string[] = [];
     const messageIdCountsBySecond = new Map<number, number>();
     const timedMessageIds = new Set<string>();
@@ -234,6 +240,17 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
         : `msg-${seconds}-${nextOccurrence}`);
       if (usedMessageIds.has(messageId)) throw new Error(`Duplicate transcript message ID: ${messageId}`);
       usedMessageIds.add(messageId);
+      if (typeof shareExcerpt === "string" && frontmatter) {
+        const line = toStringUtil(content, { includeHtml: false });
+        const start = plainQuotes(line).indexOf(plainQuotes(shareExcerpt));
+        if (start >= 0) {
+          if (frontmatter.sharePassage) throw new Error(`Ambiguous share excerpt in ${vfile.path}: ${shareExcerpt}`);
+          frontmatter.sharePassage = {
+            text: line.slice(start, start + shareExcerpt.length),
+            speaker: speaker.replace(/:$/, ""), seconds: hasExplicitTimestamp ? seconds : null,
+          };
+        }
+      }
       if (hasExplicitTimestamp) timedMessageIds.add(messageId);
 
       const previousProps = prevNode?.data?.hProperties;
@@ -421,5 +438,6 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
       group.children = children;
     }
     tree.children = grouped;
+    if (shareExcerpt && !frontmatter?.sharePassage) throw new Error(`Share excerpt missing from transcript in ${vfile.path}: ${shareExcerpt}`);
   };
 };

@@ -11,10 +11,11 @@ interface Props {
   };
   slug?: string;
   mainId?: string;
+  image?: { path: string; alt: string };
   noindex?: boolean;
 }
 
-const { frontmatter, slug = '', mainId = 'main-content', noindex = false } = Astro.props;
+const { frontmatter, slug = '', mainId = 'main-content', noindex = false, image } = Astro.props;
 ---
 
 <!doctype html>
@@ -33,14 +34,79 @@ const { frontmatter, slug = '', mainId = 'main-content', noindex = false } = Ast
       title={frontmatter?.title}
       description={frontmatter?.description}
       slug={slug}
+      image={image}
       noindex={noindex}
     />
-    <!-- Force Vazirmatn on all text -->
-    <style>
-      body {
-        font-family: 'Vazirmatn', ui-sans-serif, system-ui, sans-serif !important;
-      }
+    <style is:global>
+      @view-transition { navigation: auto; }
+      ::view-transition-group(his-roots), ::view-transition-new(his-roots) { animation: none; }
     </style>
+    <script is:inline>
+      window.hisGrow = (x, y, transition) => {
+        const W = innerWidth, H = innerHeight, reach = Math.hypot(Math.max(x, W - x), Math.max(y, H - y));
+        const canvas = document.createElement('canvas'), dpr = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = W * dpr; canvas.height = H * dpr;
+        canvas.style.cssText = 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:2147483647;view-transition-name:his-roots';
+        document.documentElement.append(canvas);
+        const segs = [];
+        const grow = (px, py, ang, w, len, born, depth) => {
+          let bend = 0;
+          for (let d = 0; d < len; d += 9) {
+            bend = bend * .8 + (Math.random() - .5) * .16;
+            ang += bend;
+            const nx = px + Math.cos(ang) * 9, ny = py + Math.sin(ang) * 9;
+            segs.push({ px, py, nx, ny, w: Math.max(.5, w * (1 - d / len)), born: born + d, r: Math.hypot(nx - x, ny - y) });
+            if (depth && d > 30 && Math.random() < .03) grow(nx, ny, ang + (Math.random() < .5 ? -1 : 1) * (.5 + Math.random() * .6), w * .6, (len - d) * (.3 + Math.random() * .4), born + d, depth - 1);
+            px = nx; py = ny;
+          }
+        };
+        const count = 5 + Math.floor(Math.random() * 2), turn = Math.random() * Math.PI * 2;
+        for (let i = 0; i < count; i++) grow(x, y, turn + (i + Math.random() * .6) / count * Math.PI * 2, 1.4 + Math.random() * .8, reach * (.75 + Math.random() * .5), 0, 1);
+        const ctx = canvas.getContext('2d'), ink = getComputedStyle(document.documentElement).getPropertyValue('--color-his-green').trim() || '#879a39';
+        ctx.scale(dpr, dpr); ctx.lineCap = 'round'; ctx.strokeStyle = ink;
+        const duration = 800, ease = (t) => 1 - (1 - t) ** 3, band = 70;
+        const edge = (t) => { const b = [.55, 0, .3, 1]; let lo = 0, hi = 1; for (let i = 0; i < 20; i++) { const m = (lo + hi) / 2, s = 3 * b[0] * m * (1 - m) ** 2 + 3 * b[2] * m * m * (1 - m) + m ** 3; s < t ? lo = m : hi = m; } const m = lo; return 3 * b[1] * m * (1 - m) ** 2 + 3 * b[3] * m * m * (1 - m) + m ** 3; };
+        transition.ready.then(() => {
+          const start = performance.now();
+          document.documentElement.animate(
+            { clipPath: [`circle(0 at ${x}px ${y}px)`, `circle(${reach}px at ${x}px ${y}px)`] },
+            { duration, easing: 'cubic-bezier(.55, 0, .3, 1)', pseudoElement: '::view-transition-new(root)' },
+          );
+          const frame = (now) => {
+            const t = Math.min(1, (now - start) / duration), radius = reach * edge(t), tip = reach * 1.25 * ease(t);
+            const fade = .5 * Math.min(1, t / .15) * (t < .6 ? 1 : 1 - (t - .6) / .4);
+            ctx.clearRect(0, 0, W, H);
+            for (const s of segs) {
+              if (s.born > tip || s.r < radius - band || s.r > radius + 24) continue;
+              const k = Math.min(1, (tip - s.born) / 9);
+              ctx.globalAlpha = fade * Math.min(1, (s.r - radius + band) / band);
+              ctx.lineWidth = s.w;
+              ctx.beginPath(); ctx.moveTo(s.px, s.py); ctx.lineTo(s.px + (s.nx - s.px) * k, s.py + (s.ny - s.py) * k); ctx.stroke();
+            }
+            if (t < 1) requestAnimationFrame(frame);
+          };
+          requestAnimationFrame(frame);
+        }).catch(() => {});
+        transition.finished.finally(() => canvas.remove());
+      };
+      addEventListener('click', (event) => {
+        const link = event.target instanceof Element && event.target.closest('a[href]');
+        if (!link || link.origin !== location.origin || link.pathname === location.pathname || event.defaultPrevented) return;
+        const box = link.getBoundingClientRect();
+        const x = event.detail ? event.clientX : box.left + box.width / 2, y = event.detail ? event.clientY : box.top + box.height / 2;
+        try { sessionStorage.setItem('his-touch', JSON.stringify({ x, y, t: Date.now() })); } catch {}
+      });
+      addEventListener('pagereveal', (event) => {
+        if (!event.viewTransition) return;
+        let touch = null;
+        try { touch = JSON.parse(sessionStorage.getItem('his-touch') || 'null'); sessionStorage.removeItem('his-touch'); } catch {}
+        if (!touch || Date.now() - touch.t > 5000 || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          event.viewTransition.ready.catch(() => {});
+          return event.viewTransition.skipTransition();
+        }
+        window.hisGrow(touch.x, touch.y, event.viewTransition);
+      });
+    </script>
   </head>
   <body>
     <a class="skip-link" href={`#${mainId}`}>Skip to content</a>

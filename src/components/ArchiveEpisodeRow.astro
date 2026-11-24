@@ -10,19 +10,43 @@ interface Props {
 const { episode, showDescription = false } = Astro.props;
 const description = episode.data.description;
 const previewText = description.match(/^([^?]+\?)/)?.[1] ?? description;
+const minutes = Number(episode.data.time) || 0;
 ---
 
-<a class="archive-episode" href={`/${episode.slug}`}>
+<a class="archive-episode" id={`ep-${episode.slug}`} href={`/${episode.slug}`} data-seconds={minutes * 60 || undefined}>
   <span class="archive-episode-number">{episode.epNumber}</span>
   <span class="archive-episode-body">
     <span class="archive-episode-title">{episode.episodeTitle}</span>
     <span class="archive-episode-meta">
-      {episode.guestDisplays.length > 0 && <span>{episode.guestDisplays.map((guest) => guest.name).join(", ")}</span>}
-      <span>{formatEpisodeDate(episode.data.date)}</span>
-      {episode.data.time && <span>{episode.data.time} min</span>}
+      {episode.guestDisplays.length > 0 && (
+        <span class="archive-episode-guests">
+          {episode.guestDisplays.map((guest, i) => (
+            <>
+              {i > 0 && ", "}
+              {guest.name}{guest.count > 1 && <sup class="archive-episode-count" title={`${guest.count} episodes`}>×{guest.count}</sup>}
+            </>
+          ))}
+        </span>
+      )}
+      <span class="archive-episode-date">{formatEpisodeDate(episode.data.date)}</span>
+      {episode.data.time && <span class="archive-episode-time">{episode.data.time} min</span>}
+      <span class="archive-episode-tags">
+        {episode.data.video?.url && (
+          <span class="archive-episode-icon" role="img" aria-label="Video" title="Video">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path d="M6 5h12a4 4 0 0 1 4 4v6a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4Zm4 4v6l5.5-3Z" /></svg>
+          </span>
+        )}
+        {episode.data.sauntercast && (
+          <span class="archive-episode-icon" role="img" aria-label="Sauntercast, recorded on a walk" title="Sauntercast, recorded on a walk">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="4" r="1.6" fill="currentColor" stroke="none" /><path d="M12.5 8 11 14l-2.5 7" /><path d="m11 14 2.5 3.5L15 21" /><path d="M12.3 9 8.5 11.5" /><path d="m12.4 9 3.6 3" /></svg>
+          </span>
+        )}
+        <span class="archive-episode-resume">Resume</span>
+      </span>
     </span>
     {showDescription && <span class="archive-episode-description">{previewText}</span>}
   </span>
+  {minutes > 0 && <span class="archive-episode-length" style={`--length: ${Math.min(1, minutes / 120)}`} aria-hidden="true"></span>}
 </a>
 
 <style>
@@ -36,10 +60,13 @@ const previewText = description.match(/^([^?]+\?)/)?.[1] ?? description;
     color: var(--color-his-text);
     text-decoration: none;
   }
+  .archive-episode { scroll-margin-block: 6rem; }
+  .archive-episode:target { background: var(--color-his-hover); }
+  .archive-episode-count { margin-left: 0.1rem; font-size: 0.625rem; }
   .archive-episode:hover { background: var(--color-his-hover); color: var(--color-his-text); }
   .archive-episode:focus-visible { outline: 2px solid var(--color-his-green); outline-offset: -2px; }
   .archive-episode-body { display: block; min-width: 0; }
-  .archive-episode-title { display: block; font-size: 1rem; font-weight: 550; line-height: 1.4; }
+  .archive-episode-title { display: block; font-size: 1rem; font-weight: 500; line-height: 1.4; }
   .archive-episode:hover .archive-episode-title { color: var(--color-his-green); }
   .archive-episode-number {
     padding-top: 0.2rem;
@@ -56,6 +83,11 @@ const previewText = description.match(/^([^?]+\?)/)?.[1] ?? description;
     font-size: 0.8125rem;
     line-height: 1.4;
   }
+  .archive-episode-tags { display: contents; }
+  .archive-episode-icon { display: inline-flex; align-items: center; }
+  .archive-episode-resume { display: none; color: var(--color-his-green); }
+  .archive-episode[data-resume] .archive-episode-resume { display: inline; }
+  .archive-episode-length { display: none; }
   .archive-episode-description {
     display: -webkit-box;
     overflow: hidden;
@@ -69,5 +101,45 @@ const previewText = description.match(/^([^?]+\?)/)?.[1] ?? description;
   }
   @media (max-width: 640px) {
     .archive-episode { padding-inline: 0.4rem; }
+  }
+  @media (min-width: 960px) {
+    .archive-episode {
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-rows: auto auto auto 1fr auto;
+      grid-template-areas: "number tags" "title title" "guests guests" "date time" "length length";
+      gap: 0;
+      min-height: 9.5rem;
+      padding: 0.8rem 1rem 0.85rem;
+      border-radius: 0.7rem;
+      transition: background-color 0.15s ease;
+    }
+    .archive-episode-body, .archive-episode-meta { display: contents; }
+    .archive-episode-number { grid-area: number; padding: 0; font-size: 0.8125rem; line-height: 1.2; }
+    .archive-episode-tags {
+      grid-area: tags;
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      line-height: 1.95;
+      text-transform: uppercase;
+    }
+    .archive-episode-title { grid-area: title; margin-top: 0.55rem; font-size: 1.125rem; line-height: 1.28; text-wrap: balance; }
+    .archive-episode-guests { grid-area: guests; margin-top: 0.3rem; color: var(--color-his-text-secondary); font-size: 0.875rem; }
+    .archive-episode-date { grid-area: date; align-self: end; padding-top: 0.75rem; }
+    .archive-episode-time { grid-area: time; justify-self: end; align-self: end; font-variant-numeric: tabular-nums; }
+    .archive-episode-length {
+      grid-area: length;
+      display: block;
+      width: calc(var(--length) * 100%);
+      height: 2px;
+      margin-top: 0.45rem;
+      border-radius: 1px;
+      background: linear-gradient(to right, var(--color-his-green) calc(var(--progress, 0) * 100%), color-mix(in srgb, var(--color-his-text) 16%, transparent) 0);
+    }
+    .archive-episode-description { display: none; }
   }
 </style>

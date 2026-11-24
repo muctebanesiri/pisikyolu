@@ -21,9 +21,6 @@ let pauseIcon: HTMLElement | null = null;
 let muteButton: HTMLElement | null = null;
 let volumeIcon: HTMLElement | null = null;
 let muteIcon: HTMLElement | null = null;
-let shortcutsButton: HTMLElement | null = null;
-let shortcutsDialog: HTMLDialogElement | null = null;
-let closeShortcuts: HTMLElement | null = null;
 let volumeSlider: HTMLInputElement | null = null;
 let playerFeedback: HTMLElement | null = null;
 let feedbackText: HTMLElement | null = null;
@@ -34,7 +31,6 @@ let lastHighlightedMessage: HTMLElement | null = null;
 let isLoaded = false;
 let pendingTime = 0;
 let src = "";
-let shortcutReturnFocus: HTMLElement | null = null;
 
 function isWatchView(): boolean {
     return document.getElementById("episode-shell")?.dataset.videoMode === "watch";
@@ -96,6 +92,34 @@ function highlightTime(seconds: number) {
     lastHighlightedMessage?.classList.remove("message-current");
     currentMessage?.classList.add("message-current");
     lastHighlightedMessage = currentMessage;
+    scheduleFollow();
+}
+
+let followFrame = 0;
+
+function updateFollow() {
+    followFrame = 0;
+    const shell = document.getElementById("episode-shell");
+    const container = document.getElementById("episode-scroll-container");
+    if (!shell || !container) return;
+    if (!lastHighlightedMessage) {
+        delete shell.dataset.follow;
+        return;
+    }
+    const message = lastHighlightedMessage.getBoundingClientRect(), view = container.getBoundingClientRect();
+    shell.dataset.follow = message.bottom < view.top ? "above" : message.top > view.bottom ? "below" : "here";
+}
+
+function scheduleFollow() {
+    followFrame ||= requestAnimationFrame(updateFollow);
+}
+
+function setPlaying(playing: boolean) {
+    const shell = document.getElementById("episode-shell");
+    if (!shell) return;
+    if (playing) shell.dataset.playback = "playing";
+    else delete shell.dataset.playback;
+    scheduleFollow();
 }
 
 function updateTimeDisplay() {
@@ -109,7 +133,7 @@ function updateTimeDisplay() {
         "aria-valuetext",
         `${formatTime(audio.currentTime)} of ${formatTime(audio.duration)}`,
     );
-    progressBar.style.width = `${percent}%`;
+    progressBar.style.width = `calc(${percent}% + ${6 - percent * 0.12}px)`;
     highlightTime(audio.currentTime);
 }
 
@@ -118,7 +142,7 @@ function setPlaybackUi(isPaused: boolean) {
     pauseIcon?.classList.toggle("hidden", isPaused);
     const position = isLoaded && audio ? audio.currentTime : pendingTime;
     const playLabel = document.getElementById("play-label");
-    if (playLabel) playLabel.textContent = position > 0 ? `Play ${formatTime(position)}` : "Play";
+    if (playLabel) playLabel.textContent = position > 0 ? formatTime(position) : "";
     playPauseButton?.setAttribute("aria-label", isPaused
         ? (position > 0 ? `Play from ${formatTime(position)}` : "Play episode")
         : "Pause episode");
@@ -210,7 +234,7 @@ function toggleMute() {
     showFeedback(audio.muted ? "mute" : "unmute");
 }
 
-function showFeedback(action: "seek" | "play" | "pause" | "mute" | "unmute" | "volume" | "error", value: string | number = "") {
+function showFeedback(action: "play" | "pause" | "mute" | "unmute" | "volume" | "error", value: string | number = "") {
     if (!feedbackText || !playerFeedback) return;
     if (feedbackTimeout) clearTimeout(feedbackTimeout);
 
@@ -220,7 +244,6 @@ function showFeedback(action: "seek" | "play" | "pause" | "mute" | "unmute" | "v
         mute: "Muted",
         unmute: "Unmuted",
         volume: `Volume ${value}%`,
-        seek: `${Number(value) > 0 ? "Forward" : "Back"} ${Math.abs(Number(value))}s`,
         error: "Audio could not play",
     };
 
@@ -231,15 +254,27 @@ function showFeedback(action: "seek" | "play" | "pause" | "mute" | "unmute" | "v
     }, 500);
 }
 
-function seekRelative(seconds: number) {
-    if (!audio || !isLoaded) return;
-    const duration = Number.isFinite(audio.duration) ? audio.duration : Infinity;
-    audio.currentTime = Math.max(0, Math.min(duration, audio.currentTime + seconds));
-    showFeedback("seek", seconds);
+function stepMessage(direction: 1 | -1) {
+    ensureMessagePoints();
+    const container = document.getElementById("episode-scroll-container");
+    if (!messagePoints.length || !container) return;
+    const view = container.getBoundingClientRect();
+    const current = lastHighlightedMessage ? messagePoints.findIndex(({ el }) => el === lastHighlightedMessage) : -1;
+    const box = current >= 0 ? messagePoints[current].el.getBoundingClientRect() : null;
+    const onScreen = box && box.bottom > view.top && box.top < view.bottom;
+    const base = onScreen ? current : messagePoints.findIndex(({ el }) => el.getBoundingClientRect().bottom > view.top + 56) - (direction > 0 ? 1 : 0);
+    const target = messagePoints[Math.max(0, Math.min(messagePoints.length - 1, base + direction))];
+    if (audio && isLoaded && !audio.paused) audio.currentTime = target.time;
+    else setAudioPosition(target.time);
+    highlightTime(target.time);
+    target.el.scrollIntoView({
+        block: "center",
+        behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+    });
 }
 
 function handleAudioKeydown(event: KeyboardEvent) {
-    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey || shortcutsDialog?.open) return;
+    if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
     const target = event.target;
     if (target instanceof HTMLElement && (target.isContentEditable || target.closest("input, textarea, select, button, a, [role='button']"))) return;
     if (!audio || isWatchView()) return;
@@ -251,31 +286,17 @@ function handleAudioKeydown(event: KeyboardEvent) {
             break;
         case "KeyJ":
             event.preventDefault();
-            seekRelative(-10);
+            stepMessage(1);
             break;
         case "KeyK":
             event.preventDefault();
-            seekRelative(10);
+            stepMessage(-1);
             break;
         case "KeyM":
             event.preventDefault();
             toggleMute();
             break;
     }
-}
-
-function openShortcutsDialog() {
-    if (!shortcutsDialog || shortcutsDialog.open) return;
-    shortcutReturnFocus = document.activeElement as HTMLElement | null;
-    shortcutsDialog.classList.remove("hidden");
-    shortcutsDialog.classList.add("flex");
-    shortcutsDialog.setAttribute("aria-hidden", "false");
-    shortcutsDialog.showModal();
-    closeShortcuts?.focus();
-}
-
-function closeShortcutsDialog() {
-    shortcutsDialog?.close();
 }
 
 function handleGlobalClick(event: MouseEvent) {
@@ -304,9 +325,6 @@ function initAudioPlayer() {
     muteButton = document.getElementById("mute-button");
     volumeIcon = document.getElementById("volume-icon");
     muteIcon = document.getElementById("mute-icon");
-    shortcutsButton = document.getElementById("shortcuts-button");
-    shortcutsDialog = document.getElementById("shortcuts-dialog") as HTMLDialogElement | null;
-    closeShortcuts = document.getElementById("close-shortcuts");
     volumeSlider = document.getElementById("volume-slider") as HTMLInputElement | null;
     playerFeedback = document.getElementById("player-feedback");
     feedbackText = document.getElementById("feedback-text");
@@ -330,15 +348,25 @@ function initAudioPlayer() {
     });
     audio.addEventListener("play", () => {
         setPlaybackUi(false);
+        setPlaying(true);
         showFeedback("play");
     });
     audio.addEventListener("pause", () => {
         setPlaybackUi(true);
+        setPlaying(false);
         if (isLoaded) showFeedback("pause");
     });
     audio.addEventListener("error", () => {
         setPlaybackUi(true);
+        setPlaying(false);
         showFeedback("error");
+    });
+    document.getElementById("episode-scroll-container")?.addEventListener("scroll", scheduleFollow, { passive: true });
+    document.getElementById("now-playing")?.addEventListener("click", () => {
+        lastHighlightedMessage?.scrollIntoView({
+            block: "center",
+            behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+        });
     });
 
     volumeSlider?.addEventListener("input", () => {
@@ -359,19 +387,6 @@ function initAudioPlayer() {
         }
     });
     muteButton?.addEventListener("click", toggleMute);
-
-    shortcutsButton?.addEventListener("click", openShortcutsDialog);
-    closeShortcuts?.addEventListener("click", closeShortcutsDialog);
-    shortcutsDialog?.addEventListener("close", () => {
-        shortcutsDialog?.classList.add("hidden");
-        shortcutsDialog?.classList.remove("flex");
-        shortcutsDialog?.setAttribute("aria-hidden", "true");
-        shortcutReturnFocus?.focus();
-        shortcutReturnFocus = null;
-    });
-    shortcutsDialog?.addEventListener("click", (event) => {
-        if (event.target === shortcutsDialog) closeShortcutsDialog();
-    });
 
     document.addEventListener("keydown", handleAudioKeydown);
     document.addEventListener("click", handleGlobalClick);

@@ -1,5 +1,6 @@
 ---
 import HomeContentLayout from "@/layouts/HomeContentLayout.astro";
+import ArchiveEpisodeRow from "@/components/ArchiveEpisodeRow.astro";
 import { getEpisodeData } from "@/lib/episodes";
 import { HOME_MOMENTS, formatMomentTime } from "@/lib/home-moments";
 
@@ -27,15 +28,7 @@ const initialSlots = moments.map((_, index) =>
 );
 ---
 
-<HomeContentLayout page="home">
-  <p id="home-continue" hidden>
-    <a id="continue-reading">Continue reading</a>
-  </p>
-  <script type="application/json" id="reading-episodes" set:html={JSON.stringify(
-    episodeData.episodes.filter((episode) => episode.body?.trim()).map((episode) => ({
-      path: `/${episode.slug}`, title: episode.episodeTitle,
-    }))
-  ).replace(/</g, "\\u003c")} />
+<HomeContentLayout>
   <section id="home-moments" aria-label="Moments from Hope in Source conversations">
     {moments.map((moment, index) => (
       <div
@@ -43,7 +36,6 @@ const initialSlots = moments.map((_, index) =>
         data-moment
         data-title={moment.episodeTitle}
         data-slot={initialSlots[index]}
-        hidden={!initialSlots[index]}
       >
         <button
           class:list={["home-moment-preview", "message", moment.side === "sent" ? "message-sent" : "message-received"]}
@@ -92,15 +84,8 @@ const initialSlots = moments.map((_, index) =>
               <span class="message-bubble">{moment.context.after.text}<span class="message-time">{formatMomentTime(moment.context.after.seconds)}</span></span>
             </a>
           )}
-        </div>
-        <div class="home-moment-actions">
-          <div class="home-moment-transport" role="group" aria-label="Conversation controls">
-            <button type="button" data-previous aria-label="Previous conversation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 5-7 7 7 7M7 12h11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
-            <button type="button" data-next aria-label="Next conversation"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m10 5 7 7-7 7m7-7H6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg></button>
-          </div>
           <a class="home-moment-source" href={`/${moment.slug}#msg-${moment.seconds}`}>
-            {moment.episodeTitle}
-            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 12 12 4M5 4h7v7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <b>{moment.episodeTitle}</b> <span aria-hidden="true">·</span> read from here <span aria-hidden="true">→</span>
           </a>
         </div>
       </div>
@@ -108,67 +93,106 @@ const initialSlots = moments.map((_, index) =>
     <span class="sr-only" aria-live="polite" data-status></span>
   </section>
 
+  <canvas id="home-roots" slot="below" aria-hidden="true"></canvas>
+  <section id="episodes" slot="below" aria-labelledby="episodes-title">
+    <h2 id="episodes-title" class="sr-only">Episodes</h2>
+    {episodeData.archiveGroups.map((group, groupIndex) => (
+      <section class="archive-season" id={`home-season-${group.id}`} aria-labelledby={`season-title-${group.id}`}>
+        <div class="archive-season-heading">
+          <h3 id={`season-title-${group.id}`}>{group.label}</h3>
+          <span>{group.episodes.length} {group.episodes.length === 1 ? "episode" : "episodes"}</span>
+        </div>
+        <div class="archive-episode-list">
+          {group.episodes.map((episode, episodeIndex) => (
+            <ArchiveEpisodeRow episode={episode} showDescription={episodeIndex < (groupIndex === 0 ? 2 : 1)} />
+          ))}
+        </div>
+      </section>
+    ))}
+  </section>
+
   <script src="../scripts/home-showcase.ts"></script>
   <script src="../scripts/reading-position.ts"></script>
+  <script src="../scripts/home-roots.ts"></script>
 </HomeContentLayout>
 
 <style>
-  #home-continue {
+  #home-roots {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  #episodes {
+    position: relative;
+    z-index: 1;
     max-width: 52rem;
-    margin: 0 auto 0.5rem;
-    padding-inline: 0.25rem;
-    text-align: right;
+    margin: 0 auto;
+    padding: 3rem 0.75rem 6rem;
+    scroll-margin-top: 0;
   }
-  #home-continue a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 40px;
-    color: var(--color-his-text-secondary);
-    font-size: 0.8125rem;
-    text-decoration: none;
+  .archive-season + .archive-season { margin-top: 1.5rem; }
+  .archive-season-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.35rem;
+    padding-inline: 0.65rem;
   }
-  #home-continue a:hover { color: var(--color-his-green); text-decoration: underline; }
-  #home-continue a:focus-visible { outline: 2px solid var(--color-his-green); outline-offset: 3px; }
+  .archive-season-heading h3 {
+    margin: 0;
+    color: var(--color-his-text);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .archive-season-heading > span {
+    flex: none;
+    color: var(--color-his-text-tertiary);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .archive-episode-list { display: grid; }
+  @media (min-width: 960px) {
+    #episodes { max-width: 70rem; padding-inline: 1.5rem; }
+    .archive-season + .archive-season { margin-top: 3rem; }
+    .archive-season-heading { margin-bottom: 0.9rem; padding-inline: 0.15rem; }
+    .archive-season-heading h3 { font-size: 1.5rem; font-weight: 500; }
+    .archive-episode-list { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.6rem; }
+  }
 
   #home-moments {
-    position: relative;
-    isolation: isolate;
     display: grid;
-    place-items: center;
+    grid-template-rows: 6rem auto 6rem;
+    row-gap: 1.75rem;
     width: 100%;
-    max-width: 52rem;
-    min-height: 42rem;
+    max-width: 40rem;
     margin: 0 auto;
-    padding-block: 3rem;
-    overflow: hidden;
+    padding-block: 1rem 2rem;
+    touch-action: pan-y;
   }
 
   @media (min-width: 960px) {
-    #home-moments { min-height: max(42rem, calc(100svh - 5rem)); }
+    #home-moments {
+      flex: 1;
+      align-content: center;
+    }
   }
 
-  .home-moment {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    width: max-content;
-    max-width: min(80%, 36rem);
-    margin: 0;
-    color: var(--color-his-text);
-  }
-
-  .home-moment[hidden] { display: none; }
-  .home-moment :is(.home-moment-link, .home-moment-context) { color: var(--color-his-text); text-decoration: none; }
-  .home-moment :is(.home-moment-link, .home-moment-context):hover { color: var(--color-his-text); }
+  .home-moment { display: contents; color: var(--color-his-text); }
   .home-moment .message { max-width: 100%; }
-  .home-moment .message-bubble { font-size: 1rem; }
+  .home-moment a { color: var(--color-his-text); text-decoration: none; }
 
   .home-moment-preview { display: none; }
-  .home-moment:not([data-slot="focus"]) .home-moment-preview {
+  .home-moment:is([data-slot="previous"], [data-slot="up-next"]) .home-moment-preview {
     display: flex;
     flex-direction: column;
-    align-items: inherit;
-    width: 100%;
+    grid-row: 1;
+    grid-column: 1;
+    align-self: end;
+    width: min(26rem, 80%);
     min-height: 40px;
     padding: 0;
     border: 0;
@@ -176,147 +200,72 @@ const initialSlots = moments.map((_, index) =>
     font: inherit;
     text-align: left;
     cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 160ms ease;
   }
+  .home-moment[data-slot="up-next"] .home-moment-preview { grid-row: 3; align-self: start; }
+  .home-moment-preview:hover,
+  .home-moment-preview:focus-visible { opacity: 1; }
+  .home-moment-preview .message-bubble {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    font-size: 0.875rem;
+  }
+  .home-moment-preview .message-time { display: none; }
   .home-moment-teaser-label {
     display: flex;
     align-items: baseline;
     gap: 0.3rem;
-    margin-top: 0.4rem;
+    margin-top: 0.35rem;
     padding-inline: 0.25rem;
-    color: var(--color-his-text-tertiary);
-    font-size: 0.68rem;
-    line-height: 1.35;
-  }
-  .home-moment-teaser-title {
     color: var(--color-his-text-secondary);
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: 0.7rem;
   }
-  .home-moment:not([data-slot="focus"]) :is(.home-moment-link, .home-moment-context, .home-moment-actions) { display: none; }
-  .home-moment-conversation { display: none; }
-  .home-moment[data-slot="focus"] .home-moment-conversation {
-    display: flex;
-    flex: 1;
-    min-height: 0;
-    flex-direction: column;
-    justify-content: flex-end;
-  }
-  .home-moment-context { display: none; }
-  .home-moment[data-slot="focus"] .home-moment-context {
-    display: flex;
-    max-width: 94%;
-  }
-  .home-moment[data-slot="focus"] .home-moment-context .message-bubble {
-    font-size: 0.94rem;
-  }
-  .home-moment[data-slot="focus"] .home-moment-link {
-    position: relative;
-    z-index: 1;
-  }
+  .home-moment-teaser-title { color: var(--color-his-text); }
 
-  .home-moment-actions { display: none; }
-  .home-moment[data-slot="focus"] .home-moment-actions {
+  .home-moment-conversation {
     display: flex;
-    flex: none;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    width: 100%;
-    margin-top: 0.75rem;
+    flex-direction: column;
+    justify-content: center;
+    grid-row: 2;
+    grid-column: 1;
+    visibility: hidden;
   }
-  .home-moment-source {
+  .home-moment[data-slot="focus"] .home-moment-conversation { visibility: visible; }
+  .home-moment-context { max-width: 92%; }
+  .home-moment-context .message-bubble { font-size: 0.94rem; }
+  .home-moment-link .message-bubble { font-size: 1.25rem; line-height: 1.45; }
+
+  .home-moment .home-moment-source {
+    align-self: flex-start;
     display: inline-flex;
     align-items: center;
-    gap: 0.2rem;
+    gap: 0.3rem;
     min-height: 40px;
-    color: var(--color-his-text);
+    margin-top: 0.35rem;
+    padding-inline: 0.25rem;
     font-size: 0.8125rem;
-    font-weight: 500;
-    line-height: 1.4;
-    text-decoration: none;
-  }
-  .home-moment-source svg { flex: none; width: 13px; height: 13px; color: var(--color-his-green); }
-  .home-moment-source:hover { color: var(--color-his-green); text-decoration: underline; text-underline-offset: 2px; }
-  .home-moment-transport { display: flex; align-items: center; gap: 0.1rem; }
-  .home-moment-transport button {
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: 0;
-    background: none;
     color: var(--color-his-text-secondary);
-    font: inherit;
-    cursor: pointer;
   }
-  .home-moment-transport button:hover { color: var(--color-his-green); }
-  .home-moment-transport svg { width: 18px; height: 18px; }
-  .home-moment[data-slot="focus"] {
-    position: relative;
-    z-index: 2;
-    width: min(36rem, 90%);
-    height: 22rem;
-    opacity: 1;
-  }
-  .home-moment:not([data-slot="focus"]) {
-    color: var(--color-his-text-tertiary);
-  }
-  .home-moment:not([data-slot="focus"]) .message-speaker,
-  .home-moment:not([data-slot="focus"]) .message-time {
-    color: var(--color-his-text-tertiary);
-  }
-  .home-moment:not([data-slot="focus"]) .message-bubble {
-    color: var(--color-his-text);
-    background: color-mix(in oklab, var(--color-his-chat-bg) 24%, var(--color-his-bg));
-    font-size: 0.875rem;
-    transition: background-color 160ms ease, color 160ms ease;
-  }
-  .home-moment-preview:hover .message-bubble {
-    color: var(--color-his-text);
-    background: color-mix(in oklab, var(--color-his-chat-bg) 45%, var(--color-his-bg));
-  }
-
-  .home-moment[data-slot="previous"] {
-    top: 0; left: 5%; max-width: 17rem;
-  }
-  .home-moment[data-slot="up-next"] {
-    bottom: 0; right: 1%; max-width: 17rem;
-  }
-
-  @media (min-width: 960px) {
-    .home-moment[data-slot="previous"] { top: max(0px, calc(50% - 22rem)); }
-    .home-moment[data-slot="up-next"] { bottom: max(0px, calc(50% - 22rem)); }
-  }
+  .home-moment-source b { font-weight: 500; color: var(--color-his-text); }
+  .home-moment .home-moment-source:hover { color: var(--color-his-green); }
+  .home-moment-source:hover b { color: inherit; }
 
   .home-moment :is(.home-moment-link, .home-moment-context, .home-moment-preview):focus-visible { outline: none; }
   .home-moment :is(.home-moment-link, .home-moment-context, .home-moment-preview):focus-visible .message-bubble {
     box-shadow: inset 0 0 0 2px var(--color-his-green);
   }
-  .home-moment :is(.home-moment-source, .home-moment-transport button):focus-visible {
-    outline: 2px solid var(--color-his-green);
-    outline-offset: 3px;
-  }
+  .home-moment-source:focus-visible { outline: 2px solid var(--color-his-green); outline-offset: 2px; border-radius: 2px; }
 
-  @media (max-width: 959px) {
-    #home-moments { min-height: 0; padding-block: 0 1.5rem; touch-action: pan-y; }
-    .home-moment .message-bubble { font-size: 0.94rem; }
-    .home-moment[data-slot="focus"] { width: 96%; height: auto; }
-    .home-moment[data-slot="focus"] .home-moment-conversation { flex: none; }
-    .home-moment[data-slot="focus"] .home-moment-actions {
-      order: -1;
-      flex-wrap: nowrap;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 0 0 1rem;
-    }
-    .home-moment-transport { flex: none; }
-    .home-moment-source { justify-content: flex-end; min-width: 0; text-align: right; }
-    .home-moment:not([data-slot="focus"]) { display: none; }
+  @media (max-width: 639px) {
+    #home-moments { grid-template-rows: 4.75rem auto 4.75rem; row-gap: 1.25rem; }
+    .home-moment-link .message-bubble { font-size: 1.06rem; }
+    .home-moment-preview .message-bubble { -webkit-line-clamp: 1; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .home-moment:not([data-slot="focus"]) .message-bubble { transition: none; }
+    .home-moment-preview { transition: none; }
   }
 </style>

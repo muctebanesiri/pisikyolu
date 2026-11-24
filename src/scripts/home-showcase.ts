@@ -9,44 +9,44 @@ if (stage) {
     let active = 0;
     let transition: Animation | null = null;
     let touchStart: { x: number; y: number } | null = null;
+    const slotOf = (index: number) => {
+      const distance = (index - active + cards.length) % cards.length;
+      return distance === 0 ? 'focus' : distance === 1 ? 'up-next' : distance === cards.length - 1 ? 'previous' : undefined;
+    };
 
-    const show = (index: number, reason: 'next' | 'previous' | 'preview' | 'swipe' | 'keyboard') => {
+    const show = (index: number, reason: 'teaser' | 'swipe' | 'keyboard') => {
       transition?.cancel();
+      const direction = Math.sign(index - active) || 1;
       active = (index + cards.length) % cards.length;
       cards.forEach((card, cardIndex) => {
-        const distance = (cardIndex - active + cards.length) % cards.length;
-        const slot = distance === 0 ? 'focus' : distance === 1 ? 'up-next'
-          : distance === cards.length - 1 ? 'previous' : undefined;
-        card.hidden = !slot;
+        const slot = slotOf(cardIndex);
         if (slot) card.dataset.slot = slot;
         else delete card.dataset.slot;
-        const direction = card.querySelector<HTMLElement>('[data-teaser-direction]');
-        if (direction && slot !== 'focus') direction.textContent = slot === 'previous' ? 'Previous' : 'Up next';
+        const label = card.querySelector<HTMLElement>('[data-teaser-direction]');
+        if (label && slot && slot !== 'focus') label.textContent = slot === 'previous' ? 'Previous' : 'Up next';
       });
 
       if (status) status.textContent = `Showing ${cards[active].dataset.title}`;
-      const target = reason === 'preview' || reason === 'keyboard' ? cards[active].querySelector<HTMLElement>('.home-moment-link')
-        : reason === 'swipe' ? null : cards[active].querySelector<HTMLButtonElement>(`[data-${reason}]`);
-      target?.focus({ preventScroll: true });
+      document.dispatchEvent(new CustomEvent('home:moment', { detail: { index: active, direction } }));
 
-      if (!reducedMotion.matches && reason !== 'keyboard') {
+      if (reason === 'keyboard') cards[active].querySelector<HTMLElement>('.home-moment-link')?.focus({ preventScroll: true });
+      if (reason === 'teaser') {
+        const slot = direction > 0 ? 'up-next' : 'previous';
+        stage.querySelector<HTMLElement>(`[data-slot="${slot}"] [data-preview]`)?.focus({ preventScroll: true });
+      }
+
+      if (!reducedMotion.matches) {
         transition = cards[active].querySelector('.home-moment-conversation')?.animate(
-          [{ opacity: 0, transform: 'translateX(8px)' }, { opacity: 1, transform: 'translateX(0)' }],
+          [{ opacity: 0, transform: `translateY(${direction * 8}px)` }, { opacity: 1, transform: 'none' }],
           { duration: 220, easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)' },
         ) ?? null;
       }
     };
 
     stage.addEventListener('click', (event) => {
-      const button = (event.target as Element).closest<HTMLButtonElement>('[data-preview], [data-previous], [data-next]');
-      if (!button) return;
-      if (button.hasAttribute('data-preview')) {
-        const card = button.closest<HTMLElement>('[data-moment]');
-        if (card) show(cards.indexOf(card), 'preview');
-      } else {
-        const previous = button.hasAttribute('data-previous');
-        show(active + (previous ? -1 : 1), previous ? 'previous' : 'next');
-      }
+      const card = (event.target as Element).closest('[data-preview]')?.closest<HTMLElement>('[data-moment]');
+      if (!card) return;
+      show(active + (card.dataset.slot === 'previous' ? -1 : 1), 'teaser');
     });
 
     stage.addEventListener('keydown', (event) => {

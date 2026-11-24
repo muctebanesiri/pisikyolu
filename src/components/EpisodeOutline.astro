@@ -1,0 +1,19 @@
+---
+interface Props {
+  headings: { slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+---
+
+<nav class="episode-outline" aria-label="Episode chapters">
+  <ul>
+    {headings.map((heading) => (
+      <li>
+        <a href={`#${heading.slug}`} class="toc-link chapter-link outline-link" data-heading-id={heading.slug}>
+          <span class="toc-title">{heading.text}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>

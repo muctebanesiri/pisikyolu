@@ -11,18 +11,17 @@
   "homepage": "https://hopeinsource.com",
   "license": "MIT",
   "scripts": {
-    "dev": "bun run build:images && astro dev",
+    "dev": "astro dev",
     "start": "bun run dev",
     "check": "astro check",
     "check:site": "bun run scripts/check-site.ts",
     "test": "bun test",
     "test:transcripts": "python3 -m unittest discover -s scripts/transcript-pipeline",
-    "build": "bun run build:images && bun run check && astro build --force && bun run build:search",
+    "build": "bun run check && astro build --force && bun run build:search",
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "bun run build && bun run check:site && CLOUDFLARE_ACCOUNT_ID=899db3f6d2659dfb20376c7e752c862d bunx wrangler@4.140.0 pages deploy dist --project-name hopeinsource-com --branch=main",
     "deploy:preview": "bun run build && bun run check:site && CLOUDFLARE_ACCOUNT_ID=899db3f6d2659dfb20376c7e752c862d bunx wrangler@4.140.0 pages deploy dist --project-name hopeinsource-com --branch=preview",
-    "build:images": "bun run scripts/build-cover-images.ts",
     "build:search": "bun run scripts/build-search-index.ts"
   },
   "dependencies": {
@@ -31,6 +30,7 @@
     "astro": "^7.3.4",
     "mdast-util-to-string": "^4.0.0",
     "pagefind": "^1.5.2",
+    "sharp": "0.35.4",
     "tailwindcss": "^4.3.3",
     "unist-util-visit": "^5.0.0"
   },

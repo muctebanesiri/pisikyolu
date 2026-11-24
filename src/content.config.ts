@@ -4,6 +4,7 @@ import { glob } from 'astro/loaders';
 
 const podcastSchema = z.object({
   title: z.string(),
+  shareExcerpt: z.string().trim().min(1).optional(),
   season: z.number(),
   date: z.date(),
   time: z.string(),

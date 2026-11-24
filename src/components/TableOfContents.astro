@@ -21,7 +21,7 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
     {headings.length > 0 && (
       <details
         id="mobile-chapters"
-        class="mobile-chapters sticky top-2 z-[45] mb-5 rounded-xl border border-his-hr bg-his-bg/95 shadow-sm backdrop-blur-sm md:hidden"
+        class="mobile-chapters sticky top-2 z-[45] mb-5 rounded-xl border border-his-hr bg-his-bg/95 shadow-sm backdrop-blur-sm"
       >
         <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-3 text-sm font-medium text-his-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60">
           <span class="min-w-0 truncate">
@@ -49,39 +49,17 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
       </details>
     )}
 
-    <!-- Scrubber (tablet+, right side) -->
+    <!-- References (tablet+, right side) -->
     <div
       id="toc-scrubber"
       class="hidden md:flex fixed right-3 top-1/2 -translate-y-1/2 flex-col items-end gap-1.5 p-2 z-40"
-      role="navigation"
-      aria-label="Table of contents"
     >
-      {/* Section bars */}
-      {headings.length > 0 && (
-        <button
-          id="toc-bars"
-          type="button"
-          class="flex min-h-11 min-w-11 flex-col items-end justify-center gap-1.5 cursor-pointer group rounded-md p-2 bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
-          aria-label="Toggle table of contents"
-          title="Chapters"
-          aria-controls="toc-nav"
-          aria-expanded="false"
-        >
-          {headings.map((heading) => (
-            <span
-              class="toc-scrubber-bar w-4 h-1 bg-his-text-tertiary transition-[width,background-color] duration-300 rounded-full group-hover:bg-his-text-secondary"
-              data-scrubber-id={heading.slug}
-              aria-hidden="true"
-            />
-          ))}
-        </button>
-      )}
       {/* Reference count badge - vertical layout */}
       {extractedLinks.length > 0 && (
         <button
           id="ref-badge"
           type="button"
-          class="mt-2 flex min-h-10 min-w-10 flex-col items-center justify-center gap-0.5 text-[10px] text-his-text-tertiary hover:text-his-green transition-colors cursor-pointer rounded-md p-1 bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
+          class="flex min-h-10 min-w-10 flex-col items-center justify-center gap-0.5 text-[10px] text-his-text-tertiary hover:text-his-green transition-colors cursor-pointer rounded-md p-1 bg-transparent border-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-his-green/60"
           aria-label="Toggle references"
           aria-controls="ref-popover"
           aria-expanded="false"
@@ -94,34 +72,11 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
       )}
     </div>
 
-    <!-- TOC popover (sections) -->
-    {headings.length > 0 && (
-      <nav
-        id="toc-nav"
-        class="hidden md:block fixed right-12 top-1/2 w-[min(18rem,calc(100vw-5rem))] max-h-[82vh] bg-his-bg border border-his-hr rounded-xl opacity-0 invisible transition-[opacity,transform,visibility] duration-200 z-50"
-        style="transform: translateY(-50%) translateX(10px);"
-      >
-        <ul class="toc-panel-list list-none overflow-y-auto max-h-[82vh] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          {headings.map((heading) => (
-            <li class="m-0">
-              <a
-                href={`#${heading.slug}`}
-                class="toc-link chapter-link toc-panel-link no-underline transition-colors duration-150"
-                data-heading-id={heading.slug}
-              >
-                <span class="toc-title">{heading.text}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </nav>
-    )}
-
     <!-- References popover -->
     {extractedLinks.length > 0 && (
       <div
         id="ref-popover"
-        class="hidden md:block fixed right-12 top-[calc(50%+80px)] w-72 max-h-[60vh] overflow-hidden bg-his-bg border border-his-hr rounded-lg shadow-xl opacity-0 invisible transition-[opacity,transform,visibility] duration-200 z-50"
+        class="hidden md:block fixed right-12 top-1/2 w-72 max-h-[60vh] overflow-hidden bg-his-bg border border-his-hr rounded-lg shadow-xl opacity-0 invisible transition-[opacity,transform,visibility] duration-200 z-50"
         style="transform: translateY(-50%) translateX(10px);"
       >
         <div class="p-1.5 overflow-y-auto max-h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -156,41 +111,20 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
 
 <script>
   let currentActiveId: string | null = null;
-  let tocOpen = false;
   let refOpen = false;
   let tocInitialized = false;
 
   function handleTOCClick(e: MouseEvent) {
     const target = e.target as HTMLElement;
-    const tocNav = document.getElementById('toc-nav');
-    const tocBars = document.getElementById('toc-bars');
     const refPopover = document.getElementById('ref-popover');
     const refBadge = document.getElementById('ref-badge');
-
-    if (tocOpen && !tocNav?.contains(target) && !tocBars?.contains(target)) {
-      closeTOC();
-    }
     if (refOpen && !refPopover?.contains(target) && !refBadge?.contains(target)) {
       closeRefPopover();
     }
   }
 
   function handleTOCKeyDown(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
-      closeTOC(true);
-      closeRefPopover(true);
-    }
-  }
-
-  function closeTOC(restoreFocus = false) {
-    const tocNav = document.getElementById('toc-nav');
-    const tocBars = document.getElementById('toc-bars');
-    tocNav?.classList.remove('opacity-100');
-    tocNav?.classList.add('invisible', 'opacity-0');
-    tocNav?.style.setProperty('transform', 'translateY(-50%) translateX(10px)');
-    tocBars?.setAttribute('aria-expanded', 'false');
-    if (restoreFocus && tocOpen && tocNav?.contains(document.activeElement)) tocBars?.focus();
-    tocOpen = false;
+    if (e.key === 'Escape') closeRefPopover(true);
   }
 
   function closeRefPopover(restoreFocus = false) {
@@ -206,10 +140,7 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
 
   function initTOC() {
     tocInitialized = true;
-    const tocBars = document.getElementById('toc-bars');
-    const tocNav = document.getElementById('toc-nav');
     const tocLinks = document.querySelectorAll('.toc-link');
-    const scrubberBars = document.querySelectorAll('.toc-scrubber-bar');
 
     const refBadge = document.getElementById('ref-badge');
     const refPopover = document.getElementById('ref-popover');
@@ -221,43 +152,30 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
       if (!target?.matches('h2')) return;
       if (currentActiveId === id) return;
       currentActiveId = id;
-      const currentHeading = document.getElementById(id);
-      if (mobileChaptersCurrent && currentHeading?.textContent) {
-        mobileChaptersCurrent.textContent = currentHeading.textContent.trim();
+      if (mobileChaptersCurrent && target.textContent) {
+        mobileChaptersCurrent.textContent = target.textContent.trim();
       }
 
       tocLinks.forEach(link => {
-        const linkId = link.getAttribute('data-heading-id');
-        const isActive = linkId === id;
+        const isActive = link.getAttribute('data-heading-id') === id;
         link.classList.toggle('active', isActive);
         link.classList.toggle('text-his-green', isActive);
         if (isActive) {
           link.setAttribute('aria-current', 'location');
+          const outline = link.closest<HTMLElement>('.episode-outline');
+          if (outline?.offsetParent) {
+            const box = outline.getBoundingClientRect();
+            const row = link.getBoundingClientRect();
+            if (row.top < box.top) outline.scrollTop += row.top - box.top;
+            else if (row.bottom > box.bottom) outline.scrollTop += row.bottom - box.bottom;
+          }
         } else {
           link.removeAttribute('aria-current');
         }
       });
-
-      scrubberBars.forEach(bar => {
-        const barId = bar.getAttribute('data-scrubber-id');
-        const isActive = barId === id;
-        bar.classList.toggle('bg-his-green', isActive);
-        bar.classList.toggle('w-6', isActive);
-        bar.classList.toggle('bg-his-text-tertiary', !isActive);
-      });
-    }
-
-    function openTOC() {
-      closeRefPopover();
-      tocNav?.classList.remove('invisible', 'opacity-0');
-      tocNav?.classList.add('opacity-100');
-      tocNav?.style.setProperty('transform', 'translateY(-50%) translateX(0)');
-      tocBars?.setAttribute('aria-expanded', 'true');
-      tocOpen = true;
     }
 
     function openRefPopover() {
-      closeTOC();
       refPopover?.classList.remove('invisible', 'opacity-0');
       refPopover?.classList.add('opacity-100');
       refPopover?.style.setProperty('transform', 'translateY(-50%) translateX(0)');
@@ -265,26 +183,17 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
       refOpen = true;
     }
 
-    // Toggle TOC
-    tocBars?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      tocOpen ? closeTOC() : openTOC();
-    });
-
-    // Toggle refs
     refBadge?.addEventListener('click', (e) => {
       e.stopPropagation();
       refOpen ? closeRefPopover() : openRefPopover();
     });
 
-    // TOC links - scroll to section
     tocLinks.forEach(link => {
       link.addEventListener('click', () => {
         const href = link.getAttribute('href');
         if (href) {
           const target = document.querySelector(href);
           if (target) {
-            closeTOC();
             mobileChapters?.removeAttribute('open');
             setActive(href.slice(1));
             (target as HTMLElement).tabIndex = -1;
@@ -331,20 +240,31 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
       }
     });
 
-    // Intersection Observer
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => {
-        if (entry.isIntersecting) setActive(entry.target.id);
-      }),
-      { rootMargin: '-10% 0px -70% 0px', threshold: 0 }
-    );
-    document.querySelectorAll('#episode-content-shell h2').forEach((h) => observer.observe(h));
+    const chapterHeadings = [...document.querySelectorAll<HTMLElement>('#episode-content-shell h2')];
+    const scroller = document.getElementById('episode-scroll-container');
+    let chapterFrame = 0;
+    const markChapterInView = () => {
+      chapterFrame = 0;
+      const box = scroller?.getBoundingClientRect();
+      const top = box?.top ?? 0;
+      const height = box?.height ?? window.innerHeight;
+      const atEnd = scroller
+        ? scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2
+        : window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      const line = top + height * 0.3;
+      const current = atEnd
+        ? chapterHeadings.at(-1)
+        : chapterHeadings.filter((h) => h.getBoundingClientRect().top <= line).at(-1);
+      if (current) setActive(current.id);
+    };
+    (scroller ?? window).addEventListener('scroll', () => {
+      chapterFrame ||= requestAnimationFrame(markChapterInView);
+    }, { passive: true });
+    markChapterInView();
 
-    // Global listeners
     document.addEventListener('click', handleTOCClick);
     document.addEventListener('keydown', handleTOCKeyDown);
 
-    // Init from hash
     const hash = window.location.hash;
     if (hash) {
       const id = hash.slice(1);
@@ -365,7 +285,6 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
   }
 
   function initTOCLazyBootstrap() {
-    const tocBars = document.getElementById('toc-bars');
     const refBadge = document.getElementById('ref-badge');
     const mobileChapters = document.getElementById('mobile-chapters');
     const scrollContainer = document.getElementById('episode-scroll-container');
@@ -375,17 +294,6 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
       initTOC();
     };
 
-    const handleFirstControlClick = (e: Event) => {
-      const control = e.currentTarget as HTMLElement | null;
-      if (!control) return;
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      warmInit();
-      queueMicrotask(() => control.click());
-    };
-
-    tocBars?.addEventListener('click', handleFirstControlClick, { capture: true, once: true });
-    refBadge?.addEventListener('click', handleFirstControlClick, { capture: true, once: true });
     mobileChapters?.addEventListener('toggle', () => {
       warmInit();
       if ((mobileChapters as HTMLDetailsElement).open) {
@@ -401,6 +309,23 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
         scrollContainer.scrollTo({ top: targetTop, behavior });
       }
     });
+
+    // The margin outline is on screen from the start, so its times and current mark can't wait for a scroll.
+    if (document.querySelector<HTMLElement>('.episode-outline')?.offsetParent) {
+      warmInit();
+      return;
+    }
+
+    const handleFirstControlClick = (e: Event) => {
+      const control = e.currentTarget as HTMLElement | null;
+      if (!control) return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      warmInit();
+      queueMicrotask(() => control.click());
+    };
+
+    refBadge?.addEventListener('click', handleFirstControlClick, { capture: true, once: true });
     scrollContainer?.addEventListener('scroll', warmInit, { passive: true, once: true });
     if (!scrollContainer) {
       window.addEventListener('scroll', warmInit, { passive: true, once: true });

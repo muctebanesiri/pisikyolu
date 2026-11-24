@@ -29,6 +29,7 @@ for (const file of files.filter(file => file.endsWith(".html"))) {
   const page = { ids: new Set<string>(), links: [] as string[], assets: [] as string[] };
   let titles = 0;
   let mains = 0;
+  const shareImages: string[] = [];
   const rewriter = new HTMLRewriter()
     .on("[id]", { element(element) {
       const id = decodeHTML(element.getAttribute("id") ?? "");
@@ -37,6 +38,9 @@ for (const file of files.filter(file => file.endsWith(".html"))) {
     } })
     .on("h1", { element() { titles++; } })
     .on("main", { element() { mains++; } })
+    .on('meta[property="og:image"], meta[name="twitter:image"]', { element(element) {
+      shareImages.push(element.getAttribute("content") ?? "");
+    } })
     .on(".message[id][data-timestamp]", { element() { passages++; } })
     .on("a[href]", { element(element) { page.links.push(decodeHTML(element.getAttribute("href") ?? "")); } })
     .on("[src]", { element(element) { page.assets.push(decodeHTML(element.getAttribute("src") ?? "")); } })
@@ -44,6 +48,10 @@ for (const file of files.filter(file => file.endsWith(".html"))) {
   await rewriter.transform(new Response(await Bun.file(file).text())).text();
   if (titles !== 1) errors.push(`${route}: expected one h1, found ${titles}`);
   if (mains !== 1) errors.push(`${route}: expected one main, found ${mains}`);
+  const card = page.ids.has("episode-content-shell") ? `/share/episode${route}.png` : "/share/show.png";
+  if (shareImages.length !== 2 || shareImages.some(url => url !== origin + card) || !paths.has(card)) {
+    errors.push(`${route}: expected both social previews to use ${card}`);
+  }
   pages.set(route, page);
 }
 
