@@ -4,7 +4,7 @@ The site for [Hope in Source](https://hopeinsource.com), a podcast you read: eve
 
 ## Run it
 
-Needs Bun 1.4.2+ and Node 22.12+.
+Needs Bun 1.4.5+ and Node 22.22+.
 
 ```sh
 bun install
@@ -13,7 +13,7 @@ bun run dev
 
 Search only works on a build: `bun run build && bun run preview`.
 
-`bun check` checks types, `bun run test` runs the tests, and `bun run test:transcripts` runs the Python transcript-tool tests.
+`bun check` checks types and `bun run test` runs the tests, transcript tools included.
 
 ## Where things live
 

@@ -6,15 +6,15 @@ An existing usable transcript starts with contextual reading cleanup, without ne
 
 ## Runtime and new recordings
 
-Use Python 3.10+ and FFmpeg/ffprobe. Recognition and diarization use separately installed environments and downloaded models; see [runtime.example.json](runtime.example.json). Copy it to the episode directory as `runtime.local.json` and supply actual Python/model paths. `run.py` selects those environments and enables Hugging Face offline mode; it does not install dependencies or upload audio. Assembly, cleanup, review, export, and tests do not require ML packages.
+Use Bun and FFmpeg/ffprobe. Everything runs in Bun except the model calls: [models.py](models.py) is a thin runner for Whisper, diarization, and the Parakeet crosscheck, run inside separately installed Python environments with downloaded models; see [runtime.example.json](runtime.example.json). Copy it to the episode directory as `runtime.local.json` and supply actual Python/model paths. The pipeline selects those environments and enables Hugging Face offline mode; it does not install dependencies or upload audio. Assembly, cleanup, review, export, and tests need no Python.
 
 ```sh
-python3 scripts/transcript-pipeline/pipeline.py ingest experiments/transcript-pilot/my-episode --audio /absolute/path/episode.mp3
-python3 scripts/transcript-pipeline/run.py --config experiments/transcript-pilot/my-episode/runtime.local.json transcribe experiments/transcript-pilot/my-episode
-python3 scripts/transcript-pipeline/run.py --config experiments/transcript-pilot/my-episode/runtime.local.json diarize experiments/transcript-pilot/my-episode
-python3 scripts/transcript-pipeline/pipeline.py assemble experiments/transcript-pilot/my-episode
-python3 scripts/transcript-pipeline/pipeline.py audit experiments/transcript-pilot/my-episode
-python3 scripts/transcript-pipeline/serve.py experiments/transcript-pilot/my-episode
+bun scripts/transcript-pipeline/pipeline.ts ingest experiments/transcript-pilot/my-episode --audio /absolute/path/episode.mp3
+bun scripts/transcript-pipeline/pipeline.ts transcribe experiments/transcript-pilot/my-episode --config experiments/transcript-pilot/my-episode/runtime.local.json
+bun scripts/transcript-pipeline/pipeline.ts diarize experiments/transcript-pilot/my-episode --config experiments/transcript-pilot/my-episode/runtime.local.json
+bun scripts/transcript-pipeline/pipeline.ts assemble experiments/transcript-pilot/my-episode
+bun scripts/transcript-pipeline/pipeline.ts audit experiments/transcript-pilot/my-episode
+bun scripts/transcript-pipeline/serve.ts experiments/transcript-pilot/my-episode
 ```
 
 For a mixed recording, map acoustic clusters to speaker names in `manifest.json` with local voice evidence. A cluster count is not a guest count, and a global cluster/name mapping does not verify every handoff. Uncertain speaker labels remain explicit. For long recordings, `"stream_audio": true` in the diarizer configuration feeds five-second chunks into persistent speaker state with sample-based timing. This avoids whole-recording buffering; it can produce different results from file mode.
@@ -22,7 +22,7 @@ For a mixed recording, map acoustic clusters to speaker names in `manifest.json`
 Two inputs must be isolated speaker tracks with measured or confirmed offsets, not two mixed recordings. Ingest them instead with:
 
 ```sh
-python3 scripts/transcript-pipeline/pipeline.py ingest experiments/transcript-pilot/my-episode \
+bun scripts/transcript-pipeline/pipeline.ts ingest experiments/transcript-pilot/my-episode \
   --track Henry=/absolute/path/henry.mp3 --offset Henry=0 \
   --track Guest=/absolute/path/guest.mp3 --offset Guest=0
 ```
@@ -32,7 +32,7 @@ These tracks provide speaker identity, so omit diarization. Assembly preserves o
 For a disputed passage, retry without feeding the suspected words to the model:
 
 ```sh
-python3 scripts/transcript-pipeline/run.py --config experiments/transcript-pilot/my-episode/runtime.local.json recheck experiments/transcript-pilot/my-episode --track track-0 --start 775 --end 800
+bun scripts/transcript-pipeline/pipeline.ts recheck experiments/transcript-pilot/my-episode --config experiments/transcript-pilot/my-episode/runtime.local.json --track track-0 --start 775 --end 800
 ```
 
 The optional `crosscheck` stage uses the configured Parakeet Redux adapter. If that runtime is installed, run it like `transcribe`, then add `--crosscheck experiments/transcript-pilot/my-episode/raw/crosscheck-track-0.json` to `audit`. This comparison currently supports one mixed recording; inspect isolated-track results separately. A second recognizer is not required for assembly.
@@ -71,45 +71,12 @@ Open the server's `/` page to read and compare Raw → Corrected separately from
 
 Keep originals, frozen IDs, raw evidence, edits, accepted decisions, and unique checkpoints. Generated editions can be rebuilt, but deleting them disables their review pages until assembly runs again. Local experiments and models are outside the deployment; they are not required website assets.
 
-## Existing archive
-
-Run the read-only structural preflight before editing existing Markdown:
-
-```sh
-python3 scripts/transcript-pipeline/audit_archive.py --output /tmp/archive-preflight.json
-```
-
-It checks every season by default, including untimed dialogue. Selected Markdown paths may precede `--output`. Same-second messages are informational; candidates require review, not automatic deletion.
-
-`cleanup_archive.py` applies a JSON list of repository-relative `path`, exact whole dialogue `before` and `after` lines, and `reason`. It defaults to dry-run, rejects stale/ambiguous matches and changed speakers/timestamps/links, and validates all proposals before writing. Reviewed filler-only turns may become empty while retaining markup. Other lines, frontmatter, and line endings survive.
-
-```sh
-python3 scripts/transcript-pipeline/cleanup_archive.py reviewed-edits.json
-python3 scripts/transcript-pipeline/cleanup_archive.py reviewed-edits.json --apply
-```
-
-For an assembled pilot, synchronize the same vetted ledger into its editable state. This requires complete agreement between the website and pilot, preserves frozen IDs/times/decisions, and never exports website Markdown:
-
-```sh
-python3 scripts/transcript-pipeline/sync_archive_pilot.py reviewed-edits.json my-episode
-python3 scripts/transcript-pipeline/sync_archive_pilot.py reviewed-edits.json my-episode --apply
-```
-
-The passage-only archive queue consumes JSON reports from `my-review/reviewed/*.json`, or `my-review/batch-*/*.json` when `reviewed/` is absent. Reports contain a repository-relative `path` and `issues` with a source line, anchor, timestamp, or quoted phrase. It is a separate view of existing Markdown:
-
-```sh
-python3 scripts/transcript-pipeline/archive_review.py experiments/transcript-pilot/reviews/my-review
-python3 scripts/transcript-pipeline/archive_review_server.py experiments/transcript-pilot/reviews/my-review --port 8792
-```
-
-`Space` plays, `R` replays, `Enter` saves/advances, `K` keeps, and `S` skips. Saves stay in `review-decisions.json`; reconcile accepted changes into the exact edit ledger before rebuilding the queue. Source hashes/revisions reject stale saves. Keep decisions before regenerating a queue. Untimed passages remain explicitly untimed; a neighboring audio window is not a verified timestamp.
-
 ## Export and metadata
 
 Only export an assembled draft when replacing the existing episode body is intended:
 
 ```sh
-python3 scripts/transcript-pipeline/export_site.py experiments/transcript-pilot/my-episode src/content/podcast/season-5/my-episode.md
+bun scripts/transcript-pipeline/export-site.ts experiments/transcript-pilot/my-episode src/content/podcast/season-5/my-episode.md
 bun run build
 ```
 
@@ -122,7 +89,7 @@ Draft one plain description: an actual question, who is talking, and a few disti
 ## Verification
 
 ```sh
-bun run test:transcripts
+bun test scripts/transcript-pipeline
 ```
 
-Tests cover edit/evidence constraints, frozen anchors and offsets, restoration timing, metadata provenance, exports, escaped review HTML, and both servers' audio seeking and stale-save rejection. They run without model execution; HTTP tests bind localhost. Passing tests verifies these contracts, not audio accuracy or editorial fidelity.
+Tests cover edit/evidence constraints, frozen anchors and offsets, restoration timing, metadata provenance, exports, escaped review HTML, and the review server's audio seeking and stale-save rejection. They run without Python or models; HTTP tests bind localhost. Passing tests verifies these contracts, not audio accuracy or editorial fidelity.

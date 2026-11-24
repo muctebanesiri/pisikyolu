@@ -27,11 +27,7 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.4.5"
-      - uses: actions/setup-python@v7.0.0
-        with:
-          python-version: "3.12"
       - run: bun install --frozen-lockfile
       - run: bun run test
-      - run: bun run test:transcripts
       - run: bun run build
       - run: bun run check:site

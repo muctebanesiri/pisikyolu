@@ -14,8 +14,7 @@
     "dev": "astro dev",
     "check:site": "bun run scripts/check-site.ts",
     "test": "bun test",
-    "test:transcripts": "python3 -m unittest discover -s scripts/transcript-pipeline",
-    "build": "bun check &&astro build --force && bun run build:search",
+    "build": "bun check && astro build --force && bun run build:search",
     "preview": "astro preview",
     "deploy": "bun run build && bun run check:site && CLOUDFLARE_ACCOUNT_ID=899db3f6d2659dfb20376c7e752c862d bunx wrangler@4.140.0 pages deploy dist --project-name hopeinsource-com --branch=main",
     "deploy:preview": "bun run build && bun run check:site && CLOUDFLARE_ACCOUNT_ID=899db3f6d2659dfb20376c7e752c862d bunx wrangler@4.140.0 pages deploy dist --project-name hopeinsource-com --branch=preview",
@@ -38,6 +37,6 @@
   },
   "engines": {
     "bun": ">=1.4.5",
-    "node": ">=22.12.0"
+    "node": ">=22.22.0"
   }
 }
