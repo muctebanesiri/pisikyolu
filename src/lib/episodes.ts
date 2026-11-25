@@ -1,41 +1,39 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import { toPersianDigits } from "@/lib/localization";  // ✅ added
 
-export type PodcastEntry = CollectionEntry<'podcast'> & {
-  slug: string;
-};
-
-// Parse title to separate episode name from guest name(s)
-function parseTitle(title: string): { episodeTitle: string; guests: string[] } {
-  const match = title.match(/^(.+?)\s*\(([^)]+)\)$/);
-  if (match) {
-    const guests = match[2].split(',').map(g => g.trim());
-    return { episodeTitle: match[1].trim(), guests };
-  }
-  return { episodeTitle: title, guests: [] };
-}
-
 export interface GuestDisplay {
   name: string;
   count: number;
 }
 
-export interface EnrichedEpisode extends PodcastEntry {
-  episodeTitle: string;
-  guests: string[];
-  guestDisplays: GuestDisplay[];
-  epNumber: number;
+export interface RelatedByGuest {
+  guest: string;
+  episodes: Episode[];
 }
 
-export interface EpisodeData {
-  episodes: EnrichedEpisode[];
-  archiveGroups: EpisodeArchiveGroup[];
+export interface Episode extends CollectionEntry<'podcast'> {
+  slug: string;
+  number: number;
+  guestDisplays: GuestDisplay[];
+  previous?: Episode;
+  next?: Episode;
+  related: RelatedByGuest[];
 }
 
 export interface EpisodeArchiveGroup {
   id: string;
   label: string;
-  episodes: EnrichedEpisode[];
+  episodes: Episode[];
+}
+
+export interface EpisodeData {
+  episodes: Episode[];
+  archiveGroups: EpisodeArchiveGroup[];
+}
+
+export function pageTitle(episode: Episode): string {
+  const { title, guests } = episode.data;
+  return guests.length ? `${title} (${guests.join(", ")})` : title;
 }
 
 function archiveGroupIdForSeason(season: number): string {
@@ -53,64 +51,40 @@ function archiveGroupLabel(groupId: string): string {
 }
 
 export async function getEpisodeData(): Promise<EpisodeData> {
-  const rawPosts = await getCollection("podcast");
+  const entries = (await getCollection("podcast")).sort((a, b) =>
+    (b.data.season || 0) - (a.data.season || 0) || b.data.sidebar.order - a.data.sidebar.order);
 
-  // Sort episodes
-  const posts: PodcastEntry[] = rawPosts
-    .sort((a, b) => {
-      const aSeason = a.data.season || 0;
-      const bSeason = b.data.season || 0;
-      if (bSeason !== aSeason) {
-        return bSeason - aSeason;
-      }
-      return b.data.sidebar.order - a.data.sidebar.order;
-    })
-    .map(post => ({
-      ...post,
-      slug: post.id.split('/').pop() || ''
-    }));
-
-  // Build guest appearance counts
   const guestCounts = new Map<string, number>();
-  posts.forEach(post => {
-    const { guests } = parseTitle(post.data.title);
-    guests.forEach(guest => {
-      guestCounts.set(guest, (guestCounts.get(guest) || 0) + 1);
-    });
-  });
+  for (const entry of entries) {
+    for (const guest of entry.data.guests) guestCounts.set(guest, (guestCounts.get(guest) ?? 0) + 1);
+  }
 
-  // Enrich episodes with all computed data
-  const episodes: EnrichedEpisode[] = posts.map((post, index) => {
-    const { episodeTitle, guests } = parseTitle(post.data.title);
-    return {
-      ...post,
-      episodeTitle,
-      guests,
-      guestDisplays: guests.map(g => ({
-        name: g,
-        count: guestCounts.get(g) || 0
-      })),
-      epNumber: posts.length - index
-    };
+  const episodes: Episode[] = entries.map((entry, index) => ({
+    ...entry,
+    slug: entry.id.split('/').pop() || '',
+    number: entries.length - index,
+    guestDisplays: entry.data.guests.map(name => ({ name, count: guestCounts.get(name) ?? 0 })),
+    related: [],
+  }));
+
+  episodes.forEach((episode, index) => {
+    episode.previous = episodes[index + 1];
+    episode.next = episodes[index - 1];
+    episode.related = episode.data.guests
+      .map(guest => ({
+        guest,
+        episodes: episodes.filter(other => other !== episode && other.data.guests.includes(guest)),
+      }))
+      .filter(group => group.episodes.length > 0);
   });
 
   const archiveGroupMap = new Map<string, EpisodeArchiveGroup>();
   for (const episode of episodes) {
-    const season = episode.data.season || 0;
-    const groupId = archiveGroupIdForSeason(season);
-    const existing = archiveGroupMap.get(groupId);
-    if (existing) {
-      existing.episodes.push(episode);
-      continue;
-    }
-    archiveGroupMap.set(groupId, {
-      id: groupId,
-      label: archiveGroupLabel(groupId),
-      episodes: [episode],
-    });
+    const groupId = archiveGroupIdForSeason(episode.data.season || 0);
+    const group = archiveGroupMap.get(groupId);
+    if (group) group.episodes.push(episode);
+    else archiveGroupMap.set(groupId, { id: groupId, label: archiveGroupLabel(groupId), episodes: [episode] });
   }
 
-  const archiveGroups = Array.from(archiveGroupMap.values());
-
-  return { episodes, archiveGroups };
+  return { episodes, archiveGroups: [...archiveGroupMap.values()] };
 }

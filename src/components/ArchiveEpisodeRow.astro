@@ -1,9 +1,9 @@
 ---
 import { formatEpisodeDate } from "@/lib/dates";
-import type { EnrichedEpisode } from "@/lib/episodes";
+import type { Episode } from "@/lib/episodes";
 
 interface Props {
-  episode: EnrichedEpisode;
+  episode: Episode;
   showDescription?: boolean;
 }
 
@@ -14,9 +14,9 @@ const minutes = Number(episode.data.time) || 0;
 ---
 
 <a class="archive-episode" id={`ep-${episode.slug}`} href={`/${episode.slug}`} data-seconds={minutes * 60 || undefined}>
-  <span class="archive-episode-number">{episode.epNumber}</span>
+  <span class="archive-episode-number">{episode.number}</span>
   <span class="archive-episode-body">
-    <span class="archive-episode-title">{episode.episodeTitle}</span>
+    <span class="archive-episode-title">{episode.data.title}</span>
     <span class="archive-episode-meta">
       {episode.guestDisplays.length > 0 && (
         <span class="archive-episode-guests">

@@ -5,10 +5,9 @@ import { fileURLToPath } from 'node:url';
 
 test("search records use rendered canonical anchors and decode only visible dialogue", async () => {
   const html = `<header id="chat-header"><h1>A &amp; B</h1></header>
-    <p class="message" id="msg-21-2" data-timestamp="21" data-speaker="Henry">
-      <span class="message-speaker">Henry</span><span class="message-text">
+    <p class="message" id="msg-21-2" data-side="received"><b>Henry</b><span class="message-bubble">
         <span id="msg-21.12-2"></span>Hello <em>world</em> &amp; &#x2019;quotes&#x2019;.
-      </span><a class="message-time">0:21</a>
+      <a href="#t=21">0:21</a></span>
     </p>`;
   const [record] = await extractEpisodeRecords(html, "/play");
   expect(record?.url).toBe("/play#msg-21-2");
@@ -18,18 +17,16 @@ test("search records use rendered canonical anchors and decode only visible dial
 
 test("compact replies, untimed turns, and line breaks remain searchable without empty aliases", async () => {
   const html = `<header id="chat-header"><h1>Conversation</h1></header>
-    <span class="transcript-anchor" id="msg-0" data-timestamp="0"></span>
+    <span class="transcript-anchor" id="msg-0"></span>
     <div class="conversation-run">
-      <p class="message" id="msg-0-2" data-timestamp="0" data-speaker="Nadia">
-        <span class="message-text">First<br>second</span>
-      </p>
-      <p class="message message-nod" id="msg-0-3" data-timestamp="0" data-speaker="Henry">
-        <a><span class="message-text">Yep.</span></a>
-      </p>
+      <p class="message" id="msg-0-2"><b>Nadia</b><span class="message-bubble">First<br>second</span></p>
+      <p class="message" id="msg-0-3" data-kind="nod"><a href="#t=0"><b>Henry · 0:00</b> Yep.</a></p>
+      <p class="message" id="msg-1"><span class="message-bubble">Still Nadia.</span></p>
     </div>`;
   const records = await extractEpisodeRecords(html, "/faith");
-  expect(records.map(record => record.url)).toEqual(["/faith#msg-0-2", "/faith#msg-0-3"]);
-  expect(records.map(record => record.content)).toEqual(["First second", "Yep."]);
+  expect(records.map(record => record.url)).toEqual(["/faith#msg-0-2", "/faith#msg-0-3", "/faith#msg-1"]);
+  expect(records.map(record => record.content)).toEqual(["First second", "Yep.", "Still Nadia."]);
+  expect(records.map(record => record.meta.speaker)).toEqual(["Nadia", "Henry", "Nadia"]);
 });
 
 test("non-episode HTML does not enter the transcript index", async () => {
@@ -43,28 +40,28 @@ test('directory episode routes point directly at canonical static pages', () => 
 
 test('the episode filter uses the rendered canonical route without a passage hash', async () => {
   const records = await extractEpisodeRecords(`<header id="chat-header"><h1>Conversation</h1></header>
-    <p class="message" id="msg-21-2" data-timestamp="21" data-speaker="Henry"><span class="message-text">A passage.</span></p>`, '/conversation/');
+    <p class="message" id="msg-21-2" data-side="received"><b>Henry</b><span class="message-bubble">A passage.</span></p>`, '/conversation/');
   expect(createEpisodeSearchHtml(records)).toContain('data-pagefind-filter="episode[content]" content="/conversation/"');
 });
 
 test("rendered document titles preserve guest-name search metadata", async () => {
   const records = await extractEpisodeRecords(`<title>Digital Disembodiment (Maggie Appleton)</title>
     <header id="chat-header"><h1>Digital Disembodiment</h1></header>
-    <p class="message" id="msg-0" data-timestamp="0" data-speaker="Maggie"><span class="message-text">Hello.</span></p>`, "/disembodiment");
+    <p class="message" id="msg-0"><b>Maggie</b><span class="message-bubble">Hello.</span></p>`, "/disembodiment");
   expect(records[0]?.meta.title).toBe("Digital Disembodiment (Maggie Appleton)");
   expect(createEpisodeSearchHtml(records)).toContain("Digital Disembodiment (Maggie Appleton)");
 });
 
 test("invalid passage metadata fails the build instead of publishing broken search links", async () => {
-  const error = await extractEpisodeRecords(`<p class="message" id="bucket-21" data-timestamp="21" data-speaker="Henry"><span class="message-text">Hello</span></p>`, "/play").then(() => null, error => error);
+  const error = await extractEpisodeRecords(`<p class="message" id="bucket-21"><b>Henry</b><span class="message-bubble">Hello</span></p>`, "/play").then(() => null, error => error);
   expect(error).toBeInstanceOf(Error);
   expect(String(error)).toContain("Invalid rendered passage");
 });
 
 test("Pagefind native sections retain duplicate-second canonical anchors in one episode fragment", async () => {
   const records = await extractEpisodeRecords(`<header id="chat-header"><h1>Conversation</h1></header>
-    <p class="message" id="msg-21" data-timestamp="21" data-speaker="Henry"><span class="message-text">Apple red.</span></p>
-    <p class="message" id="msg-21-2" data-timestamp="21" data-speaker="Nadia"><span class="message-text">Apple green.</span></p>`, "/play");
+    <p class="message" id="msg-21"><b>Henry</b><span class="message-bubble">Apple red.</span></p>
+    <p class="message" id="msg-21-2"><b>Nadia</b><span class="message-bubble">Apple green.</span></p>`, "/play");
   const { index } = await pagefind.createIndex();
   if (!index) throw new Error("Pagefind did not create an index");
   try {

@@ -26,12 +26,8 @@ jobs:
           node-version: "24"
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: "1.4.2"
-      - uses: actions/setup-python@v7.1.0
-        with:
-          python-version: "3.12"
+          bun-version: "1.4.5"
       - run: bun install --frozen-lockfile
       - run: bun run test
-      - run: bun run test:transcripts
       - run: bun run build
       - run: bun run check:site

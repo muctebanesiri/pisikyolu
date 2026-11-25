@@ -1,17 +1,11 @@
 import { isCompactReply } from "./compact-reply.js";
-import { toString as toStringUtil } from "mdast-util-to-string";
-import { visit } from "unist-util-visit";
-import type { Heading, Link, Paragraph, Parent, PhrasingContent, Root, RootContent, Strong, Text } from "mdast";
-import type { Plugin } from "unified";
+import type { Heading, Link, Paragraph, PhrasingContent, Root, RootContent, Strong, Text } from "mdast";
+import { toString as toStringUtil, visit } from "./tree";
 
 const timestampRegex = /^\[(\d{1,2}:\d{2}(?::\d{2})?)\]/;
 const maxConversationGapSeconds = 45;
-
-interface PluginOptions {
-  timestampClass?: string;
-  wrapClass?: string;
-  textClass?: string;
-}
+const wrapClass = "message";
+const textClass = "message-bubble";
 
 function isTimestamp(node: Paragraph): boolean {
   if (node.children.length < 2) return false;
@@ -86,43 +80,65 @@ function extractMessageIdOverride(content: PhrasingContent[], seconds: number, t
   return { content: [...content.slice(0, index), ...content.slice(index + consumed)], override: match![2] };
 }
 
-function createSpan(
-  className: string,
-  children: PhrasingContent[]
-): PhrasingContent {
-  return {
-    type: "span",
-    data: {
-      hName: "span",
-      hProperties: { className: [className] },
-    },
-    children,
-  } as unknown as PhrasingContent;
+type Side = "sent" | "received" | "system";
+
+interface Message {
+  id: string;
+  seconds: number;
+  speaker: string;
+  side: Side;
+  timed: boolean;
+  ack: boolean;
+  nod: boolean;
+  brief: boolean;
+  prev: boolean;
+  next: boolean;
+  cont: boolean;
+  inThread: boolean;
+  content: PhrasingContent[];
 }
 
-function createStrong(children: Text[]): Strong {
-  return {
-    type: "strong",
-    children,
-  };
+function element(hName: string, hProperties: Record<string, unknown>, children: PhrasingContent[]): PhrasingContent {
+  return { type: "span", data: { hName, hProperties }, children } as unknown as PhrasingContent;
 }
 
-function createTimestampLink(
-  className: string,
-  timestamp: string,
-  seconds: number,
-): Link {
+function timeLink(seconds: number, children: PhrasingContent[]): Link {
   return {
     type: "link",
     url: `#t=${seconds}`,
-    data: {
-      hProperties: {
-        className: [className],
-        "aria-label": `Jump to ${timestamp}`,
-        title: `Jump to ${formatTimestamp(seconds)}`,
-      },
+    children: children as Link["children"],
+  };
+}
+
+function run(message: Message): string | undefined {
+  if (message.prev && message.next) return "mid";
+  if (message.prev) return "end";
+  if (message.next) return "start";
+  if (message.cont && !message.inThread) return "cont";
+}
+
+function emit(node: Paragraph, message: Message) {
+  const kind = message.nod ? "nod" : message.ack ? "ack" : message.brief ? "brief" : undefined;
+  const label = (text: string) => element("b", {}, [createText(text)]);
+  if (message.nod) {
+    node.children = [timeLink(message.seconds, [label(`${message.speaker} · ${formatTimestamp(message.seconds)}`), ...message.content])];
+  } else {
+    const bubble = [...message.content];
+    if (message.timed) bubble.push(timeLink(message.seconds, [createText(formatTimestamp(message.seconds))]));
+    node.children = [
+      ...(!message.ack && (message.prev || message.cont) ? [] : [label(message.speaker)]),
+      element("span", { className: [textClass] }, bubble),
+    ];
+  }
+  node.data = {
+    hName: "p",
+    hProperties: {
+      id: message.id,
+      className: [wrapClass],
+      "data-side": message.side,
+      ...(kind ? { "data-kind": kind } : {}),
+      ...(run(message) ? { "data-run": run(message) } : {}),
     },
-    children: [createText(formatTimestamp(timeToSeconds(timestamp)))],
   };
 }
 
@@ -143,26 +159,45 @@ function formatTimestamp(seconds: number): string {
     : `${minutes}:${remainder}`;
 }
 
-export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
-  options: PluginOptions = {}
-) => {
-  const {
-    timestampClass = "message-time",
-    wrapClass = "message",
-    textClass = "message-bubble",
-  } = options;
+type Words = [number, number];
+interface MomentRef { at: string; words?: Words }
 
-  return (tree: Root, vfile) => {
+function resolveMoments(moments: (MomentRef & { preview?: Words; before: MomentRef; after?: MomentRef })[], all: Iterable<Message>, path: string) {
+  const byId = new Map([...all].map(message => [message.id, message]));
+  const words = (full: string, range: Words | undefined, at: string) => {
+    if (!range) return full;
+    const list = full.split(/\s+/), [from, to] = range;
+    if (!(Number.isInteger(from) && Number.isInteger(to) && from >= 0 && from < to && to <= list.length)) {
+      throw new Error(`Moment word range [${from}, ${to}] is outside ${at} (${list.length} words) in ${path}`);
+    }
+    return list.slice(from, to).join(" ");
+  };
+  const line = ({ at, words: range }: MomentRef) => {
+    const message = byId.get(at);
+    if (!message) throw new Error(`Moment anchor missing from transcript in ${path}: ${at}`);
+    if (message.side === "system") throw new Error(`Moment anchor is not a conversation turn in ${path}: ${at}`);
+    const full = toStringUtil(message.content, { includeHtml: false }).trim();
+    return { id: at, seconds: message.seconds, speaker: message.speaker, side: message.side, full, text: words(full, range, at) };
+  };
+  const strip = ({ full, ...rest }: ReturnType<typeof line>) => rest;
+  return moments.map(({ preview, before, after, ...main }) => {
+    const moment = line(main);
+    return { ...strip(moment), preview: preview && words(moment.full, preview, main.at), before: strip(line(before)), after: after && strip(line(after)) };
+  });
+}
+
+export function transcript(tree: Root, frontmatter: Record<string, unknown>, path = "transcript") {
     // Episode titles are the page's h1; transcript sections follow at h2.
-    visit(tree, 'heading', (node: Heading) => {
+    visit(tree, 'heading', (node) => {
       if (node.depth === 3 || node.depth === 4) node.depth = 2;
     });
-    const frontmatter = vfile.data?.astro?.frontmatter;
     const shareExcerpt = frontmatter?.shareExcerpt;
     const speakerConfig: Record<string, string> = (frontmatter?.speakers as Record<string, string>) || {};
     const speakerOrder: string[] = [];
     const messageIdCountsBySecond = new Map<number, number>();
-    const timedMessageIds = new Set<string>();
+    const messages = new Map<RootContent, Message>();
+    const replyTo = new Map<RootContent, string>();
+    const threadOf = new Map<RootContent, string>();
     const usedMessageIds = new Set<string>();
     let speakerCount = 0;
     let lastSpeaker: string | null = null;
@@ -170,9 +205,7 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
     let previousTime: number | null = null;
     let previousTimed = false;
 
-    visit(tree, "paragraph", (node: Paragraph, index?: number, parent?: Parent) => {
-      if (index === undefined || !parent) return;
-
+    visit(tree, "paragraph", (node, index, parent) => {
       // Check if previous node was a heading
       const prevNode = index > 0 ? parent.children[index - 1] : null;
       if (prevNode && isHeading(prevNode)) {
@@ -206,16 +239,16 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
       if (!timestamp || !speaker) return;
       
       // use frontmatter config if present, else fallback to original logic
-      let alignmentClass = "";
+      let alignmentClass: Side;
 
       if (speaker.replace(/:$/, "") in speakerConfig) {
         const order = speakerConfig[speaker.replace(/:$/, "")];
         if (order === "left") {
-          alignmentClass = "message-sent";
+          alignmentClass = "sent";
         } else if (order === "right") {
-          alignmentClass = "message-received";
+          alignmentClass = "received";
         } else {
-          alignmentClass = "message-system";
+          alignmentClass = "system";
         }
       } else {
         let speakerIndex = speakerOrder.indexOf(speaker);
@@ -223,8 +256,8 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
           speakerIndex = speakerCount++;
           speakerOrder.push(speaker);
         }
-        alignmentClass = speakerIndex === 0 ? "message-sent" :
-                         speakerIndex === 1 ? "message-received" : "message-system";
+        alignmentClass = speakerIndex === 0 ? "sent" :
+                         speakerIndex === 1 ? "received" : "system";
       }
 
       const originalContent = hasExplicitTimestamp
@@ -244,18 +277,15 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
         const line = toStringUtil(content, { includeHtml: false });
         const start = plainQuotes(line).indexOf(plainQuotes(shareExcerpt));
         if (start >= 0) {
-          if (frontmatter.sharePassage) throw new Error(`Ambiguous share excerpt in ${vfile.path}: ${shareExcerpt}`);
+          if (frontmatter.sharePassage) throw new Error(`Ambiguous share excerpt in ${path}: ${shareExcerpt}`);
           frontmatter.sharePassage = {
             text: line.slice(start, start + shareExcerpt.length),
             speaker: speaker.replace(/:$/, ""), seconds: hasExplicitTimestamp ? seconds : null,
           };
         }
       }
-      if (hasExplicitTimestamp) timedMessageIds.add(messageId);
-
-      const previousProps = prevNode?.data?.hProperties;
-      const adjacentMessage = Boolean(previousProps?.['data-speaker']
-        && Array.isArray(previousProps.className) && !previousProps.className.includes('message-system'));
+      const previous = prevNode ? messages.get(prevNode as RootContent) : undefined;
+      const adjacentMessage = Boolean(previous && previous.side !== 'system');
       const nearby = previousTime !== null && previousTimed === hasExplicitTimestamp
         && (!hasExplicitTimestamp || (seconds >= previousTime && seconds - previousTime <= maxConversationGapSeconds));
       
@@ -277,78 +307,35 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
       }
 
       // Handle consecutive messages
-      const canShareAttribution = alignmentClass !== 'message-system' && !isProvisionalSpeaker(speaker);
+      const canShareAttribution = alignmentClass !== 'system' && !isProvisionalSpeaker(speaker);
       const isNextConsecutive = canShareAttribution && speaker === nextSpeaker
         && hasExplicitTimestamp === nextTimed
         && (!hasExplicitTimestamp || (nextSeconds >= seconds && nextSeconds - seconds <= maxConversationGapSeconds));
-      const previousClasses = prevNode?.data?.hProperties?.className;
       const isPrevConsecutive = canShareAttribution && adjacentMessage && nearby && speaker === lastSpeaker
-        && !(Array.isArray(previousClasses) && previousClasses.includes('message-ack'));
-
-      const messageChildren: PhrasingContent[] = [
-        createSpan("message-text", content as PhrasingContent[]),
-      ];
-      if (hasExplicitTimestamp) {
-        messageChildren.push(createTimestampLink(timestampClass, timestamp, seconds));
-      }
-      const messageSpan = createSpan(textClass, messageChildren);
+        && !previous!.ack;
 
       const spokenText = content.map(part => toStringUtil(part)).join("").replace(/<[^>]*>/g, "").trim().replace(/^:\s*/, "");
       // Reviewed empty filler turns retain their original anchor and occurrence.
       // Keeping the source turn also keeps later same-second IDs stable.
       if (!spokenText) {
         node.children = content;
-        node.data = { hName: 'span', hProperties: { id: messageId, className: ['transcript-anchor'], 'data-timestamp': String(seconds) } };
+        node.data = { hName: 'span', hProperties: { id: messageId, className: ['transcript-anchor'] } };
         replyParent = "";
         previousTime = null;
         return;
       }
       const compactReply = Boolean(adjacentMessage && nearby && replyParent && lastSpeaker && lastSpeaker !== speaker
-        && alignmentClass !== 'message-system' && !isProvisionalSpeaker(speaker) && !isProvisionalSpeaker(lastSpeaker)
+        && alignmentClass !== 'system' && !isProvisionalSpeaker(speaker) && !isProvisionalSpeaker(lastSpeaker)
         && !content.some(hasInteractiveContent) && isCompactReply(spokenText));
-      const classes = [wrapClass, alignmentClass];
-      if (compactReply) classes.push('message-ack');
-      else if (spokenText.split(/\s+/).length <= 4 && alignmentClass !== 'message-system'
-        && !isProvisionalSpeaker(speaker)) classes.push('message-brief');
       const nod = compactReply && hasExplicitTimestamp;
-      const nodLabel = `${speaker.replace(/:$/, "")} · ${formatTimestamp(seconds)}`;
-      if (nod) {
-        classes.push('message-nod', alignmentClass === 'message-received' ? 'reply-left' : 'reply-right');
-        const play = createTimestampLink(`${timestampClass} nod-play`, timestamp, seconds);
-        play.children = [messageChildren[0]];
-        play.data!.hProperties!['aria-label'] = `${nodLabel}: ${spokenText} Jump to passage`;
-        messageChildren.splice(0, messageChildren.length, play);
-      }
-
-      if (isPrevConsecutive || isNextConsecutive) {
-        classes.push('consecutive');
-      }
-      if (isPrevConsecutive && !isNextConsecutive) {
-        classes.push('consecutive-end');
-      }
-      if (!isPrevConsecutive && isNextConsecutive) {
-        classes.push('consecutive-start');
-      }
-      // Add class to hide speaker name if it's a consecutive message (not start)
-      if (isPrevConsecutive) {
-        classes.push('hide-speaker');
-      }
-
-      node.children = [
-        createSpan("message-speaker", [createStrong([createText(speaker.replace(/:$/, ""))])]),
-        messageSpan,
-      ];
-      node.data = {
-        hName: "p",
-        hProperties: {
-          id: messageId,
-          className: classes,
-          "data-timestamp": String(seconds),
-          "data-speaker": speaker.replace(/:$/, ""),
-          "data-msg-occurrence": String(nextOccurrence),
-          ...(nod ? { "data-nod-label": nodLabel, "data-reply-to": replyParent } : {}),
-        },
-      };
+      messages.set(node, {
+        id: messageId, seconds, speaker: speaker.replace(/:$/, ""), side: alignmentClass, timed: hasExplicitTimestamp,
+        ack: compactReply, nod,
+        brief: spokenText.split(/\s+/).length <= 4 && alignmentClass !== 'system' && !isProvisionalSpeaker(speaker),
+        prev: isPrevConsecutive, next: isNextConsecutive, cont: false, inThread: false,
+        content: content as PhrasingContent[],
+      });
+      if (nod) replyTo.set(node, replyParent);
 
       lastSpeaker = speaker;
       previousTime = seconds;
@@ -359,25 +346,25 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
     // Group only adjacent rendered turns. Markdown and canonical passage IDs stay flat.
     const grouped: RootContent[] = [];
     for (const node of tree.children) {
-      const replyTo = node.data?.hProperties?.['data-reply-to'];
+      const parentId = replyTo.get(node);
       const previous = grouped.at(-1);
-      if (replyTo && previous) {
-        const previousId = previous.data?.hProperties?.id;
-        const groupId = previous.data?.hProperties?.['data-reply-parent'];
-        if (groupId === replyTo && previous.type === 'blockquote') {
+      if (parentId && previous) {
+        if (threadOf.get(previous) === parentId && previous.type === 'blockquote') {
           previous.children.push(node as Paragraph);
           continue;
         }
-        if (previousId === replyTo && previous.type === 'paragraph') {
-          const classes = String(previous.data?.hProperties?.className || '');
-          grouped[grouped.length - 1] = {
+        const lead = messages.get(previous);
+        if (lead?.id === parentId && previous.type === 'paragraph') {
+          const thread: RootContent = {
             type: 'blockquote',
             data: { hName: 'div', hProperties: {
-              className: ['message-thread', classes.includes('message-received') ? 'thread-left' : 'thread-right'],
-              'data-reply-parent': replyTo,
+              className: ['message-thread', lead.side === 'received' ? 'thread-left' : 'thread-right'],
             } },
             children: [previous, node as Paragraph],
           };
+          lead.inThread = true;
+          threadOf.set(thread, parentId);
+          grouped[grouped.length - 1] = thread;
           continue;
         }
       }
@@ -389,42 +376,33 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
     let previousEnd = 0;
     let previousEndTimed = false;
     for (const node of grouped) {
-      const lead = node.type === 'blockquote' && node.data?.hProperties?.['data-reply-parent']
-        ? node.children[0] : node;
-      const props = lead.data?.hProperties;
-      const speaker = props?.['data-speaker'];
-      const classes = props?.className;
-      if (typeof speaker !== 'string' || !Array.isArray(classes)
-        || classes.includes('message-nod') || classes.includes('message-system') || isProvisionalSpeaker(speaker)) {
+      const thread = threadOf.has(node) && node.type === 'blockquote';
+      const lead = messages.get(thread ? node.children[0] : node);
+      if (!lead || lead.nod || lead.side === 'system' || isProvisionalSpeaker(lead.speaker)) {
         previousLead = null;
         continue;
       }
-      const start = Number(props?.['data-timestamp']);
-      const timed = timedMessageIds.has(String(props?.id));
-      if (previousLead === speaker && timed === previousEndTimed
-        && start >= previousEnd && start - previousEnd <= maxConversationGapSeconds) {
-        if (!classes.includes('hide-speaker')) classes.push('hide-speaker');
-        classes.push('message-continuation');
-        if (node !== lead) {
-          (node.data!.hProperties!.className as string[]).push('thread-continuation');
-        }
+      if (previousLead === lead.speaker && lead.timed === previousEndTimed
+        && lead.seconds >= previousEnd && lead.seconds - previousEnd <= maxConversationGapSeconds) {
+        lead.cont = true;
+        if (thread && !lead.prev) node.data!.hProperties!['data-run'] = 'cont';
       }
-      previousLead = speaker;
-      const tail = node.type === 'blockquote' ? node.children.at(-1) : node;
-      previousEnd = Number(tail?.data?.hProperties?.['data-timestamp'] ?? start);
-      previousEndTimed = timedMessageIds.has(String(tail?.data?.hProperties?.id));
+      previousLead = lead.speaker;
+      const tail = messages.get(thread ? node.children.at(-1)! : node) ?? lead;
+      previousEnd = tail.seconds;
+      previousEndTimed = tail.timed;
     }
     // Pair nearby responses on opposite sides without reordering their DOM/audio sequence.
     for (const group of grouped) {
-      if (group.type !== 'blockquote' || !group.data?.hProperties?.['data-reply-parent']) continue;
+      if (group.type !== 'blockquote' || !threadOf.has(group)) continue;
       const children = [group.children[0]];
       for (const reply of group.children.slice(1)) {
         const previous = children.at(-1);
-        const previousReply = previous?.type === 'blockquote' ? previous.children[0] : null;
-        const left = (reply.data?.hProperties?.className as string[])?.includes('reply-left');
-        const previousLeft = (previousReply?.data?.hProperties?.className as string[])?.includes('reply-left');
-        const gap = Number(reply.data?.hProperties?.['data-timestamp'])
-          - Number(previousReply?.data?.hProperties?.['data-timestamp']);
+        const previousReply = previous?.type === 'blockquote' ? messages.get(previous.children[0]) : undefined;
+        const current = messages.get(reply)!;
+        const left = current.side === 'received';
+        const previousLeft = previousReply?.side === 'received';
+        const gap = current.seconds - (previousReply?.seconds ?? NaN);
         if (previous?.type === 'blockquote' && previous.children.length === 1
           && left !== previousLeft && gap >= 0 && gap <= 8 && (previousLeft || gap === 0)) {
           previous.children.push(reply);
@@ -437,7 +415,8 @@ export const remarkTranscriptPlugin: Plugin<[PluginOptions?], Root> = (
       }
       group.children = children;
     }
+    if (Array.isArray(frontmatter?.moments)) frontmatter.momentPassages = resolveMoments(frontmatter.moments, messages.values(), path);
+    for (const [node, message] of messages) emit(node as Paragraph, message);
     tree.children = grouped;
-    if (shareExcerpt && !frontmatter?.sharePassage) throw new Error(`Share excerpt missing from transcript in ${vfile.path}: ${shareExcerpt}`);
-  };
-};
+    if (shareExcerpt && !frontmatter?.sharePassage) throw new Error(`Share excerpt missing from transcript in ${path}: ${shareExcerpt}`);
+}

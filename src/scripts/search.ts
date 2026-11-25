@@ -19,7 +19,6 @@ type SearchScope = 'episode' | 'all';
 interface SearchOptions { filters: { episode: string } }
 
 interface SearchSession {
-    id: number;
     results: PagefindResult[];
     passageResults: PagefindData[];
     visiblePassages: Map<string, number>;
@@ -28,7 +27,47 @@ interface SearchSession {
     query: string;
     termMatches: Map<string, number[]>[];
     scope: SearchScope;
-    state: 'ready' | 'retry';
+}
+
+type Engine =
+    | { kind: 'idle'; released: Promise<void> }
+    | { kind: 'loading'; ready: Promise<Pagefind | null> }
+    | { kind: 'ready'; pagefind: Pagefind };
+
+// Every state carries the id of its work; async completions for another id are stale.
+type Search =
+    | { kind: 'closed' | 'empty' | 'searching' | 'settled'; id: number }
+    | { kind: 'waiting'; id: number; timer: ReturnType<typeof setTimeout> }
+    | { kind: 'results'; id: number; session: SearchSession; more: 'idle' | 'loading' | 'retry' };
+
+type SearchEvent =
+    | { type: 'open' }
+    | { type: 'close' }
+    | { type: 'clear' }
+    | { type: 'type'; timer: ReturnType<typeof setTimeout> }
+    | { type: 'search' }
+    | { type: 'found'; id: number; session: SearchSession }
+    | { type: 'settle'; id: number }
+    | { type: 'more' }
+    | { type: 'more-done'; id: number }
+    | { type: 'more-failed'; id: number };
+
+function transition(state: Search, event: SearchEvent): Search {
+    const id = state.id + 1;
+    switch (event.type) {
+        case 'open': return state.kind === 'closed' ? { kind: 'empty', id } : state;
+        case 'close': return state.kind === 'closed' ? state : { kind: 'closed', id };
+        case 'clear': return state.kind === 'closed' ? state : { kind: 'empty', id };
+        case 'type': return state.kind === 'closed' ? state : { kind: 'waiting', id, timer: event.timer };
+        case 'search': return state.kind === 'waiting' || state.kind === 'results' ? { kind: 'searching', id } : state;
+        case 'found': return state.kind === 'searching' && state.id === event.id
+            ? { kind: 'results', id: state.id, session: event.session, more: 'idle' } : state;
+        case 'settle': return state.kind === 'searching' && state.id === event.id ? { kind: 'settled', id: state.id } : state;
+        case 'more': return state.kind === 'results' && state.more !== 'loading' ? { ...state, more: 'loading' } : state;
+        case 'more-done':
+        case 'more-failed': return state.kind === 'results' && state.more === 'loading' && state.id === event.id
+            ? { ...state, more: event.type === 'more-done' ? 'idle' : 'retry' } : state;
+    }
 }
 
 function resultSeconds(result: PagefindData): number | null {
@@ -37,17 +76,12 @@ function resultSeconds(result: PagefindData): number | null {
     return Number.isFinite(seconds) && seconds >= 0 ? seconds : null;
 }
 
-let pagefind: Pagefind | null = null;
-let pagefindPromise: Promise<Pagefind | null> | null = null;
-let pagefindCleanup: Promise<void> | null = null;
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+let engine: Engine = { kind: 'idle', released: Promise.resolve() };
+let search: Search = { kind: 'closed', id: 0 };
 let modal: HTMLDivElement | null = null;
 let input: HTMLInputElement | null = null;
 let resultsArea: HTMLDivElement | null = null;
 let returnFocusTo: HTMLElement | null = null;
-let activeSearchId = 0;
-let searchSession: SearchSession | null = null;
-let isHydratingMore = false;
 let currentEpisode: string | null = null;
 let searchScope: SearchScope = 'all';
 
@@ -58,6 +92,25 @@ const LOCAL_PASSAGES = 5;
 const MORE_PASSAGES_STEP = 10;
 const HYDRATE_BATCH_SIZE = 3;
 const SEARCH_DEBOUNCE_MS = 120;
+
+function dispatch(event: SearchEvent): Search {
+    const previous = search;
+    search = transition(search, event);
+    if (previous.kind === 'waiting' && search !== previous) clearTimeout(previous.timer);
+    return search;
+}
+
+function isCurrent(id: number): boolean {
+    return search.kind !== 'closed' && search.id === id;
+}
+
+function isEmpty(): boolean {
+    return search.kind === 'empty';
+}
+
+function currentSession(): SearchSession | null {
+    return search.kind === 'results' ? search.session : null;
+}
 
 function getLoadingHtml(): string {
     return `
@@ -140,7 +193,8 @@ function createPopover() {
             if (first) { event.preventDefault(); first.focus(); }
         } else if (event.key === 'Enter') {
             const links = resultsArea?.querySelectorAll<HTMLAnchorElement>('.search-result');
-            if (links?.length === 1 && searchSession?.nextIndex === searchSession?.total) {
+            const session = currentSession();
+            if (links?.length === 1 && (!session || session.nextIndex === session.total)) {
                 event.preventDefault(); links[0].click();
             }
         }
@@ -170,7 +224,7 @@ function createPopover() {
         }
     });
     document.addEventListener('focusin', (event) => {
-        if (modal?.classList.contains('visible') && !modal.contains(event.target as Node)) {
+        if (search.kind !== 'closed' && !modal?.contains(event.target as Node)) {
             closePopover(false);
         }
     });
@@ -178,7 +232,7 @@ function createPopover() {
         // Failed index/filter downloads can be cached as empty native results.
         // Reconnecting is a reliable occasion to discard that stale engine.
         resetPagefind();
-        if (modal?.classList.contains('visible')) queueSearch();
+        if (search.kind !== 'closed') queueSearch();
     });
     modal.querySelector('.search-close-button')?.addEventListener('click', () => closePopover());
 
@@ -192,10 +246,11 @@ function createPopover() {
             return;
         }
         const expandButton = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-expand-episode]');
-        if (expandButton && searchSession) {
+        const session = currentSession();
+        if (expandButton && session) {
             const episode = expandButton.dataset.expandEpisode ?? '';
             const firstNew = passageLimit(episode);
-            searchSession.visiblePassages.set(episode, firstNew + MORE_PASSAGES_STEP);
+            session.visiblePassages.set(episode, firstNew + MORE_PASSAGES_STEP);
             renderSearchSession();
             const group = [...resultsArea!.querySelectorAll<HTMLElement>('.search-episode-group')]
                 .find(element => element.dataset.episode === episode);
@@ -251,21 +306,18 @@ function updateScopeControls() {
 function queueSearch() {
     if (!input || !resultsArea) return;
     const query = input.value.trim();
-    if (debounceTimer) clearTimeout(debounceTimer);
-    activeSearchId++;
-    searchSession = null;
-    isHydratingMore = false;
     resultsArea.scrollTop = 0;
     setSearchStatus('');
     if (!query) {
+        dispatch({ type: 'clear' });
         resultsArea.innerHTML = '';
         resultsArea.setAttribute('aria-busy', 'false');
         return;
     }
+    dispatch({ type: 'type', timer: setTimeout(() => { void performSearch(query); }, SEARCH_DEBOUNCE_MS) });
     showLoading();
     resultsArea.setAttribute('aria-busy', 'true');
-    if (pagefind) void pagefind.preload(normalizeSearchQuery(query), scopeOptions()).catch(() => {});
-    debounceTimer = setTimeout(() => { void performSearch(query); }, SEARCH_DEBOUNCE_MS);
+    if (engine.kind === 'ready') void engine.pagefind.preload(normalizeSearchQuery(query), scopeOptions()).catch(() => {});
 }
 
 function showLoading() {
@@ -278,44 +330,48 @@ function setSearchStatus(text: string) {
 }
 
 async function loadPagefind(): Promise<Pagefind | null> {
-    if (pagefind) return pagefind;
+    if (engine.kind === 'ready') return engine.pagefind;
+    if (engine.kind === 'loading') return engine.ready;
     if (document.getElementById('search-trigger')?.dataset.dev) return null;
-    if (!pagefindPromise) {
-        pagefindPromise = (async () => {
-            try {
-                await pagefindCleanup;
-                pagefindCleanup = null;
-                const p = 'pagefind';
-                const module = await import(/* @vite-ignore */ `/${p}/${p}.js`) as Pagefind;
-                await module.options({ ranking: { metaWeights: { passage_speakers: 0 } } });
-                await module.init();
-                pagefind = module;
-                return module;
-            } catch {
-                pagefindPromise = null;
-                return null;
-            }
-        })();
+    const loading: Engine = { kind: 'loading', ready: importPagefind(engine.released) };
+    engine = loading;
+    void loading.ready.then(pagefind => {
+        if (engine !== loading) return;
+        engine = pagefind ? { kind: 'ready', pagefind } : { kind: 'idle', released: Promise.resolve() };
+    });
+    return loading.ready;
+}
+
+async function importPagefind(released: Promise<void>): Promise<Pagefind | null> {
+    try {
+        await released;
+        const p = 'pagefind';
+        const module = await import(/* @vite-ignore */ `/${p}/${p}.js`) as Pagefind;
+        await module.options({ ranking: { metaWeights: { passage_speakers: 0 } } });
+        await module.init();
+        return module;
+    } catch {
+        return null;
     }
-    return pagefindPromise;
 }
 
 function resetPagefind() {
-    const engine = pagefind;
-    pagefind = null;
-    pagefindPromise = null;
     // Pagefind memoizes failed fragment promises. Release those caches now,
     // then initialize on the next user action, once the connection may recover.
-    if (engine) pagefindCleanup = engine.destroy().catch(() => {});
+    if (engine.kind === 'ready') {
+        engine = { kind: 'idle', released: engine.pagefind.destroy().catch(() => {}) };
+    } else if (engine.kind === 'loading') {
+        engine = { kind: 'idle', released: engine.ready.then(stale => stale?.destroy()).catch(() => {}) };
+    }
 }
 
-async function findResults(engine: Pagefind, query: string, options: SearchOptions | undefined, searchId: number) {
-    const resultSet = await engine.search(normalizeSearchQuery(query), options);
-    if (searchId !== activeSearchId) return null;
+async function findResults(pagefind: Pagefind, query: string, options: SearchOptions | undefined, searchId: number) {
+    const resultSet = await pagefind.search(normalizeSearchQuery(query), options);
+    if (!isCurrent(searchId)) return null;
     const terms = searchTerms(query);
     // Native offsets preserve stemming while requiring all terms in one turn.
     const termSets = !resultSet.results.length ? [] : terms.length === 1
-        ? [resultSet] : await Promise.all(terms.map(term => engine.search(term, options)));
+        ? [resultSet] : await Promise.all(terms.map(term => pagefind.search(term, options)));
     const visibleTermIds = termSets.map(set => new Set(set.results.filter(hasVisibleSearchMatch).map(result => result.id)));
     return {
         results: resultSet.results.filter(result => hasVisibleSearchMatch(result)
@@ -328,7 +384,7 @@ async function openPopover() {
     if (!modal) createPopover();
     const trigger = document.getElementById('search-trigger');
     if (!modal) return;
-    if (modal.classList.contains('visible')) {
+    if (search.kind !== 'closed') {
         input?.focus();
         return;
     }
@@ -337,6 +393,7 @@ async function openPopover() {
         && !modal.contains(document.activeElement)
         ? document.activeElement
         : trigger;
+    dispatch({ type: 'open' });
     modal.removeAttribute('inert');
     modal.setAttribute('aria-hidden', 'false');
     modal.classList.add('visible');
@@ -344,18 +401,15 @@ async function openPopover() {
     input?.focus();
 
     // Focus immediately; load the engine in parallel with the user's typing.
-    const engine = await loadPagefind();
-    if (!engine && modal.classList.contains('visible') && !input?.value && resultsArea) {
+    const pagefind = await loadPagefind();
+    if (!pagefind && isEmpty() && resultsArea) {
         resultsArea.innerHTML = '<div class="search-empty-state">Search is unavailable. Try reopening it.</div>';
     }
 }
 
 function closePopover(restoreFocus = true) {
-    if (!modal?.classList.contains('visible') || !input || !resultsArea) return;
-    if (debounceTimer) clearTimeout(debounceTimer);
-    activeSearchId++;
-    searchSession = null;
-    isHydratingMore = false;
+    if (search.kind === 'closed' || !modal || !input || !resultsArea) return;
+    dispatch({ type: 'close' });
     const focusTarget = returnFocusTo;
     returnFocusTo = null;
     modal.classList.remove('visible');
@@ -382,7 +436,7 @@ async function hydrateResults(
     for (let i = startIndex; i < endIndex; i += HYDRATE_BATCH_SIZE) {
         const batch = results.slice(i, Math.min(i + HYDRATE_BATCH_SIZE, endIndex));
         const data = await Promise.all(batch.map((r) => r.data()));
-        if (searchId !== activeSearchId) return null;
+        if (!isCurrent(searchId)) return null;
         hydrated.push(...data.map((result, index) => ({
             ...result,
             term_locations: termMatches.map(matches => matches.get(batch[index].id ?? '') ?? []),
@@ -395,20 +449,20 @@ async function hydrateResults(
 async function performSearch(query: string) {
     if (!resultsArea) return;
 
-    const searchId = ++activeSearchId;
-    searchSession = null;
-    isHydratingMore = false;
+    const started = dispatch({ type: 'search' });
+    if (started.kind !== 'searching') return;
+    const searchId = started.id;
 
     try {
-        const engine = await loadPagefind();
-        if (searchId !== activeSearchId) return;
-        if (!engine) throw new Error('Search unavailable');
+        const pagefind = await loadPagefind();
+        if (!isCurrent(searchId)) return;
+        if (!pagefind) throw new Error('Search unavailable');
         const scope = searchScope;
         const options = scopeOptions();
-        const resultSet = await findResults(engine, query, options, searchId);
-        if (searchId !== activeSearchId) return;
+        const resultSet = await findResults(pagefind, query, options, searchId);
         if (!resultSet) return;
         if (resultSet.results.length === 0) {
+            dispatch({ type: 'settle', id: searchId });
             await renderNoResults(query, searchId);
             return;
         }
@@ -423,19 +477,23 @@ async function performSearch(query: string) {
             searchId,
             termMatches,
         );
-        if (!hydratedResults || searchId !== activeSearchId) return;
+        if (!hydratedResults) return;
 
         const passageResults = getQueryResults(hydratedResults, query);
         let nextIndex = hydratedResults.length;
         while (!passageResults.length && nextIndex < resultSet.results.length) {
             const nextHydrated = await hydrateResults(resultSet.results, nextIndex, EPISODES_TO_HYDRATE, searchId, termMatches);
-            if (!nextHydrated || searchId !== activeSearchId) return;
+            if (!nextHydrated) return;
             passageResults.push(...getQueryResults(nextHydrated, query));
             nextIndex += nextHydrated.length;
         }
 
-        searchSession = {
-            id: searchId,
+        if (!passageResults.length) {
+            dispatch({ type: 'settle', id: searchId });
+            await renderNoResults(query, searchId);
+            return;
+        }
+        dispatch({ type: 'found', id: searchId, session: {
             results: resultSet.results,
             passageResults,
             visiblePassages: new Map(),
@@ -444,13 +502,11 @@ async function performSearch(query: string) {
             query,
             termMatches,
             scope,
-            state: 'ready',
-        };
-
-        if (!passageResults.length) await renderNoResults(query, searchId);
-        else renderSearchSession();
+        } });
+        renderSearchSession();
     } catch {
-        if (searchId !== activeSearchId) return;
+        if (!isCurrent(searchId)) return;
+        dispatch({ type: 'settle', id: searchId });
         resetPagefind();
         resultsArea.innerHTML = '<div class="search-no-results">Search couldn’t load. Try typing again.</div>';
         resultsArea.setAttribute('aria-busy', 'false');
@@ -459,7 +515,7 @@ async function performSearch(query: string) {
 }
 
 async function renderNoResults(query: string, searchId: number, knownSuggestions?: string[]) {
-    if (!resultsArea || searchId !== activeSearchId) return;
+    if (!resultsArea || !isCurrent(searchId)) return;
     const message = searchScope === 'episode' ? 'No matches in this episode' : 'No matching passages';
     const allEpisodes = searchScope === 'episode'
         ? '<button class="search-all-episodes" type="button" data-search-scope="all">Search all episodes</button>'
@@ -468,7 +524,7 @@ async function renderNoResults(query: string, searchId: number, knownSuggestions
     resultsArea.setAttribute('aria-busy', 'false');
     setSearchStatus(`${message}.`);
     const vocabulary = knownSuggestions ? null : await loadSearchVocabulary();
-    if (searchId !== activeSearchId || !resultsArea) return;
+    if (!isCurrent(searchId) || !resultsArea) return;
     const suggestions = knownSuggestions ?? (vocabulary ? suggestQuery(query, vocabulary) : []);
     const suggestionArea = resultsArea.querySelector('.search-suggestions');
     if (suggestionArea && suggestions.length) {
@@ -479,10 +535,10 @@ async function renderNoResults(query: string, searchId: number, knownSuggestions
 }
 
 async function loadMoreResults() {
-    if (!searchSession || !resultsArea || isHydratingMore) return;
-    if (searchSession.nextIndex >= searchSession.total) return;
-
-    isHydratingMore = true;
+    if (search.kind !== 'results' || search.more === 'loading' || !resultsArea) return;
+    if (search.session.nextIndex >= search.session.total) return;
+    const refresh = search.more === 'retry';
+    const { id, session } = dispatch({ type: 'more' }) as Extract<Search, { kind: 'results' }>;
 
     const loadMoreButton = resultsArea.querySelector<HTMLButtonElement>('#search-load-more');
     const startedFromButton = document.activeElement === loadMoreButton;
@@ -491,15 +547,14 @@ async function loadMoreResults() {
         loadMoreButton.textContent = 'Loading...';
     }
 
-    const session = searchSession;
     const firstNewIndex = session.passageResults.length;
     try {
-        if (session.state === 'retry') {
-            const engine = await loadPagefind();
-            if (session.id !== activeSearchId) return;
-            if (!engine) throw new Error('Search unavailable');
-            const refreshed = await findResults(engine, session.query, scopeOptions(), session.id);
-            if (!refreshed || session.id !== activeSearchId) return;
+        if (refresh) {
+            const pagefind = await loadPagefind();
+            if (!isCurrent(id)) return;
+            if (!pagefind) throw new Error('Search unavailable');
+            const refreshed = await findResults(pagefind, session.query, scopeOptions(), id);
+            if (!refreshed) return;
             // A deployment may have replaced the index during the failed request.
             // Restart the search if its consumed result order changed.
             if (!session.results.slice(0, session.nextIndex).every((result, index) => result.id === refreshed.results[index]?.id)) {
@@ -509,14 +564,14 @@ async function loadMoreResults() {
             session.results = refreshed.results;
             session.termMatches = refreshed.termMatches;
             session.total = refreshed.results.length;
-            session.state = 'ready';
         }
         do {
-            const nextHydrated = await hydrateResults(session.results, session.nextIndex, EPISODES_TO_HYDRATE, session.id, session.termMatches);
-            if (!nextHydrated || session.id !== activeSearchId) return;
+            const nextHydrated = await hydrateResults(session.results, session.nextIndex, EPISODES_TO_HYDRATE, id, session.termMatches);
+            if (!nextHydrated) return;
             session.passageResults.push(...getQueryResults(nextHydrated, session.query));
             session.nextIndex += nextHydrated.length;
         } while (session.passageResults.length === firstNewIndex && session.nextIndex < session.total);
+        dispatch({ type: 'more-done', id });
         const focused = document.activeElement as HTMLElement;
         // Disabling the loading button can move focus to body. If the reader
         // focused another control while waiting, preserve that control instead.
@@ -530,25 +585,20 @@ async function loadMoreResults() {
             focusTarget?.focus();
         } else if (focusedId) document.getElementById(focusedId)?.focus({ preventScroll: true });
     } catch {
-        if (session.id !== activeSearchId) return;
-        session.state = 'retry';
+        if (!isCurrent(id)) return;
+        dispatch({ type: 'more-failed', id });
         resetPagefind();
         if (loadMoreButton) {
             loadMoreButton.disabled = false;
             loadMoreButton.textContent = 'Try loading more again';
             if (startedFromButton && document.activeElement === document.body) loadMoreButton.focus();
         }
-    } finally {
-        if (session.id === activeSearchId) isHydratingMore = false;
     }
 }
 
 function renderSearchSession() {
-    if (!searchSession) return;
-    renderGroupedResults(
-        searchSession.passageResults,
-        searchSession.nextIndex < searchSession.total,
-    );
+    const session = currentSession();
+    if (session) renderGroupedResults(session.passageResults, session.nextIndex < session.total);
 }
 
 function renderGroupedResults(results: PagefindData[], hasMore: boolean) {
@@ -591,14 +641,15 @@ function renderGroupedResults(results: PagefindData[], hasMore: boolean) {
       ${loadMoreHtml}
     `;
     resultsArea.setAttribute('aria-busy', 'false');
-    setSearchStatus(searchSession?.scope === 'episode'
+    setSearchStatus(currentSession()?.scope === 'episode'
         ? `${sortedGroups[0]?.[1].results.length ?? 0} matching passages in this episode.`
         : `Showing ${sortedGroups.length} matching episode${sortedGroups.length === 1 ? '' : 's'}${hasMore ? ', more available' : ''}.`);
 }
 
 function passageLimit(baseUrl: string): number {
-    return searchSession?.visiblePassages.get(baseUrl)
-        ?? (searchSession?.scope === 'episode' ? LOCAL_PASSAGES : PASSAGES_PER_EPISODE);
+    const session = currentSession();
+    return session?.visiblePassages.get(baseUrl)
+        ?? (session?.scope === 'episode' ? LOCAL_PASSAGES : PASSAGES_PER_EPISODE);
 }
 
 function renderEpisodeGroup(baseUrl: string, title: string, results: Array<{ result: PagefindData; index: number }>, groupIndex: number) {

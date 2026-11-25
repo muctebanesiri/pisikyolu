@@ -5,6 +5,7 @@ import { mkdtemp, readdir, rename, rm, stat } from "node:fs/promises";
 import { dirname, join, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildSearchVocabulary, vocabularyAsset } from "./search-vocabulary";
+import { passageSeconds } from "../src/lib/passage";
 
 const BUILD_DIR = fileURLToPath(new URL("../dist/", import.meta.url));
 const OUTPUT_DIR = join(BUILD_DIR, "pagefind");
@@ -14,6 +15,7 @@ interface RenderedMessage {
   seconds: number;
   speaker: string;
   text: string;
+  nod: boolean;
 }
 
 interface EpisodeSearchRecord {
@@ -27,6 +29,7 @@ export async function extractEpisodeRecords(html: string, url: string): Promise<
   let headerTitle = "";
   const messages: RenderedMessage[] = [];
   let currentMessage: RenderedMessage | null = null;
+  let skipping = false;
 
   const rewriter = new HTMLRewriter()
     .on("title", {
@@ -35,28 +38,32 @@ export async function extractEpisodeRecords(html: string, url: string): Promise<
     .on("#chat-header h1", {
       text(chunk) { headerTitle += chunk.text; },
     })
-    .on(".message[id][data-speaker]", {
+    .on(".message[id]", {
       element(element) {
         const anchor = element.getAttribute("id") ?? "";
-        const seconds = Number(element.getAttribute("data-timestamp"));
-        if (!/^msg-\d+(?:\.\d+)?(?:-\d+)?$/.test(anchor) || !Number.isFinite(seconds) || seconds < 0) {
-          throw new Error(`Invalid rendered passage in ${url}: ${anchor}`);
-        }
-        currentMessage = {
-          anchor,
-          seconds,
-          speaker: decodeHTML(element.getAttribute("data-speaker") ?? "").trim(),
-          text: "",
-        };
+        const seconds = passageSeconds(anchor);
+        if (seconds === null) throw new Error(`Invalid rendered passage in ${url}: ${anchor}`);
+        const nod = element.getAttribute("data-kind") === "nod";
+        currentMessage = { anchor, seconds, speaker: "", text: "", nod };
         messages.push(currentMessage);
         element.onEndTag(() => { currentMessage = null; });
       },
+      text(chunk) { if (currentMessage && !skipping) currentMessage.text += chunk.text; },
     })
-    .on(".message-text", {
-      element() { if (currentMessage) currentMessage.text += " "; },
-      text(chunk) { if (currentMessage) currentMessage.text += chunk.text; },
+    .on(".message[id] > b, .message[id] > a[href^='#t='] > b", {
+      element(element) {
+        skipping = true;
+        element.onEndTag(() => { skipping = false; });
+      },
+      text(chunk) { if (currentMessage) currentMessage.speaker += chunk.text; },
     })
-    .on(".message-text br", {
+    .on(".message[id] > .message-bubble > a[href^='#t=']", {
+      element(element) {
+        skipping = true;
+        element.onEndTag(() => { skipping = false; });
+      },
+    })
+    .on(".message[id] br", {
       element() { if (currentMessage) currentMessage.text += " "; },
     });
 
@@ -65,7 +72,12 @@ export async function extractEpisodeRecords(html: string, url: string): Promise<
   const episodeTitle = decodeHTML(title || headerTitle).trim();
   if (messages.length && !episodeTitle) throw new Error(`Missing episode title in ${url}`);
 
+  let runSpeaker = "";
   return messages.flatMap(message => {
+    let speaker = decodeHTML(message.speaker).replace(/\s+/g, " ").trim();
+    if (message.nod) speaker = speaker.replace(/ · [\d:]+$/, "");
+    else if (speaker) runSpeaker = speaker;
+    else speaker = runSpeaker;
     const text = decodeHTML(message.text).replace(/\s+/g, " ").trim();
     if (!text) return [];
     return [{
@@ -73,7 +85,7 @@ export async function extractEpisodeRecords(html: string, url: string): Promise<
       content: text,
       meta: {
         title: episodeTitle,
-        speaker: message.speaker,
+        speaker,
         seconds: String(message.seconds),
         timestamp: formatTimestamp(message.seconds),
       },

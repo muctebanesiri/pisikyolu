@@ -1,6 +1,5 @@
 ---
-import type { ExtractedLink } from "@/plugins/remark-links-extractor";
-import { toPersianDigits } from "@/lib/localization";  // ✅ added
+import type { ExtractedLink } from "@/markdown/links";
 
 interface TOCHeading {
   slug: string;
@@ -76,10 +75,10 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
     {extractedLinks.length > 0 && (
       <div
         id="ref-popover"
-        class="hidden md:block fixed right-12 top-1/2 w-72 max-h-[60vh] overflow-hidden bg-his-bg border border-his-hr rounded-lg shadow-xl opacity-0 invisible transition-[opacity,transform,visibility] duration-200 z-50"
+        class="hidden md:block fixed right-12 top-1/2 w-72 overflow-hidden bg-his-bg border border-his-hr rounded-lg shadow-xl opacity-0 invisible transition-[opacity,transform,visibility] duration-200 z-50"
         style="transform: translateY(-50%) translateX(10px);"
       >
-        <div class="p-1.5 overflow-y-auto max-h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div class="p-1.5 max-h-[60vh] overflow-y-auto overscroll-contain [scrollbar-width:thin]">
           {extractedLinks.map((link) => (
             <div
               class="ref-popover-item py-2 px-2 rounded-md hover:bg-his-hover/50 transition-colors"
@@ -110,6 +109,7 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
 )}
 
 <script>
+  import { passageSeconds, passageSelector } from "../lib/passage";
   let currentActiveId: string | null = null;
   let refOpen = false;
   let tocInitialized = false;
@@ -218,12 +218,12 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
     // Enrich TOC links with timestamps from adjacent messages
     document.querySelectorAll('#episode-content-shell h2').forEach((heading) => {
       let el = heading.nextElementSibling;
-      while (el && !el.matches('[data-timestamp]') && !el.querySelector('[data-timestamp]') && !el.matches('h2')) {
+      while (el && !el.matches(passageSelector) && !el.querySelector(passageSelector) && !el.matches('h2')) {
         el = el.nextElementSibling;
       }
-      const timed = el?.matches('[data-timestamp]') ? el : el?.querySelector('[data-timestamp]');
+      const timed = el?.matches(passageSelector) ? el : el?.querySelector(passageSelector);
       if (timed) {
-        const seconds = parseInt(timed.getAttribute('data-timestamp') || '0', 10);
+        const seconds = passageSeconds(timed.id) ?? 0;
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         const timeStr = `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -273,8 +273,8 @@ const hasContent = headings.length > 0 || extractedLinks.length > 0;
       else {
         const seconds = id.startsWith('t=') ? Number(id.slice(2)) : null;
         const passage = target ?? (seconds !== null && Number.isFinite(seconds)
-          ? [...document.querySelectorAll<HTMLElement>('.message[data-timestamp]')]
-            .filter(m => Number(m.dataset.timestamp) <= seconds).at(-1) : null);
+          ? [...document.querySelectorAll<HTMLElement>('.message[id]')]
+            .filter(m => (passageSeconds(m.id) ?? Infinity) <= seconds).at(-1) : null);
         if (passage) {
           const heading = [...document.querySelectorAll('#episode-content-shell h2')].filter(h =>
             Boolean(h.compareDocumentPosition(passage) & Node.DOCUMENT_POSITION_FOLLOWING)).at(-1);

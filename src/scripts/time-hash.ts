@@ -1,3 +1,5 @@
+import { passageSeconds, passageSelector } from "../lib/passage";
+
 export interface ParsedTimeHash {
   seconds: number;
   canonicalHash: string;
@@ -53,10 +55,10 @@ export function parseTimeHash(hash: string): ParsedTimeHash | null {
 }
 
 /** A legacy passage alias must not redirect a time link to a different timestamp. */
-export function timeHashTarget<T extends { dataset: { timestamp?: string } }>(
+export function timeHashTarget<T extends { id: string; matches(selectors: string): boolean }>(
   seconds: number,
   candidate: T | null,
   nearest: T | undefined,
 ): T | undefined {
-  return candidate && parseTimeValue(candidate.dataset.timestamp ?? '') === seconds ? candidate : nearest;
+  return candidate?.matches(passageSelector) && passageSeconds(candidate.id) === seconds ? candidate : nearest;
 }
